@@ -62,7 +62,10 @@
     "didi": "^9.0.2",
     "highlight.js": "^11.9.0",
     "@highlightjs/vue-plugin": "2.1.0",
-    "tiny-svg": "^3.0.1"
+    "tiny-svg": "^3.0.1",
+    "min-dom": "^4.1.0",
+    "min-dash": "^4.1.1",
+    "ids": "^1.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.8.1",
