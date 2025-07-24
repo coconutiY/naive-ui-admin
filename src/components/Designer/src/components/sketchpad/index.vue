@@ -9,7 +9,7 @@
   import Toolbar from '@/components/Designer/src/components/toolbar/index.vue';
   import Palette from '@/components/Designer/src/components/palette/index.vue';
   import Panel from '@/components/Designer/src/components/Panel/index.vue';
-  import type CommandStack from 'diagram-js/lib/command/CommandStack';
+  // import type CommandStack from 'diagram-js/lib/command/CommandStack';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
 
   const emit = defineEmits(['update:xml']);
@@ -45,11 +45,12 @@
     }
   }
 
-  onMounted(() => {
+  onMounted(async () => {
     //阻止右键默认事件
     document.body.addEventListener('contextmenu', (ev: MouseEvent) => {
       ev.preventDefault();
     });
+    await init();
   });
 </script>
 
@@ -66,4 +67,6 @@
   </div>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+  @import '../../styles/index.scss';
+</style>

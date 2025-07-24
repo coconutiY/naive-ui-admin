@@ -113,6 +113,15 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () => import('@/views/comp/drag/index.vue'),
       },
+      {
+        path: 'bpmn',
+        name: 'Bpmn',
+        meta: {
+          title: '流程定义',
+          extra: renderNew(),
+        },
+        component: () => import('@/views/comp/bpmn/index.vue'),
+      },
     ],
   },
 ];
