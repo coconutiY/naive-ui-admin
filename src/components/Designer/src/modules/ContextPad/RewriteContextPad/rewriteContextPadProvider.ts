@@ -10,17 +10,25 @@ import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
 import Canvas from 'diagram-js/lib/core/Canvas';
 import Rules from 'diagram-js/lib/features/rules/Rules';
 
-class EnhancementContextPadProvider extends ContextPadProvider {
+class RewriteContextPadProvider extends ContextPadProvider {
+  // @ts-ignore
   private _contextPad: ContextPad;
+  // @ts-ignore
   private _modeling: Modeling;
-  private _elementFactory: any;
+  // @ts-ignore
+  private _elementFactory: ElementFactory;
+  // @ts-ignore
   private _autoPlace: any;
+  // @ts-ignore
   private _connect: Connect;
+  // @ts-ignore
   private _create: Create;
+  // @ts-ignore
   private _popupMenu: PopupMenu;
+  // @ts-ignore
   private _canvas: Canvas;
+  // @ts-ignore
   private _rules: Rules;
-
   constructor(
     config: any,
     injector: Injector,
@@ -62,32 +70,35 @@ class EnhancementContextPadProvider extends ContextPadProvider {
     this._autoPlace = injector.get('autoPlace', false);
   }
 
-  // getContextPadEntries(element: Element) {
-  //   const actions: Record<string, any> = {};
-  //   const appendUserTask = (event: Event, element: Shape) => {
-  //     const shape = this._elementFactory.createShape({ type: 'bpmn:UserTask' });
-  //     this._create.start(event, shape, {
-  //       source: element
-  //     });
-  //   };
-  //   const append = this._autoPlace
-  //     ? (event: Event, element: Shape) => {
-  //         const shape = this._elementFactory.createShape({ type: 'bpmn:UserTask' });
-  //         this._autoPlace.append(element, shape);
-  //       }
-  //     : appendUserTask;
-  //   // 添加创建用户任务按钮
-  //   actions['append.append-user-task'] = {
-  //     group: 'model',
-  //     className: 'bpmn-icon-user-task',
-  //     title: '用户任务',
-  //     action: {
-  //       dragstart: appendUserTask,
-  //       click: append
-  //     }
-  //   };
-  //   return actions;
-  // }
+  getContextPadEntries() {
+    const actions: Record<string, any> = {};
+
+    // 添加一个与edit一组的按钮
+    actions['enhancement-op-1'] = {
+      group: 'edit',
+      className: 'enhancement-op',
+      title: '扩展操作1',
+      action: {
+        click: function () {
+          alert('点击 扩展操作1');
+        },
+      },
+    };
+
+    // 添加一个新分组的自定义按钮
+    actions['enhancement-op'] = {
+      group: 'enhancement',
+      className: 'enhancement-op',
+      title: '扩展操作2',
+      action: {
+        click: function () {
+          alert('点击 扩展操作2');
+        },
+      },
+    };
+
+    return actions;
+  }
 }
 
-export default EnhancementContextPadProvider;
+export default RewriteContextPadProvider;

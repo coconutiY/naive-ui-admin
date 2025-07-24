@@ -1,5 +1,5 @@
 import { ModuleDeclaration } from 'didi';
-import CustomRenderer from '@/components/Designer/modules/Renderer/CustomRenderer/CustomRenderer';
+import CustomRenderer from '@/components/Designer/src/modules/Renderer/CustomRenderer/CustomRenderer';
 
 const customRenderer: ModuleDeclaration = {
   __init__: ['customRenderer'],

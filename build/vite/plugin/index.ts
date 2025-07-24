@@ -4,6 +4,7 @@ import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import Icons from "unplugin-icons/vite"
 
 import { configHtmlPlugin } from './html';
 import { configCompressPlugin } from './compress';
@@ -21,6 +22,10 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     Components({
       dts: true,
       resolvers: [NaiveUiResolver()],
+    }),
+    Icons({
+      compiler: 'vue3',// 指定编译器
+      autoInstall: true,// 自动安装
     }),
   ];
 

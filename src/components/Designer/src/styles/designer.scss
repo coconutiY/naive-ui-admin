@@ -1,0 +1,18 @@
+@import '../../../../../node_modules/bpmn-js/dist/assets/diagram-js.css'; // 基础样式
+@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-js.css'; // 基础样式
+@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css'; // 节点基础图标
+@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'; // 节点完整图标
+@import "../../../../../node_modules/diagram-js-minimap/assets/diagram-js-minimap.css";// 小地图
+
+// 修复选中时填充色
+.layer-selectionOutline {
+  fill: none;
+}
+
+//隐藏bpmn的logo（侵权，但好像camunda不管CN市场）以及增强的palette插件以及小地图的部分组件
+.djs-palette,
+.bts-toggle-mode,
+.djs-minimap div.toggle,
+.bjs-powered-by {
+  display: none;
+}

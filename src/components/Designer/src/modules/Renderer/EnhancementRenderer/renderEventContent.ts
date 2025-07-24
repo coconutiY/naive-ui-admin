@@ -3,7 +3,7 @@ import {
   getSemantic,
   isThrowEvent,
   isTypedEvent,
-} from '@/components/Designer/modules/Renderer/utils';
+} from '@/components/Designer/src/modules/Renderer/utils';
 
 export default function renderEventContent(handlers: any, element: any, parentGfx: any) {
   const event = getSemantic(element);

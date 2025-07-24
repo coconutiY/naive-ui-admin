@@ -65,9 +65,12 @@
     "tiny-svg": "^3.0.1",
     "min-dom": "^4.1.0",
     "min-dash": "^4.1.1",
-    "ids": "^1.0.0"
+    "ids": "^1.0.0",
+    "vue-i18n": "11.1.10"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.40",
+    "unplugin-icons": "0.15.1",
     "@commitlint/cli": "^17.8.1",
     "@commitlint/config-conventional": "^17.8.1",
     "@faker-js/faker": "^9.0.0",
