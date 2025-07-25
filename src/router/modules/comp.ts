@@ -122,6 +122,16 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () => import('@/views/comp/bpmn/index.vue'),
       },
+      {
+        path: 'designer/:id?',
+        name: 'Designer',
+        meta: {
+          title: '流程设计',
+          //缓存该路由
+          keepAlive: true,
+        },
+        component: () => import('@/views/comp/designer/index.vue'),
+      },
     ],
   },
 ];

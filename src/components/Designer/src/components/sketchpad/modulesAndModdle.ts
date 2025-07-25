@@ -93,11 +93,5 @@ export default function initModules(): ModulesAndModdles {
   modules.push(translate);
   // 设置 背景网格线
   modules.push(GridLineModule);
-  // 设置对应的 moddle 解析配置JSON文件
-  // if (!Object.keys(moddle).length) {
-  //   moddle['activiti'] = activitiModdleDescriptors;
-  //   moddle['flowable'] = flowableModdleDescriptors;
-  //   moddle['camunda'] = camundaModdleDescriptors;
-  // }
   return [modules, moddle, options];
 }

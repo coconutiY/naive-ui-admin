@@ -4,6 +4,7 @@ import { createI18n } from 'vue-i18n';
 // 本地语言包
 import enUSLocale from './en_US';
 import zhCNLocale from './zh_CN';
+import { useStorage } from "@vueuse/core";
 
 const messages = {
   zh_CN: {

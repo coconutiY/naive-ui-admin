@@ -5,12 +5,13 @@
   import LucideUndo2 from '~icons/lucide/undo-2';
   import LucideEraser from '~icons/lucide/eraser';
   import Emitter from '@/components/Designer/src/utils/event-emitter';
+  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
   let command: CommandStack | null = null;
 
   const { canRedo, canUndo } = {} as any;
 
-  Emitter.on('modeler-init', (modeler: Modeler) => {
+  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
     command = modeler.get<CommandStack>('commandStack');
   });
 
@@ -32,23 +33,41 @@
 
 <template>
   <n-button-group>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.undo') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="undo" :disabled="!canUndo">
+          <template #icon>
+            <NIcon>
+              <LucideUndo2 />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideUndo2" @click="undo" :disabled="!canUndo" />
+      {{ $t('bpmn.toolbar.undo') }}
     </n-tooltip>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.redo') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="redo" :disabled="!canRedo">
+          <template #icon>
+            <NIcon>
+              <LucideRedo2 />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideRedo2" @click="redo" :disabled="!canRedo" />
+      {{ $t('bpmn.toolbar.redo') }}
     </n-tooltip>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.restart') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="restart">
+          <template #icon>
+            <NIcon>
+              <LucideEraser />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideEraser" @click="restart" />
+      {{ $t('bpmn.toolbar.restart') }}
     </n-tooltip>
   </n-button-group>
 </template>

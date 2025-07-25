@@ -5,11 +5,12 @@
   import Emitter from '@/components/Designer/src/utils/event-emitter';
   import LucideZoomIn from '~icons/lucide/zoom-in';
   import LucideZoomOut from '~icons/lucide/zoom-out';
+  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
   const currentScale = ref(1);
   let canvas: Canvas | null = null;
 
-  Emitter.on('modeler-init', (modeler: Modeler) => {
+  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
     try {
       canvas = modeler.get<Canvas>('canvas');
       currentScale.value = canvas.zoom();
@@ -37,27 +38,39 @@
 
 <template>
   <n-button-group>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.zoomOut') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="zoomOut()">
+          <template #icon>
+            <NIcon>
+              <LucideZoomOut />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideZoomOut" @click="zoomOut()" />
+      {{ $t('bpmn.toolbar.zoomOut') }}
     </n-tooltip>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.zoomReset') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="zoomReset('fit-viewport')">
+          <span style="text-align: center; display: inline-block; width: 40px">
+            {{ Math.floor(currentScale * 10) * 10 + '%' }}
+          </span>
+        </n-button>
       </template>
-      <n-button @click="zoomReset('fit-viewport')">
-        <span style="text-align: center; display: inline-block; width: 40px">
-          {{ Math.floor(currentScale * 10) * 10 + '%' }}
-        </span>
-      </n-button>
+      {{ $t('bpmn.toolbar.zoomReset') }}
     </n-tooltip>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.zoomIn') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="zoomIn()">
+          <template #icon>
+            <NIcon>
+              <LucideZoomIn />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideZoomIn" @click="zoomIn()" />
+      {{ $t('bpmn.toolbar.zoomIn') }}
     </n-tooltip>
   </n-button-group>
 </template>

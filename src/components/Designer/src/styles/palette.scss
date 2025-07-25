@@ -9,15 +9,6 @@
     grid-row-start: 0;
     grid-row-end: 0;
   }
-  .el-scrollbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
   .item-palette {
     display: flex;
     align-items: center;
@@ -25,27 +16,5 @@
     width: 100%;
     height: 48px;
     font-size: 30px;
-
-    &:hover {
-      color: var(--el-color-primary);
-    }
-
-    .el-icon {
-      font-size: 48px !important;
-    }
-  }
-
-  .el-collapse {
-    .el-collapse-item {
-      :deep(.el-collapse-item__header) {
-        display: flex;
-
-        h2 {
-          flex: 1;
-          padding: 0 16px;
-          font-weight: bold;
-        }
-      }
-    }
   }
 }

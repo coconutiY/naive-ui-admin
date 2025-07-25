@@ -1,6 +1,9 @@
 <script setup lang="ts">
   import ToggleMode from 'bpmn-js-token-simulation/lib/features/toggle-mode/modeler/ToggleMode';
   import LucideBot from '~icons/lucide/bot';
+  import LucideMap from '~icons/lucide/map';
+  import LucideInfo from '~icons/lucide/info';
+  import LucideClipboardCheck from '~icons/lucide/clipboard-check';
   import AntDesignClusterOutlined from '~icons/ant-design/cluster-outlined';
   import { computed, getCurrentInstance, inject, ref, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
@@ -65,38 +68,68 @@
 
 <template>
   <n-button-group>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.toggleProcessMock') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="mockSimulation">
+          <template #icon>
+            <NIcon>
+              <LucideBot />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="LucideBot" @click="mockSimulation" />
+      {{ $t('bpmn.toolbar.toggleProcessMock') }}
     </n-tooltip>
-    <n-tooltip effect="light">
-      <template #content>
-        {{ $t('bpmn.toolbar.bpmnEvents') }}
+    <n-tooltip>
+      <template #trigger>
+        <n-button @click="openEventsModel">
+          <template #icon>
+            <NIcon>
+              <AntDesignClusterOutlined />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="AntDesignClusterOutlined" @click="openEventsModel" />
+      {{ $t('bpmn.toolbar.bpmnEvents') }}
     </n-tooltip>
-    <n-tooltip effect="light" v-if="minimapStatus">
-      <template #content>
-        {{ $t('bpmn.toolbar.toggleMinimap') }}
+    <n-tooltip v-if="minimapStatus">
+      <template #trigger>
+        <n-button @click="minimapToggle">
+          <template #icon>
+            <NIcon>
+              <LucideMap />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="MapLocation" @click="minimapToggle" />
+      {{ $t('bpmn.toolbar.toggleMinimap') }}
     </n-tooltip>
-    <n-tooltip effect="light" v-if="lintEnable">
-      <template #content>
-        {{ $t('bpmn.toolbar.toggleProcessLint') }}
+    <n-tooltip v-if="lintEnable">
+      <template #trigger>
+        <n-button @click="lintToggle">
+          <template #icon>
+            <NIcon>
+              <LucideClipboardCheck />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="DocumentChecked" @click="lintToggle" />
+      {{ $t('bpmn.toolbar.toggleProcessLint') }}
     </n-tooltip>
-    <n-tooltip effect="light" v-if="shortcutKeysEnable">
-      <template #content>
-        {{ $t('bpmn.toolbar.bpmnShortcutKeys') }}
+    <n-tooltip v-if="shortcutKeysEnable">
+      <template #trigger>
+        <n-button @click="openShortcutKeysModel">
+          <template #icon>
+            <NIcon>
+              <LucideInfo />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="WarningFilled" @click="openShortcutKeysModel" />
+      {{ $t('bpmn.toolbar.bpmnShortcutKeys') }}
     </n-tooltip>
   </n-button-group>
-  <n-dialog :title="eventsModel.title" v-model="eventsModel.visible" width="500px" append-to-body>
+  <n-modal :title="eventsModel.title" v-model:show="eventsModel.visible" width="500px">
     <div class="event-listeners-box">
       <div class="listener-search">
         <n-input v-model="listenerFilter" :clearable="true" />
@@ -107,14 +140,9 @@
         >
       </div>
     </div>
-  </n-dialog>
+  </n-modal>
 
-  <n-dialog
-    :title="shortcutKeysModel.title"
-    v-model="shortcutKeysModel.visible"
-    width="500px"
-    append-to-body
-  >
+  <n-modal :title="shortcutKeysModel.title" v-model:show="shortcutKeysModel.visible" width="500px">
     <div class="shortcut-keys-model">
       <p>{{ $t('bpmn.toolbar.undo') }}</p>
       <p>Ctrl + Z</p>
@@ -145,7 +173,7 @@
       <p>{{ $t('bpmn.toolbar.createAnything') }}</p>
       <p>N</p>
     </div>
-  </n-dialog>
+  </n-modal>
 </template>
 
 <style scoped lang="scss"></style>

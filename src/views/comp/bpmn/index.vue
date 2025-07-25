@@ -1,42 +1,29 @@
 <script setup name="Bpmn" lang="ts">
   import { columns } from '@/views/comp/bpmn/basicColumns';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { h, reactive, ref, unref } from 'vue';
+  import { h, reactive, ref } from 'vue';
   import { DeleteOutlined, EditOutlined } from '@vicons/antd';
-  import { useDialog, useMessage } from 'naive-ui';
-  import { useRoute, useRouter } from 'vue-router';
+  import { useMessage } from 'naive-ui';
+  import { useRouter } from 'vue-router';
 
   const message = useMessage();
   // const dialog = useDialog();
   const router = useRouter();
-  const route = useRoute();
   const actionRef = ref();
   const data = ref([
     {
-      id: `Process_No${new Date().getTime()}`,
+      id: `Process_No1753436033030`,
       name: '流程1',
       category: '重构流程1',
       createDate: '2025-07-24 21:43:00',
     },
     {
-      id: `Process_No${new Date().getTime()}`,
+      id: `Process_No1753436070101`,
       name: '流程2',
       category: '重构流程2',
       createDate: '2025-07-24 22:43:00',
     },
   ]);
-
-  // const loadDataTable = async () => {
-  //   return new Promise(() => {
-  //     resultSuccess({
-  //         page: Number(1),
-  //         pageSize: Number(10),
-  //         pageCount: 2,
-  //         itemCount: Number(10),
-  //         list: data,
-  //       })
-  //   });
-  // };
 
   const actionColumn = reactive({
     width: 180,
@@ -74,10 +61,10 @@
     console.log(rowKeys);
   }
 
-  function handleDelete(record) {
-    console.log(record);
-    router.push({
-      path: `/designer/${record.id}`,
+  async function handleDelete(record) {
+    console.log(record.id);
+    await router.push({
+      path: `designer/${record.id}`,
       query: { id: record.id, name: record.name },
     });
   }

@@ -5,6 +5,7 @@ import Emitter from '@/components/Designer/src/utils/event-emitter';
 import { ViewerOptions } from 'diagram-js/lib/model';
 import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
 import EmptyXml from '@/components/Designer/src/utils/empty-xml';
+import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
 export default function initModeler(
   designer: Ref<HTMLElement | undefined>,
@@ -20,7 +21,7 @@ export default function initModeler(
   // 扩展上下文菜单
   enhancementContextmenu(modeler);
   // 画布创建完成
-  Emitter.emit('modeler-init', modeler);
+  Emitter.emit(MODELER_INIT, modeler);
   return modeler;
 }
 

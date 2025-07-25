@@ -63,25 +63,31 @@
 
 <template>
   <n-popover>
-    <template #default>
-      <div class="button-list_column">
-        <n-button text @click="openXMLPreviewModel">
-          {{ $t('bpmn.toolbar.previewAsXML') }}
-        </n-button>
-        <n-button text @click="openJsonPreviewModel">
-          {{ $t('bpmn.toolbar.previewAsJSON') }}
-        </n-button>
-      </div>
-    </template>
-    <template #reference>
-      <n-button :icon="LucideEye" />
+    <div class="button-list_column">
+      <n-button text @click="openXMLPreviewModel">
+        {{ $t('bpmn.toolbar.previewAsXML') }}
+      </n-button>
+      <n-button text @click="openJsonPreviewModel">
+        {{ $t('bpmn.toolbar.previewAsJSON') }}
+      </n-button>
+    </div>
+    <template #trigger>
+      <n-button>
+        <template #icon>
+          <n-icon>
+            <LucideEye />
+          </n-icon>
+        </template>
+      </n-button>
     </template>
   </n-popover>
-  <n-dialog :title="previewModel.title" v-model="previewModel.visible" width="60%" append-to-body>
+  <n-dialog :title="previewModel.title" v-if="previewModel.visible" width="60%">
     <div class="preview-model">
       <highlightjs :language="previewModel.language" :code="previewModel.content as string" />
     </div>
   </n-dialog>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  @use 'src/components/Designer/src/styles/toolbar.scss';
+</style>

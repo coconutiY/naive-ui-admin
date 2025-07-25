@@ -24,7 +24,7 @@
   import { useScreenLockStore } from '@/store/modules/screenLock.js';
   import { useRoute } from 'vue-router';
   import { useDesignSettingStore } from '@/store/modules/designSetting';
-  import { lighten } from '@/utils/index';
+  import { lighten } from '@/utils';
 
   const route = useRoute();
   const useScreenLock = useScreenLockStore();

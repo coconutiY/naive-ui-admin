@@ -12,7 +12,6 @@
   import { ComponentInternalInstance } from 'vue-demi';
   import { PaletteElement } from '/#/bpmn/designer/settings';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import BpmnIcon from '@/components/Designer/src/components/common/BpmnIcon.vue';
 
   const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -126,6 +125,11 @@
     },
   ]);
 
+  /**
+   * 通过右键菜单添加元素
+   * @param event
+   * @param modeler
+   */
   function bpmnCreate(event: MouseEvent, modeler: Modeler) {
     const popupMenu: PopupMenu = modeler.get('popupMenu');
     const canvas: Canvas = modeler.get('canvas');
@@ -138,6 +142,14 @@
     });
   }
 
+  /**
+   * 默认创建方法
+   * @param create
+   * @param event
+   * @param ElementFactory
+   * @param type
+   * @param options
+   */
   function bpmnDefault(
     create: Create,
     event: MouseEvent,
@@ -228,6 +240,11 @@
     }
   }
 
+  /**
+   * 选中画布元素（单击或者长安）
+   * @param e
+   * @param type
+   */
   function elementClick(e: MouseEvent, type: string) {
     createElement(e, type);
   }
@@ -248,12 +265,17 @@
         @click="(e) => elementClick(e, item.type)"
         @mousedown="(e) => elementMouseDown(e, item.type)"
       >
-        <n-tooltip v-if="item.visible" placement="right-start" effect="light" :content="item.title">
-          <BpmnIcon :name="item.className" />
+        <n-tooltip v-if="item.visible" placement="right-start">
+          <template #trigger>
+            <BpmnIcon :name="item.className" />
+          </template>
+          {{ item.title }}
         </n-tooltip>
       </div>
     </n-scrollbar>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  @use 'src/components/Designer/src/styles/palette.scss';
+</style>

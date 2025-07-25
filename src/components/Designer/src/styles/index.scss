@@ -1,106 +1,57 @@
-@import "../../../../../node_modules/bpmn-js-properties-panel/dist/assets/element-templates.css";
-@import "../../../../../node_modules/bpmn-js-properties-panel/dist/assets/properties-panel.css";
-@import "../../../../../node_modules/bpmn-js-connectors-extension/dist/connectors-extension.css";
-@import "../../../../../node_modules/bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
-@import "../../../../../node_modules/bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
+// 原始属性面板样式
+@forward "bpmn-js-properties-panel/dist/assets/element-templates.css";
+@forward "bpmn-js-properties-panel/dist/assets/properties-panel.css";
+//
+@forward "bpmn-js-connectors-extension/dist/connectors-extension.css";
+// 流程校验样式表
+@forward "bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
+@forward "bpmn-js-token-simulation/assets/css/bpmn-js-token-simulation.css";
+// 基础样式
+@forward 'bpmn-js/dist/assets/diagram-js.css';
+@forward 'bpmn-js/dist/assets/bpmn-js.css';
+// 节点基础图标
+@forward 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
+// 节点完整图标
+@forward 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css';
+// 小地图
+@forward "diagram-js-minimap/assets/diagram-js-minimap.css";
+//
+@forward "context-pad.scss";
+//右键菜单样式
+@forward "contextmenu.scss";
 
-@import "bpmn-override";
-@import "toolbar";
-@import "designer";
-@import "viewer";
-@import "palette";
-@import "context-pad";
-@import "panel";
-@import "camunda-penal";
-@import "contextmenu";
 
-.designer_container {
-  height: 100vh;
-  width: 100%;
-  max-height: calc(100vh - 84px);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  .designer_main {
-    width: 100%;
-    height: 100%;
-    max-height: calc(100vh - 84px);
-    flex: 1;
-    overflow: hidden;
-    .designer_canvas{
-      height: 800px;
-      width: 100%;
-      flex: 1;
-      min-height: calc(100vh - 130px);
-      max-height: calc(100vh - 84px);
-    }
-  }
-  .designer_panel{
-    flex-shrink: 0;
-    position: relative;
-    left: -4px;
-    .handoff_btn{
-      width: 18px;
-      height: 64px;
-      position: absolute;
-      z-index: 10;
-      top: 50%;
-      transform: translate(-100%, -50%);
-      cursor: pointer;
-      border-radius: 8px 0 0 8px;
-      box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .1);
-      text-align: center;
-      line-height: 64px;
-      left: 0;
-    }
-    .open{
-      min-height: calc(100vh - 84px);
-      box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .1);
-      width: 27vw;
-      min-width: 460px;
-      max-width: 560px;
-      .el-card__body{
-        overflow: auto;
-        max-height: calc(100vh - 150px);
-        -ms-overflow-style: none;
-        ::-webkit-scrollbar { width: 0 !important }
-      }
-    }
-  }
-  .designer_palette{
-    position: relative;
-    width: 49px;
-    max-width: 50px;
-    overflow: hidden;
-    border-right: 1px solid var(--el-border-color-lighter);
-  }
+// ----  重写样式 ------//
+// 修复选中时填充色
+.layer-selectionOutline {
+  fill: none;
 }
 
-.viewer_container {
-  height: 100vh;
-  width: 100%;
-  max-height: calc(100vh - 158px);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  position: relative;
-  .viewer_main {
-    width: 100%;
-    height: 100%;
-    max-height: calc(100vh - 135px);
-    flex: 1;
-    overflow: hidden;
-    .viewer_canvas{
-      height: 800px;
-      width: 100%;
-      flex: 1;
-      min-height: calc(100vh - 150px);
-      max-height: calc(100vh - 130px);
-    }
-  }
+.cmd-change-menu {
+  transition: background-color ease 0.2s;
+  background-color: rgba(0, 0, 0, .3);
 }
+
+.djs-context-pad .entry{
+  background-color: unset;
+}
+
+// 流程校验
+.bjsl-icon-error,
+.bjsl-button-error,
+// 以及增强的palette插件
+.djs-palette,
+//小地图的部分组件
+.bts-toggle-mode,
+.djs-minimap div.toggle,
+  //隐藏bpmn的logo （侵权，但好像camunda不管CN市场）
+.bjs-powered-by {
+  display: none;
+}
+
+
+
+
+
+
+

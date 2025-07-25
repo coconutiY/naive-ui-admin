@@ -36,9 +36,9 @@ import {
 } from 'bpmn-js/lib/draw/BpmnRenderUtil.js';
 import { getLabel } from 'bpmn-js/lib/features/label-editing/LabelUtil';
 import { isEventSubProcess, isExpanded } from 'bpmn-js/lib/util/DiUtil';
-// import InteractionEvents from 'diagram-js/lib/features/interaction-events/InteractionEvents';
 import ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
 import { Base, Point } from 'diagram-js/lib/model';
+import InteractionEvents from "diagram-js/lib/features/interaction-events/InteractionEvents";
 
 const RENDERER_IDS = new Ids();
 const TASK_BORDER_RADIUS = 10;
@@ -61,7 +61,8 @@ class RewriteRenderer extends BaseRenderer {
     canvas: Canvas,
     textRenderer: TextRenderer,
     elementRegistry: ElementRegistry,
-    // interactionEvents: InteractionEvents,
+    // @ts-ignore
+    interactionEvents: InteractionEvents,
     priority?: number
   ) {
     super(eventBus, priority);
@@ -107,9 +108,11 @@ class RewriteRenderer extends BaseRenderer {
       defaultIntermediateThrowEventOpacity,
       defaultIntermediateCatchEventOpacity,
       defaultTaskOpacity,
-      // defaultLabelOpacity,
+      // @ts-ignore
+      defaultLabelOpacity,
       defaultGatewayOpacity,
-      // defaultSequenceOpacity,
+      // @ts-ignore
+      defaultSequenceOpacity,
     } = { ...presetOpacity, ...config };
 
     const computeStyle = styles.computeStyle;

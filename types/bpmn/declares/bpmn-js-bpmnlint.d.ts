@@ -25,7 +25,7 @@ declare module 'bpmn-js-bpmnlint' {
     actualElementId: string;
   };
 
-  type Issue = {
+  export type Issue = {
     id: string;
     category: string;
     message: string;

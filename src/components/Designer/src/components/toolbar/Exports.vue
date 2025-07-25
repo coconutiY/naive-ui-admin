@@ -56,23 +56,29 @@
 
 <template>
   <n-popover>
-    <template #default>
-      <div class="button-list_column">
-        <n-button text @click="downloadProcessAsBpmn">
-          {{ $t('bpmn.toolbar.exportAsBPMN') }}
-        </n-button>
-        <n-button text @click="downloadProcessAsXml">
-          {{ $t('bpmn.toolbar.exportAsXML') }}
-        </n-button>
-        <n-button text @click="downloadProcessAsSvg">
-          {{ $t('bpmn.toolbar.exportAsSVG') }}
-        </n-button>
-      </div>
-    </template>
-    <template #reference>
-      <n-button :icon="RiSaveLine" />
+    <div class="button-list_column">
+      <n-button text @click="downloadProcessAsBpmn">
+        {{ $t('bpmn.toolbar.exportAsBPMN') }}
+      </n-button>
+      <n-button text @click="downloadProcessAsXml">
+        {{ $t('bpmn.toolbar.exportAsXML') }}
+      </n-button>
+      <n-button text @click="downloadProcessAsSvg">
+        {{ $t('bpmn.toolbar.exportAsSVG') }}
+      </n-button>
+    </div>
+    <template #trigger>
+      <n-button>
+        <template #icon>
+          <NIcon>
+            <RiSaveLine />
+          </NIcon>
+        </template>
+      </n-button>
     </template>
   </n-popover>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  @use 'src/components/Designer/src/styles/toolbar.scss';
+</style>

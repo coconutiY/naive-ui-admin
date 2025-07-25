@@ -1,7 +1,7 @@
 <template>
-  <svg class="bpmn-icon" aria-hidden="true">
+  <div class="bpmn-icon" aria-hidden="true">
     <svg-icon :icon-class="`${iconName}`" :color="color" />
-  </svg>
+  </div>
 </template>
 
 <script setup name="BpmnIcon" lang="ts">
@@ -25,4 +25,6 @@
   });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  @use 'src/components/Designer/src/styles/palette.scss';
+</style>

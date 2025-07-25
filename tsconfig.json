@@ -22,7 +22,8 @@
     ],
     "typeRoots": [
       "./node_modules/@types/",
-      "./types"
+      "./types",
+      "./node_modules/unplugin-icons/types/vue"
     ],
     "noImplicitAny": false,
     "skipLibCheck": true,

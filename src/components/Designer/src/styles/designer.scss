@@ -1,18 +1,34 @@
-@import '../../../../../node_modules/bpmn-js/dist/assets/diagram-js.css'; // 基础样式
-@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-js.css'; // 基础样式
-@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn.css'; // 节点基础图标
-@import '../../../../../node_modules/bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'; // 节点完整图标
-@import "../../../../../node_modules/diagram-js-minimap/assets/diagram-js-minimap.css";// 小地图
+// 流程设计器样式表
+.designer_container {
+  height: 100vh;
+  width: 100%;
+  max-height: calc(100vh - 120px);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  .designer_main {
+    width: 100%;
+    height: 100%;
+    max-height: calc(100vh - 120px);
+    flex: 1;
+    overflow: hidden;
+    .designer_canvas{
+      height: 800px;
+      width: 100%;
+      flex: 1;
+      min-height: calc(100vh - 130px);
+      max-height: calc(100vh - 120px);
+    }
+  }
 
-// 修复选中时填充色
-.layer-selectionOutline {
-  fill: none;
-}
-
-//隐藏bpmn的logo（侵权，但好像camunda不管CN市场）以及增强的palette插件以及小地图的部分组件
-.djs-palette,
-.bts-toggle-mode,
-.djs-minimap div.toggle,
-.bjs-powered-by {
-  display: none;
+  .designer_palette{
+    position: relative;
+    width: 50px;
+    max-width: 50px;
+    overflow: hidden;
+    border-right: 1px solid #EBEEF5FF;
+  }
 }

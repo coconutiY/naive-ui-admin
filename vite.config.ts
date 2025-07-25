@@ -52,7 +52,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       proxy: createProxy(VITE_PROXY),
     },
     optimizeDeps: {
-      include: [],
+      include: ['@iconify/iconify'],
       exclude: ['vue-demi'],
     },
     build: {

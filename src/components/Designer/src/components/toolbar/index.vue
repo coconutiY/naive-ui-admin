@@ -22,4 +22,6 @@
   import Commands from './Commands.vue';
   import ExternalTools from './ExternalTools.vue';
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  @use 'src/components/Designer/src/styles/toolbar.scss';
+</style>

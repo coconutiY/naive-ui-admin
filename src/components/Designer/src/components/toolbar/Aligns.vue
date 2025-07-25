@@ -12,6 +12,7 @@
   import { ComponentInternalInstance } from 'vue-demi';
   import Emitter from '@/components/Designer/src/utils/event-emitter';
   import { useMessage } from 'naive-ui';
+  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
   const { proxy } = getCurrentInstance() as ComponentInternalInstance;
   const message = useMessage();
@@ -44,7 +45,7 @@
   let selection: Selection | null = null;
   let align: any = null;
 
-  Emitter.on('modeler-init', (modeler: Modeler) => {
+  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
     modeling = modeler.get('modeling');
     selection = modeler.get('selection');
     align = modeler.get('alignElements');
@@ -63,11 +64,17 @@
 
 <template>
   <n-button-group>
-    <n-tooltip v-for="item in buttons" :key="item.key" effect="light">
-      <template #content>
-        {{ item.name }}
+    <n-tooltip v-for="item in buttons" :key="item.key">
+      <template #trigger>
+        <n-button @click="() => alignElements(item.key)">
+          <template #icon>
+            <NIcon>
+              <component :is="item.icon" />
+            </NIcon>
+          </template>
+        </n-button>
       </template>
-      <n-button :icon="item.icon" @click="() => alignElements(item.key)" />
+      {{ item.name }}
     </n-tooltip>
   </n-button-group>
 </template>

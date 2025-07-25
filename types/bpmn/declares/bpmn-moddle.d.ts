@@ -654,54 +654,58 @@ declare module 'bpmn-moddle' {
   export enum ProcessType {
     None,
     Public,
-    Private
+    Private,
   }
   export enum GatewayDirection {
     Unspecified,
     Convergent,
     Diverging,
-    Mixed
+    Mixed,
   }
   export enum EventBasedGatewayType {
     Parallel,
-    Exclusive
+    Exclusive,
   }
   export enum RelationshipDirection {
     None,
     Forward,
     Backward,
-    Both
+    Both,
   }
   export enum ItemKind {
     Physical,
-    Information
+    Information,
   }
   export enum ChoreographyLoopType {
     None,
     Standard,
     MultiInstanceSequential,
-    MultiInstanceParallel
+    MultiInstanceParallel,
   }
   export enum AssociationDirection {
     None,
     One,
-    Both
+    Both,
   }
   export enum MultiInstanceBehavior {
     None,
     One,
     All,
-    Complex
+    Complex,
   }
   export enum AdHocOrdering {
     Parallel,
-    Sequential
+    Sequential,
   }
 
   // 默认导出
   export default class BpmnModdle extends Moddle {
     constructor(packages?: Package[], options?: object);
-    fromXML(xmlStr: string, typeName?: string | object, options?: object): Promise<ParseResult | ParseError>;
+    fromXML(
+      xmlStr: string,
+      typeName?: string | object,
+      options?: object
+    ): Promise<ParseResult | ParseError>;
     toXML(element: string, options?: object): Promise<SerializationResult | Error>;
   }
 }

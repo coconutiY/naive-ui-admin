@@ -6,3 +6,29 @@
   border-radius: 4px;
   box-sizing: border-box;
 }
+
+.viewer_container {
+  height: 100vh;
+  width: 100%;
+  max-height: calc(100vh - 158px);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  .viewer_main {
+    width: 100%;
+    height: 100%;
+    max-height: calc(100vh - 135px);
+    flex: 1;
+    overflow: hidden;
+    .viewer_canvas{
+      height: 800px;
+      width: 100%;
+      flex: 1;
+      min-height: calc(100vh - 150px);
+      max-height: calc(100vh - 130px);
+    }
+  }
+}

@@ -5,10 +5,13 @@ import { setupNaiveDiscreteApi, setupNaive, setupDirectives } from '@/plugins';
 import App from './App.vue';
 import router, { setupRouter } from './router';
 import { setupStore } from '@/store';
-
+// 国际化
+import i18n from '@/lang/index';
+import 'virtual:svg-icons-register';
 async function bootstrap() {
   const app = createApp(App);
 
+  app.use(i18n);
   // 挂载状态管理
   setupStore(app);
 

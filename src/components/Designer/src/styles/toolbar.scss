@@ -5,7 +5,8 @@
   padding: 1px 1px;
   display: flex;
   align-items: center;
-  > div[class^='el-button'] + div[class^='el-button'] {
+  justify-content: flex-end;
+  > div[class^='n-button'] + div[class^='n-button'] {
     margin-left: 16px;
   }
 }
@@ -19,7 +20,7 @@
   grid-template-columns: 1fr;
   grid-row-gap: 8px;
   padding: 8px 0;
-  .el-button {
+  .n-button {
     margin: 0;
   }
 }
@@ -62,6 +63,6 @@
 }
 
 /* 修改弹窗宽度 */
-.el-dialog.el-modal {
+.n-dialog.n-modal {
   width: auto;
 }

@@ -26,5 +26,9 @@ export enum MULTIPLE_CONST {
   COMPLETE_NUM = 'nrOfCompletedInstances',
 }
 
+export const MODELER_INIT = Symbol('modeler-init');
+
 // provide/inject 数据
 export const MODELER = Symbol('modeler');
+export const ACTIVE_ID = Symbol('active_id');
+export const ACTIVE_ELEMENT = Symbol('active_element');

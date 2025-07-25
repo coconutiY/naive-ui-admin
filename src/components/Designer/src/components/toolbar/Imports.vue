@@ -29,11 +29,17 @@
 </script>
 
 <template>
-  <n-tooltip effect="light">
-    <template #content>
-      {{ $t('bpmn.toolbar.openFile') }}
+  <n-tooltip>
+    <template #trigger>
+      <n-button @click="openImportWindow">
+        <template #icon>
+          <NIcon>
+            <LucideFolderOpen />
+          </NIcon>
+        </template>
+      </n-button>
     </template>
-    <n-button :icon="LucideFolderOpen" @click="openImportWindow" />
+    {{ $t('bpmn.toolbar.openFile') }}
   </n-tooltip>
   <input
     type="file"
