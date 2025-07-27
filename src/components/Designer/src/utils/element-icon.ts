@@ -3,9 +3,11 @@ import { isEventSubProcess, isExpanded, isInterrupting } from 'bpmn-js/lib/util/
 import { isPlane } from 'bpmn-js/lib/util/DrilldownUtil';
 import { Base } from 'diagram-js/lib/model';
 
-export default function getBpmnIconType(element: Base): string {
-  // const { type: elementType } = element;
-
+/**
+ * 获取元素的icon key(bpmnIcons: Record<string, string>)
+ * @param element
+ */
+export default function bpmnIconKey(element: Base): string {
   let elementType: string;
   if (element.type === 'label') {
     const businessObject = getBusinessObject(element);
@@ -13,25 +15,19 @@ export default function getBpmnIconType(element: Base): string {
   } else {
     elementType = element.type;
   }
-
   let type = getRawType(elementType);
-
   /**
    * 事件定义类型
    */
   const eventDefinition = getEventDefinition(element);
-
   if (eventDefinition) {
     type = `${getEventDefinitionPrefix(eventDefinition)}${type}`;
-
-    // (1.1) interrupting / non interrupting
     if (
       (is(element, 'bpmn:StartEvent') && !isInterrupting(element)) ||
       (is(element, 'bpmn:BoundaryEvent') && !isCancelActivity(element))
     ) {
       type = `${type}NonInterrupting`;
     }
-
     return type;
   }
 
@@ -53,38 +49,45 @@ export default function getBpmnIconType(element: Base): string {
   if (isDefaultFlow(element)) {
     type = 'DefaultFlow';
   }
-
   if (isConditionalFlow(element)) {
     type = 'ConditionalFlow';
   }
-
   return type;
 }
 
-const getRawType = (type: string) => {
+/**
+ * 分割元素的 type属性（一般为 bpmn:xxxx）
+ * @param type
+ */
+function getRawType(type: string) {
   return type.split(':')[1];
-};
+}
 
-const getEventDefinition = (element: Base) => {
+/**
+ * 获取bpmn元素的事件定义信息
+ * @param element
+ */
+function getEventDefinition(element: Base) {
   const businessObject = getBusinessObject(element),
     eventDefinitions = businessObject.eventDefinitions;
-
   return eventDefinitions && eventDefinitions[0];
-};
-const getEventDefinitionPrefix = (eventDefinition: Base) => {
+}
+
+function getEventDefinitionPrefix(eventDefinition: Base) {
   const rawType = getRawType(eventDefinition.$type);
   return rawType.replace('EventDefinition', '');
-};
-const isCancelActivity = (element: Base) => {
+}
+
+function isCancelActivity(element: Base) {
   const businessObject = getBusinessObject(element);
   return businessObject && businessObject.cancelActivity !== false;
-};
+}
 
 /**
  * 判断是否是默认流转类型
  * @param element bpmn元素
  */
-const isDefaultFlow = (element: Base) => {
+function isDefaultFlow(element: Base) {
   const businessObject = getBusinessObject(element);
   const sourceBusinessObject = getBusinessObject(element.source);
 
@@ -96,17 +99,17 @@ const isDefaultFlow = (element: Base) => {
     sourceBusinessObject.default === businessObject &&
     (is(sourceBusinessObject, 'bpmn:Gateway') || is(sourceBusinessObject, 'bpmn:Activity'))
   );
-};
+}
 
 /**
  * 判断是否是条件流转类型
  * @param element bpmn元素
  */
-const isConditionalFlow = (element: Base) => {
+function isConditionalFlow(element: Base) {
   const businessObject = getBusinessObject(element);
   const sourceBusinessObject = getBusinessObject(element.source);
   if (!is(element, 'bpmn:SequenceFlow') || !sourceBusinessObject) {
     return false;
   }
   return businessObject.conditionExpression && is(sourceBusinessObject, 'bpmn:Activity');
-};
+}

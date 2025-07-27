@@ -1,11 +1,9 @@
-<script setup name="Designer" lang="ts">
-
+<script setup lang="ts">
+  defineOptions({ name: 'Designer' });
 </script>
 
 <template>
- <Sketchpad />
+  <Sketchpad />
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>

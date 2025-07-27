@@ -4,7 +4,6 @@ import { RedirectRoute } from '@/router/base';
 import { PageEnum } from '@/enums/pageEnum';
 import { createRouterGuards } from './guards';
 import type { IModuleType } from './types';
-import { renderNew } from "@/utils";
 
 const modules = import.meta.glob<IModuleType>('./modules/**/*.ts', { eager: true });
 
@@ -38,21 +37,11 @@ export const LoginRoute: RouteRecordRaw = {
   },
 };
 
-export const DesignerRoute: RouteRecordRaw =  {
-    path: '/designer/:id',
-    name: 'Designer',
-    meta: {
-      title: '流程设计',
-      extra: renderNew(),
-    },
-    component: () => import('@/components/Designer/src/components/sketchpad/index.vue'),
-  };
-
 //需要验证权限
 export const asyncRoutes = [...routeModuleList];
 
 //普通路由 无需验证权限
-export const constantRouter: RouteRecordRaw[] = [LoginRoute, RootRoute, RedirectRoute,DesignerRoute];
+export const constantRouter: RouteRecordRaw[] = [LoginRoute, RootRoute, RedirectRoute];
 
 const router = createRouter({
   history: createWebHistory(),

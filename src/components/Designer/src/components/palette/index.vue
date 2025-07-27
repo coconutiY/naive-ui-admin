@@ -11,7 +11,17 @@
   import { getCurrentInstance, inject, reactive, Ref } from 'vue';
   import { ComponentInternalInstance } from 'vue-demi';
   import { PaletteElement } from '/#/bpmn/designer/settings';
-  import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
+  import {
+    MODELER,
+    MODELER_CANVAS,
+    MODELER_CONN,
+    MODELER_CREATE,
+    MODELER_FACTORY,
+    MODELER_HAND,
+    MODELER_LASSO,
+    MODELER_POPUP_MENU,
+    MODELER_SPACE,
+  } from '@/components/Designer/src/config/bpmnEnums';
 
   const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
@@ -131,8 +141,8 @@
    * @param modeler
    */
   function bpmnCreate(event: MouseEvent, modeler: Modeler) {
-    const popupMenu: PopupMenu = modeler.get('popupMenu');
-    const canvas: Canvas = modeler.get('canvas');
+    const popupMenu = modeler.get<PopupMenu>(MODELER_POPUP_MENU);
+    const canvas = modeler.get<Canvas>(MODELER_CANVAS);
     const element = canvas.getRootElement();
     const position = { x: event.x + 20, y: event.y + 20 };
     popupMenu.open(element, 'bpmn-create', position, {
@@ -206,12 +216,12 @@
     if (!modeler) {
       return;
     }
-    const ElementFactory: ElementFactory = modeler.get('elementFactory');
-    const create: Create = modeler.get('create');
-    const HandTool: HandTool = modeler.get('handTool');
-    const SpaceTool: SpaceTool = modeler.get('spaceTool');
-    const LassoTool: LassoTool = modeler.get('lassoTool');
-    const GlobalConnect: GlobalConnect = modeler.get('globalConnect');
+    const ElementFactory = modeler.get<ElementFactory>(MODELER_FACTORY);
+    const create = modeler.get<Create>(MODELER_CREATE);
+    const HandTool = modeler.get<HandTool>(MODELER_HAND);
+    const SpaceTool = modeler.get<SpaceTool>(MODELER_SPACE);
+    const LassoTool = modeler.get<LassoTool>(MODELER_LASSO);
+    const GlobalConnect = modeler.get<GlobalConnect>(MODELER_CONN);
     switch (type) {
       case 'bpmn:HandTool':
         HandTool.activateHand(event, false);

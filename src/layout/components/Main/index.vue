@@ -10,10 +10,10 @@
         </transition>
       </template>
       <template v-else>
-        <keep-alive v-if="keepAliveComponents.length" :include="keepAliveComponents">
+        <keep-alive :include="keepAliveComponents">
           <component :is="Component" :key="route.fullPath" />
         </keep-alive>
-        <component v-else :is="Component" :key="route.fullPath" />
+        <!--        <component v-else :is="Component" :key="route.fullPath" />-->
       </template>
     </template>
   </RouterView>

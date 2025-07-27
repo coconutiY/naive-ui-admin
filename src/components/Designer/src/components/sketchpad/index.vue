@@ -1,4 +1,4 @@
-<script setup name="Designer" lang="ts">
+<script setup lang="ts">
   import { markRaw, onMounted, provide, ref } from 'vue';
   import initModules from '@/components/Designer/src/components/sketchpad/modulesAndModdle';
   import initModeler, {
@@ -6,7 +6,6 @@
   } from '@/components/Designer/src/components/sketchpad/initModeler';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { InternalEvent } from 'diagram-js/lib/core/EventBus';
-  // import type CommandStack from 'diagram-js/lib/command/CommandStack';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
 
   const emit = defineEmits(['update:xml']);
@@ -27,8 +26,8 @@
           console.error(error);
         }
       });
-      modelerRef.value = markRaw(modeler);
       await createNewDiagram(modeler);
+      modelerRef.value = markRaw(modeler);
     } catch (e) {
       console.log(e);
     }
