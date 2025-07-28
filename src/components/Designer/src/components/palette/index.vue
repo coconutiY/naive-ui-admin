@@ -16,7 +16,7 @@
     MODELER_CANVAS,
     MODELER_CONN,
     MODELER_CREATE,
-    MODELER_FACTORY,
+    MODELER_ELE_FACTORY,
     MODELER_HAND,
     MODELER_LASSO,
     MODELER_POPUP_MENU,
@@ -216,7 +216,7 @@
     if (!modeler) {
       return;
     }
-    const ElementFactory = modeler.get<ElementFactory>(MODELER_FACTORY);
+    const ElementFactory = modeler.get<ElementFactory>(MODELER_ELE_FACTORY);
     const create = modeler.get<Create>(MODELER_CREATE);
     const HandTool = modeler.get<HandTool>(MODELER_HAND);
     const SpaceTool = modeler.get<SpaceTool>(MODELER_SPACE);

@@ -21,7 +21,7 @@ const ID_REGEX = /^[a-z_][\w-.]*$/i;
 /**
  * 空函数
  */
-export const noop = () => {};
+export function noop() {}
 
 /**
  * 严格非空检查（适用于基础类型、数组、对象）
@@ -31,7 +31,7 @@ export const noop = () => {};
  *          - 对象：至少包含一个自身可枚举属性
  *          - 其他类型：自动转换为布尔值为 true
  */
-export const notEmpty = <T>(val: T | null | undefined): boolean => {
+export function notEmpty<T>(val: T | null | undefined): boolean {
   if (!notNull(val)) return false;
 
   const rawType = getRawType(val);
@@ -44,20 +44,20 @@ export const notEmpty = <T>(val: T | null | undefined): boolean => {
     default:
       return Boolean(val);
   }
-};
+}
 
 /**
  * 严格的空值检查（包括 null 和 undefined）
  * @param val 需要检查的值
  * @returns 当值不为 null 且不为 undefined 时返回 true
  */
-export const notNull = <T>(val: T | null | undefined): val is NonNullable<T> => {
+export function notNull<T>(val: T | null | undefined): val is NonNullable<T> {
   return val !== null && val !== undefined;
-};
+}
 
-export const isNull = <T>(val: T | null | undefined) => {
+export function isNull<T>(val: T | null | undefined) {
   return !notNull(val);
-};
+}
 
 /**
  * 返回数据原始类型
@@ -74,25 +74,25 @@ export const getRawType = (value: any): string => {
  * @param chars 字符集
  * @returns
  */
-export const uuid = (length = 8, chars?: string) => {
+export function uuid(length = 8, chars?: string) {
   let result = '';
   const charsString = chars || '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for (let i = length; i > 0; --i) {
     result += charsString[Math.floor(Math.random() * charsString.length)];
   }
   return result;
-};
+}
 
 /**
  * 判断是否为追加操作
  * @param element 当前操作元素
  */
-export const isAppendAction = (element?: Element) => {
+export function isAppendAction(element?: Element) {
   return (
     !element ||
     isAny(element, ['bpmn:Process', 'bpmn:Collaboration', 'bpmn:Participant', 'bpmn:SubProcess'])
   );
-};
+}
 
 /**
  * 检查字符串是否存在空格

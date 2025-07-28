@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import LucideFolderOpen from '~icons/lucide/folder-open';
   import { inject, Ref, ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
@@ -34,7 +33,7 @@
       <n-button @click="openImportWindow">
         <template #icon>
           <NIcon>
-            <LucideFolderOpen />
+            <icon-lucide-folder-open />
           </NIcon>
         </template>
       </n-button>

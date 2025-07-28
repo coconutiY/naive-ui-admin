@@ -1,9 +1,6 @@
 <script setup name="Commands" lang="ts">
   import type Modeler from 'bpmn-js/lib/Modeler';
   import type CommandStack from 'diagram-js/lib/command/CommandStack';
-  import LucideRedo2 from '~icons/lucide/redo-2';
-  import LucideUndo2 from '~icons/lucide/undo-2';
-  import LucideEraser from '~icons/lucide/eraser';
   import Emitter from '@/components/Designer/src/utils/event-emitter';
   import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
@@ -37,9 +34,9 @@
       <template #trigger>
         <n-button @click="undo" :disabled="!canUndo">
           <template #icon>
-            <NIcon>
-              <LucideUndo2 />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-undo2 />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -49,9 +46,9 @@
       <template #trigger>
         <n-button @click="redo" :disabled="!canRedo">
           <template #icon>
-            <NIcon>
-              <LucideRedo2 />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-redo2 />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -61,9 +58,9 @@
       <template #trigger>
         <n-button @click="restart">
           <template #icon>
-            <NIcon>
-              <LucideEraser />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-eraser />
+            </n-icon>
           </template>
         </n-button>
       </template>

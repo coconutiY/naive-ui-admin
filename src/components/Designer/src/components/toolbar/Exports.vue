@@ -1,5 +1,4 @@
 <script setup name="Exports" lang="ts">
-  import RiSaveLine from '~icons/ri/save-line';
   import { downloadFile, setEncoded } from '@/components/Designer/src/utils/files';
   import { ComponentInternalInstance } from 'vue-demi';
   import { getCurrentInstance, inject, Ref } from 'vue';
@@ -71,7 +70,7 @@
       <n-button>
         <template #icon>
           <NIcon>
-            <RiSaveLine />
+            <icon-lucide-save />
           </NIcon>
         </template>
       </n-button>

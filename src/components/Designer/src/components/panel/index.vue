@@ -25,7 +25,7 @@
   import { Base } from 'diagram-js/lib/model';
   import ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
   import { Translate } from 'diagram-js/lib/i18n/translate';
-  import bpmnIconKey from '@/components/Designer/src/utils/element-icon';
+  import bpmnIconKey from '@/components/Designer/src/utils/icon';
   type ElementChangeParams = {
     element: Shape | Element | Connection | Label | any;
     gfx: HTMLElement | object;
@@ -48,9 +48,10 @@
   };
   const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
   const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
+  const BaseInfo = defineAsyncComponent(() => import('./components/BaseInfo.vue'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const activeElement = ref();
+  const activeElement = ref<Base>();
   const activeId = computed(() => {
     return activeElement.value?.id;
   });
@@ -58,7 +59,7 @@
   provide(ACTIVE_ELEMENT, activeElement);
 
   const lintIssue = ref<Issue | null>(null);
-  const drawerVisible = ref(false);
+  const drawerVisible = ref(true);
   const drawerIcon = shallowRef(lucideChevronsLeft);
 
   const iconName = ref<string>('Process');
@@ -71,31 +72,32 @@
   /**
    * 设置选中元素，更新 store中的数据
    */
-  const setCurrentElement = debounce((element?: Shape | Base | Connection | Label) => {
-    // 如果不传入参数则显示流程配置
-    if (!element && modelerRef) {
-      const registry = modelerRef.value.get<ElementRegistry>(MODELER_REGISTRY);
-      activeElement.value = markRaw(
+  const setCurrentElement = debounce((element: Shape | Base | Connection | Label | undefined) => {
+    let elementRef = element;
+    // 如果不传入参数则显示流程配置,否则显示当前节点
+    if (!elementRef) {
+      const registry = modelerRef!.value.get<ElementRegistry>(MODELER_REGISTRY);
+      elementRef =
         registry.find((el: Base) => el.type === 'bpmn:Process') ||
-          registry.find((el: Base) => el.type === 'bpmn:Collaboration')
-      );
-      if (!activeElement.value) {
+        registry.find((el: Base) => el.type === 'bpmn:Collaboration');
+      console.log('activeElement', activeElement.value);
+      if (!elementRef) {
         throw new Error('未找到流程标签信息！');
       }
-    } else if (
-      modelerRef &&
-      element &&
-      // 元素id或者类型发生改变（选中的元素或者元素的类型）
-      (element.id !== activeId.value || element.type.split(':')[1] !== activeType.value)
-    ) {
-      const translate = modelerRef.value.get<Translate>(MODELER_TRANSLATE);
-      activeType.value = translate(element.type.split(':')[1]) as string;
-      const iconKey = bpmnIconKey(element as Base);
+    }
+    activeElement.value = markRaw(elementRef as Base);
+    // 设置panel信息, 元素id或者类型发生改变（选中的元素或者元素的类型）
+    if (elementRef.id !== activeId.value || elementRef.type.split(':')[1] !== activeType.value) {
+      const translate = modelerRef!.value.get<Translate>(MODELER_TRANSLATE);
+      activeType.value = translate(elementRef.type.split(':')[1]) as string;
+      const iconKey = bpmnIconKey(elementRef as Base);
+      // 设置panel的标题
       title.value = translate(activeType.value);
+      // 设置标题的icon
       iconName.value = bpmnIcons[iconKey];
       // TODO 设置需要填写的表单
       console.log(`选择的元素发生改变：
-    ID: ${element.id} , type: ${element.type}
+    ID: ${elementRef.id} , type: ${elementRef.type}
   `);
     }
   }, 100);
@@ -114,7 +116,7 @@
      */
     modeler.on('import.done', () => {
       console.log('import.done');
-      setCurrentElement();
+      setCurrentElement(undefined);
     });
 
     /**
@@ -163,15 +165,20 @@
 
 <template>
   <div class="designer_panel">
-    <div class="handoff_btn" @click="changeVisible">
+    <div class="drawers_btn" @click="changeVisible">
       <component :is="drawerIcon" />
     </div>
-    <n-card class="card" v-show="drawerVisible">
+    <n-card class="card" v-show="drawerVisible" header-style="background-color: #f5f5f7;">
       <template #header>
         <div class="panel-header">
           <BpmnIcon :name="iconName" />
-          <span class="element-title">{{ title }}</span>
+          <span class="title">{{ title }}</span>
         </div>
+      </template>
+      <template #default>
+        <n-collapse arrow-placement="right">
+          <component :is="BaseInfo" />
+        </n-collapse>
       </template>
     </n-card>
   </div>

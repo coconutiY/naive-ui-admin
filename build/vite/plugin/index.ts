@@ -8,7 +8,6 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import { configHtmlPlugin } from './html';
 import { configCompressPlugin } from './compress';
 
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import AutoImport from 'unplugin-auto-import/vite';
 import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
@@ -33,10 +32,11 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
       dts: true,
       resolvers: [
         NaiveUiResolver(),
-        ElementPlusResolver(),
-        IconsResolver({
-          enabledCollections: ['ep'],
-        }),
+        IconsResolver(
+          {
+            prefix: 'icon',
+          }
+        ),
       ],
     }),
     Icons({
@@ -45,8 +45,8 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     }),
     AutoImport({
       imports: ['vue', 'vue-router', '@vueuse/core', 'pinia'], //自动引入vue的ref、toRefs、onmounted等，无需在页面中再次引入
-      resolvers: [ElementPlusResolver(), NaiveUiResolver(), IconsResolver({ prefix: 'Icon' })],
-      dts: 'auto-imports.d.ts',
+      resolvers: [ NaiveUiResolver(), IconsResolver({ prefix: 'icon' })],
+      dts: pathResolve('')+'/types/auto-imports.d.ts',
       vueTemplate: true,
     }),
     createSvgIconsPlugin({

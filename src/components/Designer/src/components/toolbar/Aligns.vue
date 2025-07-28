@@ -68,9 +68,9 @@
       <template #trigger>
         <n-button @click="() => alignElements(item.key)">
           <template #icon>
-            <NIcon>
+            <n-icon>
               <component :is="item.icon" />
-            </NIcon>
+            </n-icon>
           </template>
         </n-button>
       </template>

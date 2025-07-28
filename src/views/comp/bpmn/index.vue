@@ -1,10 +1,11 @@
 <script setup name="Bpmn" lang="ts">
   import { columns } from '@/views/comp/bpmn/basicColumns';
   import { BasicTable, TableAction } from '@/components/Table';
-  import { h, reactive, ref } from 'vue';
+  import { computed, h, reactive, ref } from 'vue';
   import { DeleteOutlined, EditOutlined } from '@vicons/antd';
   import { useMessage } from 'naive-ui';
   import { useRouter } from 'vue-router';
+  import { useAsyncRouteStore } from '@/store/modules/asyncRoute';
 
   const message = useMessage();
   // const dialog = useDialog();
@@ -70,7 +71,10 @@
   }
 
   function handleEdit(record) {
-    console.log(record);
+    const asyncRouteStore = useAsyncRouteStore();
+    // 需要缓存的路由组件
+    const keepAliveComponents = computed(() => asyncRouteStore.keepAliveComponents);
+    console.log(keepAliveComponents, 'keepAliveComponentsEdit');
     message.success('您点击了编辑按钮');
   }
 </script>

@@ -42,7 +42,7 @@
       const asyncRouteStore = useAsyncRouteStore();
       // 需要缓存的路由组件
       const keepAliveComponents = computed(() => asyncRouteStore.keepAliveComponents);
-
+      console.log(keepAliveComponents, 'keepAliveComponents');
       const getTransitionName = computed(() => {
         return unref(isPageAnimate) ? unref(pageAnimateType) : '';
       });

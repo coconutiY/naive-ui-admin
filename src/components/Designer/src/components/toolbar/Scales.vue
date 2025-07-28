@@ -3,8 +3,6 @@
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ref } from 'vue';
   import Emitter from '@/components/Designer/src/utils/event-emitter';
-  import LucideZoomIn from '~icons/lucide/zoom-in';
-  import LucideZoomOut from '~icons/lucide/zoom-out';
   import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
 
   const currentScale = ref(1);
@@ -42,9 +40,9 @@
       <template #trigger>
         <n-button @click="zoomOut()">
           <template #icon>
-            <NIcon>
-              <LucideZoomOut />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-zoom-out />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -64,9 +62,9 @@
       <template #trigger>
         <n-button @click="zoomIn()">
           <template #icon>
-            <NIcon>
-              <LucideZoomIn />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-zoom-in />
+            </n-icon>
           </template>
         </n-button>
       </template>

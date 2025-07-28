@@ -1,6 +1,5 @@
 <script setup lang="ts">
   import BpmnModdle from 'bpmn-moddle';
-  import LucideEye from '~icons/lucide/eye';
   import 'highlight.js/lib/common';
   import hljsVuePlugin from '@highlightjs/vue-plugin';
   import { getCurrentInstance, inject, Ref, ref, shallowRef } from 'vue';
@@ -75,7 +74,7 @@
       <n-button>
         <template #icon>
           <n-icon>
-            <LucideEye />
+            <icon-lucide-eye />
           </n-icon>
         </template>
       </n-button>

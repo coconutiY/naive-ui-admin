@@ -26,8 +26,8 @@
           console.error(error);
         }
       });
-      await createNewDiagram(modeler);
       modelerRef.value = markRaw(modeler);
+      await createNewDiagram(modeler);
     } catch (e) {
       console.log(e);
     }

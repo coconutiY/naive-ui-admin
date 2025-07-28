@@ -1,7 +1,6 @@
 import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
 import { Base } from 'diagram-js/lib/model';
 import Canvas, { Position } from 'diagram-js/lib/core/Canvas';
-import Emitter from '@/components/Designer/src/utils/event-emitter';
 import { InternalEvent } from 'diagram-js/lib/core/EventBus';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { isAppendAction } from '@/components/Designer/src/utils/tools';
@@ -22,7 +21,7 @@ export default function enhancementContextmenu(modeler: Modeler) {
     const { element, originalEvent } = event;
     // 自定义右键菜单
     if (config.customContextmenu) {
-      return Emitter.emit('show-contextmenu', originalEvent, element);
+      // return Emitter.emit('show-contextmenu', originalEvent, element);
     }
     // 官方面板右键扩展
     if (config.templateChooser) {

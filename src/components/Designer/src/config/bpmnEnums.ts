@@ -28,12 +28,13 @@ export enum MULTIPLE_CONST {
 
 export const MODELER_INIT = Symbol('modeler-init');
 
-// bpmn Modeler插件名称
+// bpmn Modeler插件名称  TODO 使用provide/inject 从画布组件统一下发
 export const MODELER_MODDLE = 'moddle';
 export const MODELER_MODELING = 'modeling';
 export const MODELER_TRANSLATE = 'translate';
 export const MODELER_REGISTRY = 'elementRegistry';
-export const MODELER_FACTORY = 'elementFactory';
+export const MODELER_ELE_FACTORY = 'elementFactory';
+export const MODELER_BPMN_FACTORY = 'bpmnFactory';
 export const MODELER_CANVAS = 'canvas';
 export const MODELER_POPUP_MENU = 'popupMenu';
 export const MODELER_CREATE = 'create';

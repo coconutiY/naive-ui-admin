@@ -4,66 +4,67 @@
   left: -4px;
 }
 
-.handoff_btn {
+.drawers_btn {
   width: 18px;
   height: 64px;
   position: absolute;
   z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // 使其在屏幕中间
   top: 50%;
+  // 向左侧偏移，使其出现在屏幕
   transform: translate(-100%, -50%);
   cursor: pointer;
-  border-radius: 8px 0 0 8px;
-  box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .1);
+  border-radius: 10px 0 0 10px;
+  box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .3);
   text-align: center;
-  line-height: 64px;
-  left: 0;
+  background-color: #f3f3f3;
 }
 
 .card {
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 110px);
   box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .1);
   width: 27vw;
   min-width: 460px;
   max-width: 560px;
+  :deep(.n-card__content) {
+    padding: 10px 12px 10px;
+  }
 }
 
 .panel-header {
-  display: grid;
+  display: flex;
   max-height: 30px;
-  grid-template-columns: 40px auto;
-  grid-template-rows: 1fr 1fr;
-  grid-column-gap: 0;
   align-items: center;
-  margin: 0;
-  padding: 0;
-
-  .bpmn-icon {
-    height: 30px;
-    max-height: 30px;
-    width: 30px;
-    grid-row-start: 0;
-    grid-row-end: 0;
-  }
-
-  .element-title {
-    height: 100%;
-    max-height: 30px;
-    margin: 0;
-    padding: 0;
-    font-size: 18px;
-  }
-
-  > collapse-title {
-    width: 100%;
-  }
-
-
+  gap: 2px;
 }
 
+.bpmn-icon {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  height: 100%;
+  max-height: 30px;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  line-height: 30px;
+}
+.collapse-title{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
 .drawer-footer {
   display: flex;
-
-  .el-button {
+  .n-button {
     flex: 1;
     margin: 6px;
   }
@@ -72,7 +73,6 @@
 .divider-panel {
   display: flex;
   align-items: center;
-
   span {
     margin-left: 6px;
   }
