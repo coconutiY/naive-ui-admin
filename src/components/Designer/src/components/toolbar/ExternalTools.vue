@@ -1,9 +1,5 @@
 <script setup lang="ts">
   import ToggleMode from 'bpmn-js-token-simulation/lib/features/toggle-mode/modeler/ToggleMode';
-  import LucideBot from '~icons/lucide/bot';
-  import LucideMap from '~icons/lucide/map';
-  import LucideInfo from '~icons/lucide/info';
-  import LucideClipboardCheck from '~icons/lucide/clipboard-check';
   import AntDesignClusterOutlined from '~icons/ant-design/cluster-outlined';
   import { computed, getCurrentInstance, inject, ref, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
@@ -72,9 +68,9 @@
       <template #trigger>
         <n-button @click="mockSimulation">
           <template #icon>
-            <NIcon>
-              <LucideBot />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-bot />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -84,9 +80,9 @@
       <template #trigger>
         <n-button @click="openEventsModel">
           <template #icon>
-            <NIcon>
-              <AntDesignClusterOutlined />
-            </NIcon>
+            <n-icon>
+              <icon-ant-design-cluster-outlined />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -96,9 +92,9 @@
       <template #trigger>
         <n-button @click="minimapToggle">
           <template #icon>
-            <NIcon>
-              <LucideMap />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-map />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -108,9 +104,9 @@
       <template #trigger>
         <n-button @click="lintToggle">
           <template #icon>
-            <NIcon>
-              <LucideClipboardCheck />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-clipboard-check />
+            </n-icon>
           </template>
         </n-button>
       </template>
@@ -120,9 +116,9 @@
       <template #trigger>
         <n-button @click="openShortcutKeysModel">
           <template #icon>
-            <NIcon>
-              <LucideInfo />
-            </NIcon>
+            <n-icon>
+              <icon-lucide-info />
+            </n-icon>
           </template>
         </n-button>
       </template>

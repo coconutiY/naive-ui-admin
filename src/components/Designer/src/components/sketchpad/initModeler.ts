@@ -5,7 +5,7 @@ import { ViewerOptions } from 'diagram-js/lib/model';
 import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
 import EmptyXml from '@/components/Designer/src/utils/emptyXml';
 
-export default function initModeler(
+export function initModeler(
   designer: Ref<HTMLElement | undefined>,
   modelerModules: ViewerOptions<Element>
 ) {

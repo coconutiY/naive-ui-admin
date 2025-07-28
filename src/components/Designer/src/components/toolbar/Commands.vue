@@ -1,31 +1,31 @@
-<script setup name="Commands" lang="ts">
-  import type Modeler from 'bpmn-js/lib/Modeler';
+<script setup lang="ts">
   import type CommandStack from 'diagram-js/lib/command/CommandStack';
-  import Emitter from '@/components/Designer/src/utils/event-emitter';
-  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
+  import { MODELER, MODELER_COMMAND } from '@/components/Designer/src/config/bpmnEnums';
+  import Modeler from 'bpmn-js/lib/Modeler';
 
-  let command: CommandStack | null = null;
+  defineOptions({ name: 'Commands' });
+
+  const modelerRef = inject<Ref<Modeler>>(MODELER);
+  const command = computed(
+    () => modelerRef?.value && modelerRef.value.get<CommandStack>(MODELER_COMMAND)
+  );
 
   const { canRedo, canUndo } = {} as any;
 
-  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
-    command = modeler.get<CommandStack>('commandStack');
-  });
+  function undo() {
+    command.value && command.value.canUndo() && command.value.undo();
+  }
 
-  const undo = () => {
-    command && command.canUndo() && command.undo();
-  };
+  function redo() {
+    command.value && command.value.canRedo() && command.value.redo();
+  }
 
-  const redo = () => {
-    command && command.canRedo() && command.redo();
-  };
-
-  const restart = () => {
+  function restart() {
     canUndo.value = false;
     canRedo.value = false;
-    command && command.clear();
+    command.value && command.value.clear();
     // createNewDiagram()
-  };
+  }
 </script>
 
 <template>

@@ -28,7 +28,11 @@ export enum MULTIPLE_CONST {
 
 export const MODELER_INIT = Symbol('modeler-init');
 
-// bpmn Modeler插件名称  TODO 使用provide/inject 从画布组件统一下发
+// provide/inject 数据
+export const MODELER = Symbol('modeler');
+export const ACTIVE_ID = Symbol('active_id');
+export const ACTIVE_ELEMENT = Symbol('active_element');
+// bpmn Modeler插件
 export const MODELER_MODDLE = 'moddle';
 export const MODELER_MODELING = 'modeling';
 export const MODELER_TRANSLATE = 'translate';
@@ -42,11 +46,9 @@ export const MODELER_HAND = 'handTool';
 export const MODELER_SPACE = 'spaceTool';
 export const MODELER_LASSO = 'lassoTool';
 export const MODELER_CONN = 'globalConnect';
-
-// provide/inject 数据
-export const MODELER = Symbol('modeler');
-export const ACTIVE_ID = Symbol('active_id');
-export const ACTIVE_ELEMENT = Symbol('active_element');
+export const MODELER_SELECTION = 'selection';
+export const MODELER_ALIGN = 'alignElements';
+export const MODELER_COMMAND = 'commandStack';
 
 // bpmn元素的icon名称
 export const bpmnIcons: Record<string, string> = {

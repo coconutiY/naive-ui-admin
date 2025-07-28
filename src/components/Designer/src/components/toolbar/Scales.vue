@@ -1,37 +1,39 @@
 <script setup lang="ts">
-  import Canvas from 'diagram-js/lib/core/Canvas';
+  import Canvas, { Viewbox } from 'diagram-js/lib/core/Canvas';
   import Modeler from 'bpmn-js/lib/Modeler';
-  import { ref } from 'vue';
-  import Emitter from '@/components/Designer/src/utils/event-emitter';
-  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
+  import { ref, watch } from 'vue';
+  import { MODELER, MODELER_CANVAS } from '@/components/Designer/src/config/bpmnEnums';
 
   const currentScale = ref(1);
-  let canvas: Canvas | null = null;
+  const modelerRef = inject<Ref<Modeler>>(MODELER);
+  const canvasRef = ref<Canvas>();
 
-  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
-    try {
-      canvas = modeler.get<Canvas>('canvas');
-      currentScale.value = canvas.zoom();
-    } finally {
-      modeler.on('canvas.viewbox.changed', ({ viewbox }: any) => {
+  function zoomReset(newScale: number | 'fit-viewport') {
+    canvasRef.value &&
+      canvasRef.value.zoom(newScale, newScale === 'fit-viewport' ? undefined : { x: 0, y: 0 });
+  }
+
+  function zoomOut(newScale?: number) {
+    currentScale.value = newScale || Math.floor(currentScale.value * 100 - 0.1 * 100) / 100;
+    zoomReset(currentScale.value);
+  }
+
+  function zoomIn(newScale?: number) {
+    currentScale.value = newScale || Math.floor(currentScale.value * 100 + 0.1 * 100) / 100;
+    zoomReset(currentScale.value);
+  }
+
+  watch(
+    () => modelerRef?.value,
+    () => {
+      const canvas = modelerRef?.value.get<Canvas>(MODELER_CANVAS);
+      canvasRef.value = canvas;
+      currentScale.value = canvas!.zoom();
+      modelerRef?.value.on('canvas.viewbox.changed', ({ viewbox }: { viewbox: Viewbox }) => {
         currentScale.value = viewbox.scale;
       });
     }
-  });
-
-  const zoomReset = (newScale: number | 'fit-viewport') => {
-    canvas && canvas.zoom(newScale, newScale === 'fit-viewport' ? undefined : { x: 0, y: 0 });
-  };
-
-  const zoomOut = (newScale?: number) => {
-    currentScale.value = newScale || Math.floor(currentScale.value * 100 - 0.1 * 100) / 100;
-    zoomReset(currentScale.value);
-  };
-
-  const zoomIn = (newScale?: number) => {
-    currentScale.value = newScale || Math.floor(currentScale.value * 100 + 0.1 * 100) / 100;
-    zoomReset(currentScale.value);
-  };
+  );
 </script>
 
 <template>

@@ -1,6 +1,5 @@
-<script setup name="Aligns" lang="ts">
+<script setup lang="ts">
   import { computed, ComputedRef, getCurrentInstance } from 'vue';
-  import Modeler from 'bpmn-js/lib/Modeler';
   import Selection from 'diagram-js/lib/features/selection/Selection';
   import Modeling from 'bpmn-js/lib/features/modeling/Modeling.js';
   import LucideAlignStartVertical from '~icons/lucide/align-start-vertical';
@@ -10,9 +9,19 @@
   import LucideAlignCenterHorizontal from '~icons/lucide/align-center-horizontal';
   import LucideAlignEndHorizontal from '~icons/lucide/align-end-horizontal';
   import { ComponentInternalInstance } from 'vue-demi';
-  import Emitter from '@/components/Designer/src/utils/event-emitter';
   import { useMessage } from 'naive-ui';
-  import { MODELER_INIT } from '@/components/Designer/src/config/bpmnEnums';
+  import {
+    MODELER,
+    MODELER_ALIGN,
+    MODELER_MODELING,
+    MODELER_SELECTION,
+  } from '@/components/Designer/src/config/bpmnEnums';
+  import AlignElements from 'diagram-js/lib/features/align-elements/AlignElements';
+  import Modeler from 'bpmn-js/lib/Modeler';
+
+  defineOptions({
+    name: 'Aligns',
+  });
 
   const { proxy } = getCurrentInstance() as ComponentInternalInstance;
   const message = useMessage();
@@ -41,25 +50,22 @@
     }
   );
 
-  let modeling: Modeling | null = null;
-  let selection: Selection | null = null;
-  let align: any = null;
+  const modeler = inject<Ref<Modeler>>(MODELER);
+  const modeling = computed(() => modeler?.value && modeler.value.get<Modeling>(MODELER_MODELING));
+  const selection = computed(
+    () => modeler?.value && modeler.value.get<Selection>(MODELER_SELECTION)
+  );
+  const align = computed(() => modeler?.value && modeler.value.get<AlignElements>(MODELER_ALIGN));
 
-  Emitter.on(MODELER_INIT, (modeler: Modeler) => {
-    modeling = modeler.get('modeling');
-    selection = modeler.get('selection');
-    align = modeler.get('alignElements');
-  });
-
-  const alignElements = (tag: string) => {
-    if (modeling && selection) {
-      const SelectedElements = selection.get();
+  function alignElements(tag: string) {
+    if (modeling.value && selection.value && align.value) {
+      const SelectedElements = selection.value.get();
       if (!SelectedElements || SelectedElements.length <= 1) {
         return message.warning('请按住 Shift 键选择多个元素对齐');
       }
-      align.trigger(SelectedElements, tag);
+      align.value.trigger(SelectedElements, tag);
     }
-  };
+  }
 </script>
 
 <template>

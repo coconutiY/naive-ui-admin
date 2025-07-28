@@ -7,6 +7,8 @@ import Modeling from 'bpmn-js/lib/features/modeling/Modeling';
 import { Canvas } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
 import { isIdValid } from '@/components/Designer/src/utils/tools';
 import { Process } from 'bpmn-moddle';
+import Modeler from 'bpmn-js/lib/Modeler';
+import { MODELER_MODELING } from '@/components/Designer/src/config/bpmnEnums';
 
 //--- ID-----//
 /**
@@ -19,16 +21,16 @@ export function getId(element: Base): string {
 
 /**
  * 设置ID的值
- * @param modeling
+ * @param modeler
  * @param element
  * @param value
  */
-export function setId(modeling: Modeling, element: Base, value: string) {
+export function setId(modeler: Modeler, element: Base, value: string) {
   const errorMsg = isIdValid(element.businessObject, value);
-
   if (errorMsg && errorMsg.length) {
     throw new Error(errorMsg);
   }
+  const modeling = modeler.get<Modeling>(MODELER_MODELING);
   modeling.updateProperties(element, {
     id: value,
   });
@@ -56,14 +58,14 @@ export function getName(element: Base): string | undefined {
 
 /**
  * 设置元素Name属性的值
- * @param modeling
+ * @param modeler
  * @param canvas
  * @param bpmnFactory
  * @param element
  * @param value
  */
 export function setName(
-  modeling: Modeling,
+  modeler: Modeler,
   canvas: Canvas,
   bpmnFactory: BpmnFactory,
   element: Base,
@@ -72,6 +74,7 @@ export function setName(
   if (isAny(element, ['bpmn:Collaboration', 'bpmn:DataAssociation', 'bpmn:Association'])) {
     return undefined;
   }
+  const modeling = modeler.get<Modeling>(MODELER_MODELING);
   if (is(element, 'bpmn:TextAnnotation')) {
     return modeling.updateModdleProperties(element, element.businessObject, { text: value });
   }
@@ -98,11 +101,12 @@ export function getProcessExecutable(element: Base) {
 
 /**
  * 设置流程是否可执行
+ * @param modeler
  * @param element
  * @param value
- * @param modeling
  */
-export function setProcessExecutable(modeling: Modeling, element: Base, value: boolean) {
+export function setProcessExecutable(modeler: Modeler, element: Base, value: boolean) {
+  const modeling = modeler.get<Modeling>(MODELER_MODELING);
   modeling.updateProperties(element, {
     isExecutable: value,
   });
@@ -120,17 +124,18 @@ export function getProcessVersionTag(element: Base, prefix = 'camunda'): string 
 
 /**
  * 设置流程流程版本
+ * @param modeler
  * @param element
  * @param value
- * @param modeling
  * @param prefix
  */
 export function setProcessVersionTag(
-  modeling: Modeling,
+  modeler: Modeler,
   element: Base,
   value: string,
   prefix = 'camunda'
 ) {
+  const modeling = modeler.get<Modeling>(MODELER_MODELING);
   modeling.updateProperties(element, {
     [`${prefix}:versionTag`]: value,
   });

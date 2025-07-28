@@ -23,6 +23,8 @@
     MODELER_SPACE,
   } from '@/components/Designer/src/config/bpmnEnums';
 
+  defineOptions({ name: 'Palette' });
+
   const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 
   const modelerRef = inject<Ref<Modeler>>(MODELER);

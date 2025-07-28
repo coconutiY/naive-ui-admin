@@ -1,4 +1,4 @@
-import { ViewerOptions } from 'diagram-js/lib/model/Types';
+import { Connection, Label, Shape, ViewerOptions } from 'diagram-js/lib/model/Types';
 import { ModuleDeclaration } from 'didi';
 import { TranslateResult } from 'vue-i18n';
 
@@ -38,6 +38,27 @@ export interface EditorSettings {
   customTheme: Record<string, string | number>;
 }
 
+export type ElementChangeParams = {
+  element: Shape | Element | Connection | Label | any;
+  gfx: HTMLElement | object;
+  type: string | undefined;
+};
+
+export type SelectionChangeParams = {
+  /**
+   * 新选中的所有元素
+   */
+  newSelection: any[];
+  /**
+   * 之前选中的所有元素
+   */
+  oldSelection: any[];
+  /**
+   * 事件类型
+   */
+  type: string;
+};
+
 export type ModelerOptions<E extends Element> = ViewerOptions<E> & {
   additionalModules: ModuleDeclaration[];
   moddleExtensions: object;
@@ -54,6 +75,6 @@ export type PaletteElement = {
   group: string;
   type: string;
   className: string;
-  title: TranslateResult | undefined;
+  title: string | undefined;
   visible: boolean;
 };

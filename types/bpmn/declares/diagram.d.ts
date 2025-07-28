@@ -93,7 +93,12 @@ declare module 'diagram-js/lib/core/Canvas' {
    * 初始化时抛出 canvas.init 事件
    */
   export default class Canvas {
-    constructor(config: any, eventBus: EventBus, graphicsFactory: GraphicsFactory, elementRegistry: ElementRegistry);
+    constructor(
+      config: any,
+      eventBus: EventBus,
+      graphicsFactory: GraphicsFactory,
+      elementRegistry: ElementRegistry
+    );
     protected _eventBus: EventBus;
     protected _elementRegistry: ElementRegistry;
     protected _graphicsFactory: GraphicsFactory;
@@ -361,7 +366,10 @@ declare module 'diagram-js/lib/core/Canvas' {
      * @param [elements] {Base[] | string[]}
      * @param [padding] {number | Object}
      */
-    scrollToElement<E extends Base>(elements?: Array<E | object>, padding?: number | object): Position;
+    scrollToElement<E extends Base>(
+      elements?: Array<E | object>,
+      padding?: number | object
+    ): Position;
 
     /**
      * 获取或设置画布的当前缩放，可选地缩放到指定位置, 可使用 canvas.zoom('fit-viewport', 'auto') 使画布自动缩放至
@@ -533,10 +541,18 @@ declare module 'diagram-js/lib/core/EventBus' {
     [field: string]: any;
   }
 
-  export type EventCallback<T extends string, E extends Base> = (event: EventType<T, E>, data: any) => any;
-  export type EventType<T extends string, E extends Base> = EventMap<E> extends Record<T, infer P> ? P : InternalEvent;
+  export type EventCallback<T extends string, E extends Base> = (
+    event: EventType<T, E>,
+    data: any
+  ) => any;
+  export type EventType<T extends string, E extends Base> = EventMap<E> extends Record<T, infer P>
+    ? P
+    : InternalEvent;
 
-  type EventMap<E extends Base> = Record<string, SelectionEvent<E> | ElementEvent<E> | CanvasEvent<E>>;
+  type EventMap<E extends Base> = Record<
+    string,
+    SelectionEvent<E> | ElementEvent<E> | CanvasEvent<E>
+  >;
   // interface EventMap<E extends Base> {
   //   [event: string]: SelectionEvent<E> | ElementEvent<E> | CanvasEvent<E>
   // }
@@ -573,7 +589,12 @@ declare module 'diagram-js/lib/core/EventBus' {
      * @param {Function} callback
      * @param {Object} [that] Pass context (`this`) to the callback
      */
-    on<T extends string, E extends Base>(events: T, priority: number | EventCallback<T, E>, callback?: EventCallback<T, E>, that?: any): void;
+    on<T extends string, E extends Base>(
+      events: T,
+      priority: number | EventCallback<T, E>,
+      callback?: EventCallback<T, E>,
+      that?: any
+    ): void;
 
     /**
      * 注册一个只执行一次的事件监听器
@@ -582,7 +603,12 @@ declare module 'diagram-js/lib/core/EventBus' {
      * @param {Function} callback the callback to execute
      * @param {Object} [that] Pass context (`this`) to the callback
      */
-    once<T extends string, E extends Base>(event: T, priority: number, callback: EventCallback<T, E>, that?: object): void;
+    once<T extends string, E extends Base>(
+      event: T,
+      priority: number,
+      callback: EventCallback<T, E>,
+      that?: object
+    ): void;
 
     /**
      * 通过事件和回调删除事件侦听器。
@@ -591,7 +617,10 @@ declare module 'diagram-js/lib/core/EventBus' {
      * @param {string|Array<string>} events
      * @param {Function} [callback]
      */
-    off<T extends string, E extends Base>(events: string | string[], callback?: EventCallback<T, E>): void;
+    off<T extends string, E extends Base>(
+      events: string | string[],
+      callback?: EventCallback<T, E>
+    ): void;
 
     /**
      * 创建EventBus事件
@@ -698,7 +727,11 @@ declare module 'diagram-js/lib/command/CommandStack' {
     _getUndoAction(): StackItem | undefined;
 
     _internalUndo(action): void;
-    _fire<O extends object>(command: Command, qualifier: string | O, event?: O): ReturnType<typeof EventBus.prototype.fire>;
+    _fire<O extends object>(
+      command: Command,
+      qualifier: string | O,
+      event?: O
+    ): ReturnType<typeof EventBus.prototype.fire>;
     _createId(): number;
     // 执行 fn
     _atomicDo(fn: Function): void | never;
@@ -847,7 +880,11 @@ declare module 'diagram-js/lib/draw/DefaultRenderer' {
     FRAME_STYLE: Traits;
     canRender(): boolean;
     drawShape<E extends Shape>(visuals: SVGElement, element: E, attrs?: object): SVGRectElement;
-    drawConnection<E extends Connection>(visuals: SVGElement, connection: E, attrs?: object): SVGPolylineElement;
+    drawConnection<E extends Connection>(
+      visuals: SVGElement,
+      connection: E,
+      attrs?: object
+    ): SVGPolylineElement;
     getShapePath<E extends Shape>(shape: E): string;
     getConnectionPath<E extends Connection>(connection: E): string;
   }
@@ -861,7 +898,11 @@ declare module 'diagram-js/lib/draw/Styles' {
     constructor(priority?: number);
     cls(className: string, traits?: string[], additionalAttrs?: object): Traits & { class: string };
     style(traits?: string[], additionalAttrs?: object): Traits;
-    computeStyle(custom?: object | null, traits?: string[] | Traits, defaultStyles?: object): Traits;
+    computeStyle(
+      custom?: object | null,
+      traits?: string[] | Traits,
+      defaultStyles?: object
+    ): Traits;
   }
 }
 /************************************** Diagram Model 元素 声明 *****************************************/
@@ -993,7 +1034,11 @@ declare module 'diagram-js/lib/layout/ConnectionDocking' {
   export default class ConnectionDocking {
     constructor();
     getCroppedWaypoints(connection: Connection, source?: Base, target?: Base): Point[];
-    getDockingPoint(connection: Connection, shape: Shape, dockStart?: boolean): DockingPointDescriptor;
+    getDockingPoint(
+      connection: Connection,
+      shape: Shape,
+      dockStart?: boolean
+    ): DockingPointDescriptor;
   }
 }
 // 根据 ConnectionDocking 计算出来的连线锚点进行连接
@@ -1013,7 +1058,11 @@ declare module 'diagram-js/lib/layout/CroppingConnectionDocking' {
     /*获取连接的实际航路点 (可见的连接点)*/
     getCroppedWaypoints(connection: Connection, source?: Base, target?: Base): Point[];
     /*返回指定形状上的连接对接点*/
-    getDockingPoint(connection: Connection, shape: Shape, dockStart?: boolean): DockingPointDescriptor;
+    getDockingPoint(
+      connection: Connection,
+      shape: Shape,
+      dockStart?: boolean
+    ): DockingPointDescriptor;
   }
 }
 /************************************** Diagram translate 翻译模块 *****************************************/
@@ -1047,10 +1096,22 @@ declare module 'diagram-js/lib/features/modeling/Modeling' {
 
     getHandlers<H extends ModelingHandler>(): Record<string, H>;
     registerHandlers(commandStack: CommandStack[]): void;
-    moveShape(shape: Base, delta: Position, newParent: Base, newParentIndex?: number, hints?: Hints): void;
+    moveShape(
+      shape: Base,
+      delta: Position,
+      newParent: Base,
+      newParentIndex?: number,
+      hints?: Hints
+    ): void;
     updateAttachment(shape: Base, newHost?: Base): void;
     moveElements(shapes: Base[], delta: Position, target?: Base, hints?: Hints): void;
-    moveConnection(connection: Base, delta: Position, newParent: Base, newParentIndex?: number, hints?: Hints): void;
+    moveConnection(
+      connection: Base,
+      delta: Position,
+      newParent: Base,
+      newParentIndex?: number,
+      hints?: Hints
+    ): void;
     layoutConnection(connection: Base, hints?: Hints): void;
     createConnection(
       source: Base,
@@ -1060,10 +1121,28 @@ declare module 'diagram-js/lib/features/modeling/Modeling' {
       parent: Base | object,
       hints?: Hints
     ): Connection;
-    createShape(shape: Shape | object, position: Position, target: Base, parentIndex?: number, hints?: Hints): Shape;
-    createElements(elements: Base[], position: Position, target: Base, parentIndex?: number, hints?: Hints): Base[];
+    createShape(
+      shape: Shape | object,
+      position: Position,
+      target: Base,
+      parentIndex?: number,
+      hints?: Hints
+    ): Shape;
+    createElements(
+      elements: Base[],
+      position: Position,
+      target: Base,
+      parentIndex?: number,
+      hints?: Hints
+    ): Base[];
     createLabel(labelTarget: Base, position: Position, label: Base, parent?: Base): Label;
-    appendShape(source: Base, shape: Base | object, position: Position, target: Base, hints?: Hints): Shape;
+    appendShape(
+      source: Base,
+      shape: Base | object,
+      position: Position,
+      target: Base,
+      hints?: Hints
+    ): Shape;
     removeElements(elements: Base[]): Base;
     distributeElements(groups: Base[], axis: string, dimension: Dimensions): void;
     removeShape(shape: Shape, hints?: Hints): Shape;
@@ -1071,11 +1150,33 @@ declare module 'diagram-js/lib/features/modeling/Modeling' {
     replaceShape(oldShape: Shape, newShape: Shape, hints?: Hints): Shape;
     alignElements(elements: Base[], alignment: string): void;
     resizeShape(shape: Shape, newBounds: Dimensions, minBounds?: Dimensions, hints?: Hints): void;
-    createSpace(movingShapes: Base[], resizingShapes: Base[], delta: Position, direction: string, hints?: Hints): void;
+    createSpace(
+      movingShapes: Base[],
+      resizingShapes: Base[],
+      delta: Position,
+      direction: string,
+      hints?: Hints
+    ): void;
     updateWaypoints(connection: Connection, newWaypoints: Position[], hints?: Hints): void;
-    reconnect(connection: Connection, source: Shape, target: Shape, dockingOrPoints: Position | Position[], hints?: Hints): void;
-    reconnectStart(connection: Connection, newSource: Shape, dockingOrPoints: Position | Position[], hints?: Hints): void;
-    reconnectEnd(connection: Connection, newTarget: Shape, dockingOrPoints: Position | Position[], hints?: Hints): void;
+    reconnect(
+      connection: Connection,
+      source: Shape,
+      target: Shape,
+      dockingOrPoints: Position | Position[],
+      hints?: Hints
+    ): void;
+    reconnectStart(
+      connection: Connection,
+      newSource: Shape,
+      dockingOrPoints: Position | Position[],
+      hints?: Hints
+    ): void;
+    reconnectEnd(
+      connection: Connection,
+      newTarget: Shape,
+      dockingOrPoints: Position | Position[],
+      hints?: Hints
+    ): void;
     connect(source: Shape, target: Shape, attrs?: object, hints?: Hints): Connection;
     toggleCollapse(shape: Shape, hints?: Hints): void;
   }
@@ -1108,7 +1209,13 @@ declare module 'diagram-js/lib/features/attach-support/AttachSupport' {
   import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
   export default class AttachSupport extends CommandInterceptor {
-    constructor(injector: Injector, eventBus: EventBus, canvas: Canvas, rules: Rules, modeling: Modeling);
+    constructor(
+      injector: Injector,
+      eventBus: EventBus,
+      canvas: Canvas,
+      rules: Rules,
+      modeling: Modeling
+    );
   }
 }
 // 元素自动分布
@@ -1159,7 +1266,12 @@ declare module 'diagram-js/lib/features/auto-resize/AutoResize' {
   };
 
   export default class AutoResize extends CommandInterceptor {
-    constructor(eventBus: EventBus, elementRegistry: ElementRegistry, modeling: Modeling, rules: Rules);
+    constructor(
+      eventBus: EventBus,
+      elementRegistry: ElementRegistry,
+      modeling: Modeling,
+      rules: Rules
+    );
     /**
      * 给定已将许多元素移动或添加到父项中，计算目标形状的新边界。
      * 此方法考虑当前大小，添加的元素以及为新边界提供的填充
@@ -1287,7 +1399,14 @@ declare module 'diagram-js/lib/features/bendpoints/BendpointMove' {
   import { Connection, Point } from 'diagram-js/lib/model';
 
   export default class BendpointMove extends ModuleConstructor {
-    constructor(injector: Injector, eventBus: EventBus, canvas: Canvas, dragging: Dragging, rules: Rules, modeling: Modeling);
+    constructor(
+      injector: Injector,
+      eventBus: EventBus,
+      canvas: Canvas,
+      dragging: Dragging,
+      rules: Rules,
+      modeling: Modeling
+    );
 
     start(event: Event, connection: Connection, bendpointIndex: number, insert?: boolean): void;
     cropWaypoints(connection: Connection, newWaypoints: Point[]): Point[];
@@ -1301,7 +1420,12 @@ declare module 'diagram-js/lib/features/bendpoints/BendpointMovePreview' {
   import Canvas from 'diagram-js/lib/core/Canvas';
 
   export default class BendpointMovePreview extends ModuleConstructor {
-    constructor(bendpointMove: BendpointMove, injector: Injector, eventBus: EventBus, canvas: Canvas);
+    constructor(
+      bendpointMove: BendpointMove,
+      injector: Injector,
+      eventBus: EventBus,
+      canvas: Canvas
+    );
   }
 }
 // 注册拐点移动监听事件
@@ -1321,7 +1445,14 @@ declare module 'diagram-js/lib/features/bendpoints/ConnectionSegmentMove' {
   import GraphicsFactory from 'diagram-js/lib/core/GraphicsFactory';
   import Modeling from 'diagram-js/lib/features/modeling/Modeling';
   export default class ConnectionSegmentMove extends ModuleConstructor {
-    constructor(injector: Injector, eventBus: EventBus, canvas: Canvas, dragging: Dragging, graphicsFactory: GraphicsFactory, modeling: Modeling);
+    constructor(
+      injector: Injector,
+      eventBus: EventBus,
+      canvas: Canvas,
+      dragging: Dragging,
+      graphicsFactory: GraphicsFactory,
+      modeling: Modeling
+    );
   }
 }
 // 图标更改支持
@@ -1340,7 +1471,12 @@ declare module 'diagram-js/lib/features/change-support/ChangeSupport' {
    * @param {GraphicsFactory} graphicsFactory
    */
   export default class ChangeSupport extends ModuleConstructor {
-    constructor(eventBus: EventBus, canvas: Canvas, elementRegistry: ElementRegistry, graphicsFactory: GraphicsFactory);
+    constructor(
+      eventBus: EventBus,
+      canvas: Canvas,
+      elementRegistry: ElementRegistry,
+      graphicsFactory: GraphicsFactory
+    );
   }
 }
 // 剪切板数据缓存
@@ -1394,7 +1530,12 @@ declare module 'diagram-js/lib/features/connection-preview/ConnectionPreview' {
    * 绘制连接预览。这可以使用布局和连接对接来绘制外观更好的预览(可选)
    */
   export default class ConnectionPreview extends ModuleConstructor {
-    constructor(injector: Injector, canvas: Canvas, graphicsFactory: GraphicsFactory, elementFactory: ElementFactory);
+    constructor(
+      injector: Injector,
+      canvas: Canvas,
+      graphicsFactory: GraphicsFactory,
+      elementFactory: ElementFactory
+    );
     /**
      * 绘制连线预览.
      * 需要至少一个 source 和 target 元素分别作为连线起点和终点，
@@ -1587,7 +1728,13 @@ declare module 'diagram-js/lib/features/create/Create' {
   import { ModuleConstructor } from 'didi';
 
   export default class Create extends ModuleConstructor {
-    constructor(canvas: Canvas, dragging: Dragging, eventBus: EventBus, modeling: Modeling, rules: Rules);
+    constructor(
+      canvas: Canvas,
+      dragging: Dragging,
+      eventBus: EventBus,
+      modeling: Modeling,
+      rules: Rules
+    );
     start<T extends Base>(event: string | Event, elements: T | T[], context?: any): void;
   }
 }
@@ -1611,7 +1758,13 @@ declare module 'diagram-js/lib/features/create/CreatePreview' {
   import { ModuleConstructor } from 'didi';
   // 监听 create.move 事件
   export default class CreatePreview extends ModuleConstructor {
-    constructor(canvas: Canvas, eventBus: EventBus, graphicsFactory: GraphicsFactory, previewSupport: PreviewSupport, styles: Styles);
+    constructor(
+      canvas: Canvas,
+      eventBus: EventBus,
+      graphicsFactory: GraphicsFactory,
+      previewSupport: PreviewSupport,
+      styles: Styles
+    );
   }
 }
 // 分组和过滤元素，然后触发均匀分布。
@@ -1687,8 +1840,18 @@ declare module 'diagram-js/lib/features/dragging/Dragging' {
   import { Point } from 'diagram-js/lib/model';
 
   export default class Dragging extends ModuleConstructor {
-    constructor(eventBus: EventBus, canvas: Canvas, selection: Selection, elementRegistry: ElementRegistry);
-    protected init(event: MouseEvent | TouchEvent, relativeTo: Point, prefix?: string | object, options?: object): void;
+    constructor(
+      eventBus: EventBus,
+      canvas: Canvas,
+      selection: Selection,
+      elementRegistry: ElementRegistry
+    );
+    protected init(
+      event: MouseEvent | TouchEvent,
+      relativeTo: Point,
+      prefix?: string | object,
+      options?: object
+    ): void;
     private move(event: Event, activate?: boolean | object): void;
     private hover(event: Event): void;
     private out(event: Event): void;
@@ -1763,7 +1926,15 @@ declare module 'diagram-js/lib/features/global-connect/GlobalConnect' {
   import { ModuleConstructor } from 'didi';
   import { Shape } from 'diagram-js/lib/model';
   export default class GlobalConnect extends ModuleConstructor {
-    constructor(eventBus: EventBus, dragging: Dragging, connect: Connect, canvas: Canvas, toolManager: ToolManager, rules: Rules, mouse: Mouse);
+    constructor(
+      eventBus: EventBus,
+      dragging: Dragging,
+      connect: Connect,
+      canvas: Canvas,
+      toolManager: ToolManager,
+      rules: Rules,
+      mouse: Mouse
+    );
     _dragging: Dragging;
     _rules: Rules;
     _mouse: Mouse;
@@ -1806,7 +1977,11 @@ declare module 'diagram-js/lib/features/grid-snapping/GridSnapping' {
      * @param {number} [options.max]
      * @param {number} [options.offset]
      */
-    snapEvent(event: object, axis: string, options?: { min?: number; max?: number; offset?: number }): void;
+    snapEvent(
+      event: object,
+      axis: string,
+      options?: { min?: number; max?: number; offset?: number }
+    ): void;
     /**
      * 为第三方扩展模块 公开网格间距
      * @return {number} spacing of grid dots
@@ -1890,7 +2065,14 @@ declare module 'diagram-js/lib/features/hand-tool/HandTool' {
   export default class HandTool extends ModuleConstructor {
     _dragging: Dragging;
     _mouse: Mouse;
-    constructor(eventBus: EventBus, canvas: Canvas, dragging: Dragging, injector: Injector, toolManager: ToolManager, mouse: Mouse);
+    constructor(
+      eventBus: EventBus,
+      canvas: Canvas,
+      dragging: Dragging,
+      injector: Injector,
+      toolManager: ToolManager,
+      mouse: Mouse
+    );
     activateMove(event: Event, autoActivate: boolean | object, context?: object): void;
     activateHand(event: Event, autoActivate: boolean | object, reactivate?: object): void;
     toggle(): void;
@@ -1946,7 +2128,12 @@ declare module 'diagram-js/lib/features/interaction-events/InteractionEvents' {
     fire(type: string, event: Event, element?: Base): void;
     triggerMouseEvent(eventName: string, event: MouseEvent, targetElement: Base): void;
     mouseHandler(localEventName: string): Function;
-    registerEvent(node: EventTarget, event: string, localEvent: Function, ignoredFilter?: boolean): Function;
+    registerEvent(
+      node: EventTarget,
+      event: string,
+      localEvent: Function,
+      ignoredFilter?: boolean
+    ): Function;
     unregisterEvent(node: EventTarget, event: string, localEvent: Function): void;
   }
 }
@@ -2003,7 +2190,13 @@ declare module 'diagram-js/lib/features/keyboard-move-selection/KeyboardMoveSele
   import Selection from 'diagram-js/lib/features/selection/Selection';
   export default class KeyboardMoveSelection extends ModuleConstructor {
     _config: object;
-    constructor(config: object, keyboard: Keyboard<Element>, modeling: Modeling, rules: Rules, selection: Selection);
+    constructor(
+      config: object,
+      keyboard: Keyboard<Element>,
+      modeling: Modeling,
+      rules: Rules,
+      selection: Selection
+    );
     //在给定方向上移动选定的元素，accelerated 指定加速移动
     protected moveSelection(direction: string, accelerated?: boolean): void;
   }
@@ -2072,7 +2265,13 @@ declare module 'diagram-js/lib/features/move/Move' {
   import Rules from 'diagram-js/lib/features/rules/Rules';
   import { Shape } from 'diagram-js/lib/model';
   export default class Move extends ModuleConstructor {
-    constructor(eventBus: EventBus, dragging: Dragging, modeling: Modeling, selection: Selection, rules: Rules);
+    constructor(
+      eventBus: EventBus,
+      dragging: Dragging,
+      modeling: Modeling,
+      selection: Selection,
+      rules: Rules
+    );
 
     start(event: MouseEvent, element: Shape, activate?: boolean, context?: object): void;
   }
@@ -2248,10 +2447,14 @@ declare module 'diagram-js/lib/features/popup-menu/PopupMenu' {
     _providers: Record<string, PopupMenuProvider | PopupMenuProvider[]>;
     _current: object;
 
-    registerProvider(id: string, priority: number | PopupMenuProvider, provider?: PopupMenuProvider): void;
+    registerProvider(
+      id: string,
+      priority: number | PopupMenuProvider,
+      provider?: PopupMenuProvider
+    ): void;
     isEmpty(element: Base, providerId: string): boolean;
     open(element: Base, id: string, position: { cursor: Position }): object;
-    open(element: Base, id: string, position:  Position , option: any): object;
+    open(element: Base, id: string, position: Position, option: any): object;
     close(): void;
     isOpen(): boolean;
     trigger(event: Event): Function | undefined;
@@ -2295,7 +2498,12 @@ declare module 'diagram-js/lib/features/preview-support/PreviewSupport' {
   import { ModuleConstructor } from 'didi';
 
   export default class PreviewSupport extends ModuleConstructor {
-    constructor(elementRegistry: ElementRegistry, eventBus: EventBus, canvas: Canvas, styles: Styles);
+    constructor(
+      elementRegistry: ElementRegistry,
+      eventBus: EventBus,
+      canvas: Canvas,
+      styles: Styles
+    );
     protected _elementRegistry: object;
     protected _canvas: Canvas;
     protected _styles: Styles;
@@ -2316,7 +2524,11 @@ declare module 'diagram-js/lib/features/replace/Replace' {
 
   export default class Replace extends ModuleConstructor {
     constructor(modeling: Modeling);
-    replaceElement<E extends Base, S extends Shape>(oldElement: E, newElement: object | E, options?: object): S;
+    replaceElement<E extends Base, S extends Shape>(
+      oldElement: E,
+      newElement: object | E,
+      options?: object
+    ): S;
   }
 }
 // 提供画布上形状大小调整的组件
@@ -2332,7 +2544,11 @@ declare module 'diagram-js/lib/features/resize/Resize' {
   export default class Resize extends ModuleConstructor {
     constructor(eventBus: EventBus, rules: Rules, modeling: Modeling, dragging: Dragging);
     canResize(context: object): boolean;
-    activate<E extends Shape>(event: MouseEvent, shape: E, contextOrDirection: object | string): void;
+    activate<E extends Shape>(
+      event: MouseEvent,
+      shape: E,
+      contextOrDirection: object | string
+    ): void;
     computeMinResizeBox(context: object): Bounds;
   }
 }
@@ -2511,7 +2727,12 @@ declare module 'diagram-js/lib/features/selection/SelectionBehavior' {
   import { ModuleConstructor } from 'didi';
 
   export default class SelectionBehavior extends ModuleConstructor {
-    constructor(eventBus: EventBus, selection: Selection, canvas: Canvas, elementRegistry: ElementRegistry);
+    constructor(
+      eventBus: EventBus,
+      selection: Selection,
+      canvas: Canvas,
+      elementRegistry: ElementRegistry
+    );
   }
 }
 // 为选择元素添加/移除选择样式及标记dom
@@ -2605,8 +2826,16 @@ declare module 'diagram-js/lib/features/snapping/ResizeSnapping' {
     constructor(eventBus: EventBus, snapping: Snapping);
 
     initSnap(event: Event): SnapContext;
-    addSnapTargetPoints(snapPoints: SnapPoints, shape: Shape | Connection, target: Shape | Connection, direction: string): SnapPoints;
-    getSnapTargets(shape: Shape | Connection, target: Shape | Connection): Array<Shape | Connection>;
+    addSnapTargetPoints(
+      snapPoints: SnapPoints,
+      shape: Shape | Connection,
+      target: Shape | Connection,
+      direction: string
+    ): SnapPoints;
+    getSnapTargets(
+      shape: Shape | Connection,
+      target: Shape | Connection
+    ): Array<Shape | Connection>;
   }
 }
 //
@@ -2623,8 +2852,16 @@ declare module 'diagram-js/lib/features/snapping/CreateMoveSnapping' {
     protected _elementRegistry: ElementRegistry;
 
     initSnap(event: Event): SnapContext;
-    addSnapTargetPoints(snapPoints: SnapPoints, shape: Shape | Connection, target: Shape | Connection, direction: string): SnapPoints;
-    getSnapTargets(shape: Shape | Connection, target: Shape | Connection): Array<Shape | Connection>;
+    addSnapTargetPoints(
+      snapPoints: SnapPoints,
+      shape: Shape | Connection,
+      target: Shape | Connection,
+      direction: string
+    ): SnapPoints;
+    getSnapTargets(
+      shape: Shape | Connection,
+      target: Shape | Connection
+    ): Array<Shape | Connection>;
   }
 }
 // 对齐工具
@@ -2645,7 +2882,15 @@ declare module 'diagram-js/lib/features/space-tool/SpaceTool' {
   };
 
   export default class SpaceTool extends ModuleConstructor {
-    constructor(canvas: Canvas, dragging: Dragging, eventBus: EventBus, modeling: Modeling, rules: Rules, toolManager: ToolManager, mouse: Mouse);
+    constructor(
+      canvas: Canvas,
+      dragging: Dragging,
+      eventBus: EventBus,
+      modeling: Modeling,
+      rules: Rules,
+      toolManager: ToolManager,
+      mouse: Mouse
+    );
     protected _canvas: Canvas;
     protected _dragging: Dragging;
     protected _eventBus: EventBus;
@@ -2656,7 +2901,13 @@ declare module 'diagram-js/lib/features/space-tool/SpaceTool' {
 
     activateSelection(event: Event, autoActivate: boolean, reactivate?: boolean): void;
     activateMakeSpace(event: MouseEvent): void;
-    makeSpace(movingShapes: Shape[], resizingShapes: Shape[], delta: Position, direction: string, start: number): Shape;
+    makeSpace(
+      movingShapes: Shape[],
+      resizingShapes: Shape[],
+      delta: Position,
+      direction: string,
+      start: number
+    ): Shape;
     init(event: Event, context: object): boolean;
     calculateAdjustments(elements: Shape[], axis: string, delta: number, start: number): Adjustment;
     toggle(): void;
@@ -2837,10 +3088,21 @@ declare module 'diagram-js/lib/features/auto-place/AutoPlaceUtil' {
 
   export const DEFAULT_DISTANCE = 50;
 
-  function GetNextPosition(element: Shape, previousPosition: Point, connectedAtPosition: Point): Point;
+  function GetNextPosition(
+    element: Shape,
+    previousPosition: Point,
+    connectedAtPosition: Point
+  ): Point;
 
-  export function findFreePosition(source: Shape, element: Shape, position: Point, getNextPosition: typeof GetNextPosition): Point;
-  export function generateGetNextPosition(nextPositionDirection: PositionDirections): typeof GetNextPosition;
+  export function findFreePosition(
+    source: Shape,
+    element: Shape,
+    position: Point,
+    getNextPosition: typeof GetNextPosition
+  ): Point;
+  export function generateGetNextPosition(
+    nextPositionDirection: PositionDirections
+  ): typeof GetNextPosition;
   export function getConnectedAtPosition(source: Shape, position: Point, element: Element): Shape;
   export function getConnectedDistance(source: Shape, hints?: object): number;
 }
@@ -2854,7 +3116,11 @@ declare module 'diagram-js/lib/features/bendpoints/BendpointUtil' {
   export function toCanvasCoordinates(canvas: Canvas, event: Event): Point;
   export function getConnectionIntersection(canvas: Canvas, waypoints: Point[], event: Event): void;
   export function addBendpoint(parentGfx: SVGElement, className: string): void;
-  export function addSegmentDragger(parentGfx: SVGElement, segmentStart: Point, segmentEnd: Point): void;
+  export function addSegmentDragger(
+    parentGfx: SVGElement,
+    segmentStart: Point,
+    segmentEnd: Point
+  ): void;
   export function calculateSegmentMoveRegion(segmentLength: number): number;
   export function getClosestPointOnConnection(position: Position, connection: Connection): Point;
 }
@@ -2903,10 +3169,21 @@ declare module 'diagram-js/lib/features/resize/ResizeUtil' {
   export function resizeBounds(bounds: Bounds, direction: Direction, delta: Point): Bounds;
   export function resizeTRBL(bounds: Bounds, resize: TRBL): Bounds;
   export function reattachPoint(bounds: Bounds, newBounds: Bounds, point: Point): Point;
-  export function ensureConstraints(currentBounds: Bounds, resizeConstraints: ResizeConstraints): Bounds;
-  export function getMinResizeBounds(direction: Direction, currentBounds: Bounds, minDimensions: Dimensions, childrenBounds: Bounds): Bounds;
+  export function ensureConstraints(
+    currentBounds: Bounds,
+    resizeConstraints: ResizeConstraints
+  ): Bounds;
+  export function getMinResizeBounds(
+    direction: Direction,
+    currentBounds: Bounds,
+    minDimensions: Dimensions,
+    childrenBounds: Bounds
+  ): Bounds;
   export function addPadding(bbox: Bounds, padding: TRBL | number): Bounds;
-  export function computeChildrenBBox(shapeOrChildren: Shape | Shape[], padding: TRBL | number): number | undefined;
+  export function computeChildrenBBox(
+    shapeOrChildren: Shape | Shape[],
+    padding: TRBL | number
+  ): number | undefined;
 }
 
 declare module 'diagram-js/lib/features/snapping/SnapUtil' {
@@ -2929,7 +3206,10 @@ declare module 'diagram-js/lib/features/space-tool/SpaceUtil' {
   import { Bounds } from 'diagram-js/lib/core/Canvas';
 
   export function getDirection(axis: string, delta: number): string;
-  export function getWaypointsUpdatingConnections(movingShapes: Shape[], resizingShapes: Shape[]): Connection[];
+  export function getWaypointsUpdatingConnections(
+    movingShapes: Shape[],
+    resizingShapes: Shape[]
+  ): Connection[];
   export function resizeBounds(bounds: Bounds, direction: string, delta: Point): Bounds;
 }
 
@@ -2948,7 +3228,11 @@ declare module 'diagram-js/lib/layout/LayoutUtil' {
   export function getConnectionMid(connection: Connection): Point;
   export function getMid(element: Connection): Point;
   export function getOrientation(rect: Bounds, reference: Bounds, padding: Point | number): string;
-  export function getElementLineIntersection(elementPath: PathComponent, linePath: PathComponent, cropStart: boolean): Point;
+  export function getElementLineIntersection(
+    elementPath: PathComponent,
+    linePath: PathComponent,
+    cropStart: boolean
+  ): Point;
   export function getIntersections(a: PathComponent, b: PathComponent): Intersection[] | number;
   export function filterRedundantWaypoints(waypoints: Point[]): Point[];
 }
@@ -2997,7 +3281,11 @@ declare module 'diagram-js/lib/util/Elements' {
   export function getParents(elements: Base[]): Base;
   export function add(elements: object[], e: object, unique: boolean): boolean;
   export function eachElement(elements: object | object[], fn: Function, depth?: number): void;
-  export function selfAndChildren(elements: Base | Base[], unique: boolean, maxDepth: number): Base[];
+  export function selfAndChildren(
+    elements: Base | Base[],
+    unique: boolean,
+    maxDepth: number
+  ): Base[];
   export function selfAndDirectChildren(elements, allowDuplicates): Base[];
   export function selfAndAllChildren(elements, allowDuplicates): Base[];
   export function getClosure(elements, isTopLevel, closure): object;
@@ -3106,7 +3394,13 @@ declare module 'diagram-js/lib/util/RenderUtil' {
 }
 
 declare module 'diagram-js/lib/util/SvgTransformUtil' {
-  export function transform(gfx: SVGElement, x: number, y: number, angle?: number, amount?: number): void;
+  export function transform(
+    gfx: SVGElement,
+    x: number,
+    y: number,
+    angle?: number,
+    amount?: number
+  ): void;
   export function translate(gfx: SVGElement, x: number, y: number): void;
   export function rotate(gfx: SVGElement, angle: number): void;
   export function scale(gfx: SVGElement, amount: number): void;
