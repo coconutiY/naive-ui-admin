@@ -70,13 +70,14 @@
     });
   }
 
-  function handleEdit(record) {
+  function handleEdit() {
     const asyncRouteStore = useAsyncRouteStore();
     // 需要缓存的路由组件
     const keepAliveComponents = computed(() => asyncRouteStore.keepAliveComponents);
     console.log(keepAliveComponents, 'keepAliveComponentsEdit');
     message.success('您点击了编辑按钮');
   }
+
 </script>
 
 <template>

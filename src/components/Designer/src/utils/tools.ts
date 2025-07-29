@@ -1,5 +1,13 @@
 import { isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { ModdleElement } from 'bpmn-js/lib/model/Types';
+import { Moddle, ModdleElement } from 'bpmn-js/lib/model/Types';
+import Modeling from 'bpmn-js/lib/features/modeling/Modeling.js';
+import {
+  MODELER_BPMN_FACTORY,
+  MODELER_MODDLE,
+  MODELER_MODELING,
+} from '@/components/Designer/src/config/bpmnEnums';
+import Modeler from 'bpmn-js/lib/Modeler';
+import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
 
 /**
  * 空格正则表达式
@@ -138,4 +146,28 @@ export function validateId(idValue: string) {
 
     return 'ID 必须符合 BPMN 规范';
   }
+}
+
+/**
+ * 获取 Modeling
+ * @param modeler
+ */
+export function getModeling(modeler: Modeler) {
+  return modeler.get<Modeling>(MODELER_MODELING);
+}
+
+/**
+ * 获取 Modele
+ * @param modeler
+ */
+export function getModdle(modeler: Modeler) {
+  return modeler.get<Moddle>(MODELER_MODDLE);
+}
+
+/**
+ * 获取 bpmnFactory
+ * @param modeler
+ */
+export function getBpmnFactory(modeler: Modeler) {
+  return modeler.get<BpmnFactory>(MODELER_BPMN_FACTORY);
 }

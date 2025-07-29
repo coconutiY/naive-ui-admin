@@ -15,6 +15,8 @@
   const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
   const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
   const BaseInfo = defineAsyncComponent(() => import('./components/BaseInfo.vue'));
+  const Documentations = defineAsyncComponent(() => import('./components/Documentations.vue'));
+  const Conditional = defineAsyncComponent(() => import('./components/Conditional.vue'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
@@ -26,7 +28,7 @@
   const title = ref<string | undefined>('');
   // const elementName = ref<string>('Process');
   // const collapseKey = ref<any[]>([])
-  // const renderComponents = shallowRef<Item[]>([])
+  const renderComponents = shallowRef<Component[]>([BaseInfo, Conditional, Documentations]);
 
   /**
    * 设置panel的展示和隐藏并且更新对应的Icon
@@ -72,7 +74,9 @@
       </template>
       <template #default>
         <n-collapse arrow-placement="right">
-          <component :is="BaseInfo" />
+          <template v-for="renderComponent in renderComponents" :key="renderComponent">
+            <component :is="renderComponent" v-if="active" />
+          </template>
         </n-collapse>
       </template>
     </n-card>

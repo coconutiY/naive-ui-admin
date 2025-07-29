@@ -56,7 +56,6 @@ import { ComponentInternalInstance, inject } from 'vue-demi';
   };
 
   function reloadGenerationData(active: Base) {
-    console.log(active, 'active');
     baseInfo.value.isProcess = active.type === 'bpmn:Process';
     baseInfo.value.elementId = active.id;
     baseInfo.value.elementName = getName(active) || '';

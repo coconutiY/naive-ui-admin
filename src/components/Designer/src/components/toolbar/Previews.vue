@@ -39,9 +39,10 @@
         return message.warning('模型加载失败，请刷新重试');
       }
       const { xml } = await modeler.saveXML({ format: true, preamble: true });
-      previewModel.value.visible = true;
-      previewModel.value.content = xml;
-      previewModel.value.language = 'xml';
+      console.log('xml:', xml);
+      // previewModel.value.visible = true;
+      // previewModel.value.content = xml;
+      // previewModel.value.language = 'xml';
     } catch (e) {
       message.error((e as Error).message || (e as string));
     }
@@ -80,11 +81,11 @@
       </n-button>
     </template>
   </n-popover>
-  <n-dialog :title="previewModel.title" v-if="previewModel.visible" width="60%">
+  <n-modal :title="previewModel.title" :show="previewModel.visible" width="60%">
     <div class="preview-model">
       <highlightjs :language="previewModel.language" :code="previewModel.content as string" />
     </div>
-  </n-dialog>
+  </n-modal>
 </template>
 
 <style scoped lang="scss">
