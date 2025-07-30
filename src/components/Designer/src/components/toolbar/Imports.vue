@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { inject, Ref, ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
 
@@ -12,7 +11,6 @@
   }
 
   function changeImportFile() {
-    console.log(importRef.value, 'changeImportFile');
     if (importRef.value && importRef.value.files) {
       const file = importRef.value.files[0];
       const reader = new FileReader();

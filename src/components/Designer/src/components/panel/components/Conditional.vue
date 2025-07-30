@@ -191,7 +191,7 @@
         >
           <n-input v-model:value="conditionData.expression" @change="setConditionExpression" />
         </n-form-item>
-        <template v-if="conditionData.conditionType && conditionData.conditionType === 'script'">
+        <template v-if="conditionData.conditionType === 'script'">
           <n-form-item
             key="scriptType"
             :label="$t('bpmn.panel.scriptType')"

@@ -8,8 +8,6 @@
   import GlobalConnect from 'diagram-js/lib/features/global-connect/GlobalConnect';
   import Modeler from 'bpmn-js/lib/Modeler';
   import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
-  import { getCurrentInstance, inject, reactive, Ref } from 'vue';
-  import { ComponentInternalInstance } from 'vue-demi';
   import { PaletteElement } from '/#/bpmn/designer/settings';
   import {
     MODELER,
@@ -25,7 +23,7 @@
 
   defineOptions({ name: 'Palette' });
 
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const { t } = useI18n();
 
   const modelerRef = inject<Ref<Modeler>>(MODELER);
 
@@ -34,105 +32,105 @@
       group: 'tools',
       type: 'bpmn:HandTool',
       className: 'bpmn-icon-hand-tool',
-      title: proxy?.$t('bpmn.palette.activateHandTool'),
+      title: t('bpmn.palette.activateHandTool'),
       visible: true,
     },
     {
       group: 'tools',
       type: 'bpmn:LassoTool',
       className: 'bpmn-icon-lasso-tool',
-      title: proxy?.$t('bpmn.palette.activateLassoTool'),
+      title: t('bpmn.palette.activateLassoTool'),
       visible: true,
     },
     {
       group: 'tools',
       type: 'bpmn:SpaceTool',
       className: 'bpmn-icon-space-tool',
-      title: proxy?.$t('bpmn.palette.activateSpaceTool'),
+      title: t('bpmn.palette.activateSpaceTool'),
       visible: true,
     },
     {
       group: 'tools',
       type: 'bpmn:GlobalConnectTool',
       className: 'bpmn-icon-connection-multi',
-      title: proxy?.$t('bpmn.palette.activateGlobalConnectTool'),
+      title: t('bpmn.palette.activateGlobalConnectTool'),
       visible: true,
     },
     {
       group: 'event',
       type: 'bpmn:StartEvent',
       className: 'bpmn-icon-start-event-none',
-      title: proxy?.$t('bpmn.palette.createStartEvent'),
+      title: t('bpmn.palette.createStartEvent'),
       visible: true,
     },
     {
       group: 'event',
       type: 'bpmn:IntermediateThrowEvent',
       className: 'bpmn-icon-intermediate-event-none',
-      title: proxy?.$t('bpmn.palette.createIntermediateThrowEvent'),
+      title: t('bpmn.palette.createIntermediateThrowEvent'),
       visible: true,
     },
     {
       group: 'event',
       type: 'bpmn:EndEvent',
       className: 'bpmn-icon-end-event-none',
-      title: proxy?.$t('bpmn.palette.createEndEvent'),
+      title: t('bpmn.palette.createEndEvent'),
       visible: true,
     },
     {
       group: 'gateway',
       type: 'bpmn:ExclusiveGateway',
       className: 'bpmn-icon-gateway-none',
-      title: proxy?.$t('bpmn.palette.createGateway'),
+      title: t('bpmn.palette.createGateway'),
       visible: true,
     },
     {
       group: 'activity',
       type: 'bpmn:Task',
       className: 'bpmn-icon-task',
-      title: proxy?.$t('bpmn.palette.createTask'),
+      title: t('bpmn.palette.createTask'),
       visible: true,
     },
     {
       group: 'data-object',
       type: 'bpmn:DataObjectReference',
       className: 'bpmn-icon-data-object',
-      title: proxy?.$t('bpmn.palette.createDataObjectReference'),
+      title: t('bpmn.palette.createDataObjectReference'),
       visible: true,
     },
     {
       group: 'data-store',
       type: 'bpmn:DataStoreReference',
       className: 'bpmn-icon-data-store',
-      title: proxy?.$t('bpmn.palette.createDataStoreReference'),
+      title: t('bpmn.palette.createDataStoreReference'),
       visible: true,
     },
     {
       group: 'activity',
       type: 'bpmn:SubprocessExpanded',
       className: 'bpmn-icon-subprocess-expanded',
-      title: proxy?.$t('bpmn.palette.createSubprocessExpanded'),
+      title: t('bpmn.palette.createSubprocessExpanded'),
       visible: true,
     },
     {
       group: 'collaboration',
       type: 'bpmn:Participant',
       className: 'bpmn-icon-participant',
-      title: proxy?.$t('bpmn.palette.createParticipant'),
+      title: t('bpmn.palette.createParticipant'),
       visible: true,
     },
     {
       group: 'artifact',
       type: 'bpmn:Group',
       className: 'bpmn-icon-group',
-      title: proxy?.$t('bpmn.palette.createGroup'),
+      title: t('bpmn.palette.createGroup'),
       visible: true,
     },
     {
       group: 'create',
       type: 'bpmn:Create',
       className: 'bpmn-icon-more',
-      title: proxy?.$t('bpmn.palette.createElement'),
+      title: t('bpmn.palette.createElement'),
       visible: true,
     },
   ]);
@@ -148,7 +146,7 @@
     const element = canvas.getRootElement();
     const position = { x: event.x + 20, y: event.y + 20 };
     popupMenu.open(element, 'bpmn-create', position, {
-      title: proxy?.$t('bpmn.palette.createElement'),
+      title: t('bpmn.palette.createElement'),
       width: 300,
       search: true,
     });

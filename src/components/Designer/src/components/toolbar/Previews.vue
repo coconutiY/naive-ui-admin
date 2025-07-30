@@ -2,8 +2,6 @@
   import BpmnModdle from 'bpmn-moddle';
   import 'highlight.js/lib/common';
   import hljsVuePlugin from '@highlightjs/vue-plugin';
-  import { getCurrentInstance, inject, Ref, ref, shallowRef } from 'vue';
-  import { ComponentInternalInstance } from 'vue-demi';
   import { useMessage } from 'naive-ui';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
@@ -21,10 +19,10 @@
 
   const modelerRef = inject<Ref<Modeler>>(MODELER);
 
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const { t } = useI18n();
 
   const previewModel = ref<PreviewModel>({
-    title: proxy?.$t('bpmn.toolbar.previewAs'),
+    title: t('bpmn.toolbar.previewAs'),
     visible: false,
     content: '',
     language: '',

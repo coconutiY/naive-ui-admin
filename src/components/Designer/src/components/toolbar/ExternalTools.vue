@@ -1,21 +1,18 @@
 <script setup lang="ts">
   import ToggleMode from 'bpmn-js-token-simulation/lib/features/toggle-mode/modeler/ToggleMode';
-  import AntDesignClusterOutlined from '~icons/ant-design/cluster-outlined';
-  import { computed, getCurrentInstance, inject, ref, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { ComponentInternalInstance } from 'vue-demi';
 
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const { t } = useI18n();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
 
   const eventsModel = ref({
-    title: proxy?.$t('bpmn.toolbar.bpmnShortcutKeys'),
+    title: t('bpmn.toolbar.bpmnShortcutKeys'),
     visible: false,
   });
 
   const shortcutKeysModel = ref({
-    title: proxy?.$t('bpmn.toolbar.bpmnShortcutKeys'),
+    title: t('bpmn.toolbar.bpmnShortcutKeys'),
     visible: false,
   });
 

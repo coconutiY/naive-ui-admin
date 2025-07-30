@@ -1,12 +1,10 @@
 <script setup name="Exports" lang="ts">
   import { downloadFile, setEncoded } from '@/components/Designer/src/utils/files';
-  import { ComponentInternalInstance } from 'vue-demi';
-  import { getCurrentInstance, inject, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import { useMessage } from 'naive-ui';
 
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const { t } = useI18n();
   const message = useMessage();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   /**
@@ -17,7 +15,7 @@
   async function downloadProcess(type: string, name = 'diagram') {
     const modelerInstance = modelerRef?.value;
     if (!modelerInstance) {
-      return message.warning(proxy?.$t('No modeler instance found') as string);
+      return message.warning(t('No modeler instance found') as string);
     }
     try {
       // 按需要类型创建文件并下载

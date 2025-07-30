@@ -44,7 +44,7 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
       compiler: 'vue3',
     }),
     AutoImport({
-      imports: ['vue', 'vue-router', '@vueuse/core', 'pinia'], //自动引入vue的ref、toRefs、onmounted等，无需在页面中再次引入
+      imports: ['vue', 'vue-router','vue-i18n' ,'@vueuse/core', 'pinia'], //自动引入vue的ref、toRefs、onmounted等，无需在页面中再次引入
       resolvers: [ NaiveUiResolver(), IconsResolver({ prefix: 'icon' })],
       dts: pathResolve('')+'/types/auto-imports.d.ts',
       vueTemplate: true,

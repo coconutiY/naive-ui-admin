@@ -17,6 +17,12 @@
   const BaseInfo = defineAsyncComponent(() => import('./components/BaseInfo.vue'));
   const Documentations = defineAsyncComponent(() => import('./components/Documentations.vue'));
   const Conditional = defineAsyncComponent(() => import('./components/Conditional.vue'));
+  const AsyncContinuations = defineAsyncComponent(
+    () => import('./components/AsyncContinuations.vue')
+  );
+  const ExtensionProperties = defineAsyncComponent(
+    () => import('./components/ExtensionProperties.vue')
+  );
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
@@ -28,7 +34,13 @@
   const title = ref<string | undefined>('');
   // const elementName = ref<string>('Process');
   // const collapseKey = ref<any[]>([])
-  const renderComponents = shallowRef<Component[]>([BaseInfo, Conditional, Documentations]);
+  const renderComponents = shallowRef<Component[]>([
+    BaseInfo,
+    Conditional,
+    ExtensionProperties,
+    AsyncContinuations,
+    Documentations,
+  ]);
 
   /**
    * 设置panel的展示和隐藏并且更新对应的Icon
@@ -39,9 +51,9 @@
   }
 
   function reloadData() {
-    if (active?.value && active?.value.type.split(':')[1] !== activeType.value) {
+    if (active!.value && active!.value.type.split(':')[1] !== activeType.value) {
       const translate = modelerRef!.value.get<Translate>(MODELER_TRANSLATE);
-      activeType.value = translate(active.value.type.split(':')[1]);
+      activeType.value = translate(active!.value.type.split(':')[1]);
       const iconKey = bpmnIconKey(active!.value);
       // 设置panel的标题
       title.value = translate(activeType.value);

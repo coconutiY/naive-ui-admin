@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ComponentInternalInstance, inject } from 'vue-demi';
   import { propTypes } from '@/utils/propTypes';
   import { FormRules, useMessage } from 'naive-ui';
   import {
@@ -26,7 +25,7 @@ import { ComponentInternalInstance, inject } from 'vue-demi';
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const { t } = useI18n();
   const message = useMessage();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
@@ -44,12 +43,12 @@ import { ComponentInternalInstance, inject } from 'vue-demi';
 
   const rules: FormRules = {
     elementId: [
-      { required: true, message: proxy?.$t('bpmn.panel.rules.ebiElementIdRule'), trigger: 'blur' },
+      { required: true, message: t('bpmn.panel.rules.ebiElementIdRule'), trigger: 'blur' },
     ],
     elementName: [
       {
         required: true,
-        message: proxy?.$t('bpmn.panel.rules.ebiElementNameRule'),
+        message: t('bpmn.panel.rules.ebiElementNameRule'),
         trigger: 'blur',
       },
     ],
