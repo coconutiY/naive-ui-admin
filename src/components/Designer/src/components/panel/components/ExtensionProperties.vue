@@ -12,7 +12,8 @@
     removeExtensionProperty,
   } from '@/components/Designer/src/utils/extensionProperties';
   import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
-
+  import type { DataTableColumns } from 'naive-ui';
+  import { NButton } from 'naive-ui';
   defineOptions({ name: 'ExtensionProperties' });
   defineProps({
     labelWidth: propTypes.number.def(80),
@@ -40,6 +41,41 @@
       trigger: ['blur', 'change'],
     },
   });
+
+  const columns: DataTableColumns<BpmnExtensionProperty> = [
+    {
+      title: t('bpmn.panel.index'),
+      key: 'index',
+      titleAlign: 'center',
+    },
+    {
+      title: t('bpmn.panel.propertyName'),
+      key: 'name',
+      titleAlign: 'center',
+    },
+    {
+      title: t('bpmn.panel.propertyName'),
+      key: 'value',
+      titleAlign: 'center',
+    },
+    {
+      title: t('bpmn.panel.operations'),
+      key: 'actions',
+      titleAlign: 'center',
+      render(rowData: BpmnExtensionProperty, rowIndex: number) {
+        return [
+          h(NButton, {
+            type: 'primary',
+            onClick: () => editProperty(rowIndex, rowData),
+          }),
+          h(NButton, {
+            type: 'error',
+            onClick: () => removeProperty(rowIndex),
+          }),
+        ];
+      },
+    },
+  ];
   const modelVisible = ref(false);
 
   async function reloadExtensionProperties() {
@@ -55,7 +91,7 @@
     activerPropertyTitle.value = t('bpmn.panel.editExtensionProperties');
     modelVisible.value = true;
     await nextTick();
-    propertyRef.value.resetFields();
+    propertyRef.value;
     newProperty.value = { name: poperty.name, value: poperty.value };
   }
 
@@ -86,7 +122,6 @@
     activerPropertyTitle.value = t('bpmn.panel.addExtensionProperties');
     modelVisible.value = true;
     await nextTick();
-    propertyRef.value.resetFields();
   }
   onMounted(async () => {
     await reloadExtensionProperties();
@@ -102,18 +137,25 @@
     </template>
     <template #default>
       <div class="element-extension-properties">
-        <n-data-table size="small" :data="extensions" :fit="true" :max-height="400" />
-        <n-button type="primary" class="inline-large-button" @click="openPropertyModel">
+        <n-data-table
+          size="small"
+          :columns="columns"
+          :data="extensions"
+          :fit="true"
+          :max-height="400"
+        />
+        <n-button type="primary" secondary class="inline-large-button" @click="openPropertyModel">
           <template #icon>
             <n-icon>
               <icon-lucide-plus />
             </n-icon>
           </template>
+          {{ $t('bpmn.panel.addExtensionProperties') }}
         </n-button>
       </div>
     </template>
   </n-collapse-item>
-  <n-modal v-model="modelVisible" :title="activerPropertyTitle" width="500">
+  <n-modal v-model:show="modelVisible" :title="activerPropertyTitle" width="500">
     <n-form ref="propertyRef" :model="newProperty" :rules="rules" :label-width="labelWidth">
       <n-form-item prop="name" :label="$t('bpmn.panel.propertyName')">
         <n-input v-model:value="newProperty.name" @keydown.enter.prevent />
