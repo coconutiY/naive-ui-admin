@@ -12,18 +12,20 @@
     removeExtensionProperty,
   } from '@/components/Designer/src/utils/extensionProperties';
   import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
-  import type { DataTableColumns } from 'naive-ui';
+  import type { DataTableColumns, FormInst } from 'naive-ui';
   import { NButton } from 'naive-ui';
   defineOptions({ name: 'ExtensionProperties' });
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
+  const lucideSquarePen = defineAsyncComponent(() => import('~icons/lucide/square-pen'));
+  const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
   const { t } = useI18n();
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
 
-  const propertyRef = ref();
+  const propertyRef = ref<FormInst | null>(null);
   const activerPropertyIndex = ref(-1);
   const activerPropertyTitle = ref(t('bpmn.panel.addExtensionProperties'));
   const extensions = ref<BpmnExtensionProperty[]>([]);
@@ -33,53 +35,62 @@
     name: {
       required: true,
       message: t('bpmn.panel.rules.epNameRule'),
-      trigger: ['blur', 'change'],
+      trigger: ['blur', 'change', 'input'],
     },
     value: {
       required: true,
       message: t('bpmn.panel.rules.epValueRule'),
-      trigger: ['blur', 'change'],
+      trigger: ['blur', 'change', 'input'],
     },
   });
-
   const columns: DataTableColumns<BpmnExtensionProperty> = [
-    {
-      title: t('bpmn.panel.index'),
-      key: 'index',
-      titleAlign: 'center',
-    },
     {
       title: t('bpmn.panel.propertyName'),
       key: 'name',
-      titleAlign: 'center',
+      align: 'center',
     },
     {
       title: t('bpmn.panel.propertyName'),
       key: 'value',
-      titleAlign: 'center',
+      align: 'center',
     },
     {
       title: t('bpmn.panel.operations'),
       key: 'actions',
-      titleAlign: 'center',
+      align: 'center',
       render(rowData: BpmnExtensionProperty, rowIndex: number) {
         return [
-          h(NButton, {
-            type: 'primary',
-            onClick: () => editProperty(rowIndex, rowData),
-          }),
-          h(NButton, {
-            type: 'error',
-            onClick: () => removeProperty(rowIndex),
-          }),
+          h(
+            NButton,
+            {
+              type: 'primary',
+              circle: true,
+              tertiary: true,
+              onClick: () => editProperty(rowIndex, rowData),
+            },
+            {
+              icon: () => h(lucideSquarePen),
+            }
+          ),
+          h(
+            NButton,
+            {
+              type: 'error',
+              circle: true,
+              tertiary: true,
+              onClick: () => removeProperty(rowIndex),
+            },
+            {
+              icon: () => h(lucideMinus),
+            }
+          ),
         ];
       },
     },
   ];
   const modelVisible = ref(false);
-
   async function reloadExtensionProperties() {
-    newProperty.value = { name: '', value: '' };
+    resetForm();
     propertiesRaw.value = markRaw(getExtensionProperties(modelerRef!.value, active!.value));
     extensions.value = JSON.parse(JSON.stringify(propertiesRaw.value));
     await nextTick();
@@ -90,9 +101,8 @@
     activerPropertyIndex.value = index;
     activerPropertyTitle.value = t('bpmn.panel.editExtensionProperties');
     modelVisible.value = true;
-    await nextTick();
     propertyRef.value;
-    newProperty.value = { name: poperty.name, value: poperty.value };
+    Object.assign(modelVisible.value, poperty);
   }
 
   function removeProperty(propIndex: number) {
@@ -101,8 +111,9 @@
   }
 
   async function saveProperty() {
-    propertyRef.value?.validate(async (valid: boolean) => {
-      if (valid) {
+    propertyRef.value?.validate((errors) => {
+      console.log(errors, 'errors');
+      if (!errors) {
         if (activerPropertyIndex.value === -1) {
           addExtensionProperty(modelerRef!.value, active!.value, toRaw(newProperty.value));
         } else {
@@ -113,19 +124,32 @@
             activerPropertyIndex.value
           );
         }
-        await reloadExtensionProperties();
+        reloadExtensionProperties();
       }
     });
   }
   async function openPropertyModel() {
     activerPropertyIndex.value = -1;
     activerPropertyTitle.value = t('bpmn.panel.addExtensionProperties');
+    resetForm();
     modelVisible.value = true;
-    await nextTick();
   }
-  onMounted(async () => {
-    await reloadExtensionProperties();
-  });
+  function resetForm() {
+    propertyRef.value?.restoreValidation();
+    Object.assign(newProperty.value, {
+      name: '',
+      value: '',
+    });
+  }
+
+  watch(
+    () => active?.value,
+    async (value) => {
+      if (value) {
+        await reloadExtensionProperties();
+      }
+    }
+  );
 </script>
 
 <template>
@@ -165,15 +189,17 @@
       style="width: 500px"
     >
       <n-form ref="propertyRef" :model="newProperty" :rules="rules" :label-width="labelWidth">
-        <n-form-item prop="name" :label="$t('bpmn.panel.propertyName')">
+        <n-form-item path="name" :label="$t('bpmn.panel.propertyName')" required>
           <n-input v-model:value="newProperty.name" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item prop="value" :label="$t('bpmn.panel.propertyValue')">
+        <n-form-item path="value" :label="$t('bpmn.panel.propertyValue')" required>
           <n-input v-model:value="newProperty.value" @keydown.enter.prevent />
         </n-form-item>
       </n-form>
       <template #footer>
-        <n-button type="primary" @click="saveProperty">{{ $t('bpmn.panel.confirm') }}</n-button>
+        <n-button type="primary" size="medium" @click="saveProperty">{{
+          $t('bpmn.panel.confirm')
+        }}</n-button>
       </template>
     </n-card>
   </n-modal>

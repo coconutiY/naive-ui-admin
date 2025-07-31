@@ -184,6 +184,6 @@ export default {
     fieldName: '字段名称不能为空',
     fieldType: '字段类型不能为空',
     fieldString: '字段值不能为空',
-    fieldExpression: '表达式不能为空'
-  }
+    fieldExpression: '表达式不能为空',
+  },
 };

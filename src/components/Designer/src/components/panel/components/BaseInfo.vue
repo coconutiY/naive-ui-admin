@@ -97,12 +97,12 @@
     </template>
     <template #default>
       <n-form :label-width="labelWidth" :rules="rules" :model="baseInfo">
-        <n-form-item :label="$t('bpmn.panel.id')" prop="elementId" required>
+        <n-form-item :label="$t('bpmn.panel.id')" path="elementId" required>
           <n-input v-model:value="baseInfo.elementId" maxlength="32" @change="updateElementId" />
         </n-form-item>
         <n-form-item
           :label="baseInfo.isProcess ? $t('bpmn.panel.processName') : $t('bpmn.panel.nodeName')"
-          prop="elementName"
+          path="elementName"
           required
         >
           <n-input
@@ -112,7 +112,7 @@
           />
         </n-form-item>
         <template v-if="baseInfo.isProcess">
-          <n-form-item key="version" :label="$t('bpmn.panel.version')" prop="elementVersion">
+          <n-form-item key="version" :label="$t('bpmn.panel.version')" path="elementVersion">
             <n-input
               v-model:value="baseInfo.elementVersion"
               maxlength="20"
@@ -122,7 +122,7 @@
           <n-form-item
             key="executable"
             :label="$t('bpmn.panel.executable')"
-            prop="elementExecutable"
+            path="elementExecutable"
           >
             <n-switch
               v-model:value="baseInfo.elementExecutable"
