@@ -155,18 +155,27 @@
       </div>
     </template>
   </n-collapse-item>
-  <n-modal v-model:show="modelVisible" :title="activerPropertyTitle" width="500">
-    <n-form ref="propertyRef" :model="newProperty" :rules="rules" :label-width="labelWidth">
-      <n-form-item prop="name" :label="$t('bpmn.panel.propertyName')">
-        <n-input v-model:value="newProperty.name" @keydown.enter.prevent />
-      </n-form-item>
-      <n-form-item prop="value" :label="$t('bpmn.panel.propertyValue')">
-        <n-input v-model:value="newProperty.value" @keydown.enter.prevent />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-button type="primary" @click="saveProperty">{{ $t('bpmn.panel.confirm') }}</n-button>
-    </template>
+  <n-modal v-model:show="modelVisible">
+    <n-card
+      :bordered="false"
+      size="small"
+      :title="activerPropertyTitle"
+      closable
+      @close="() => (modelVisible = false)"
+      style="width: 500px"
+    >
+      <n-form ref="propertyRef" :model="newProperty" :rules="rules" :label-width="labelWidth">
+        <n-form-item prop="name" :label="$t('bpmn.panel.propertyName')">
+          <n-input v-model:value="newProperty.name" @keydown.enter.prevent />
+        </n-form-item>
+        <n-form-item prop="value" :label="$t('bpmn.panel.propertyValue')">
+          <n-input v-model:value="newProperty.value" @keydown.enter.prevent />
+        </n-form-item>
+      </n-form>
+      <template #footer>
+        <n-button type="primary" @click="saveProperty">{{ $t('bpmn.panel.confirm') }}</n-button>
+      </template>
+    </n-card>
   </n-modal>
 </template>
 
