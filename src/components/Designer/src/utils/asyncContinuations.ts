@@ -121,3 +121,12 @@ function isAsyncAfter(bo: ModdleElement, prefix: string): boolean {
 function isExclusive(bo: ModdleElement, prefix: string): boolean {
   return !!bo.get(`${prefix}:exclusive`);
 }
+
+/**
+ * 是否异步
+ * @param bo
+ * @param prefix
+ */
+export function isAsync(bo: ModdleElement, prefix: string): boolean {
+  return isAsyncAfter(bo, prefix) || isAsyncBefore(bo, prefix);
+}

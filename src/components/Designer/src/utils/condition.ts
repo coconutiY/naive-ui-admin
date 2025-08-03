@@ -29,7 +29,7 @@ const defaultConditionTypeOptions: Record<string, string>[] = [
  * 检查条件父节点是否符合条件
  * @param element
  */
-export function isConditionalSource(element: Base) {
+export function isConditionalSource(element: Connection | Base | Element | undefined) {
   return isAny(element, CONDITIONAL_SOURCES);
 }
 
@@ -38,7 +38,7 @@ export function isConditionalSource(element: Base) {
  * 检查元素是否为条件定义相关
  * @param element
  */
-export function isConditionEventDefinition(element: Base): boolean {
+export function isConditionEventDefinition(element: Connection): boolean {
   return (
     is(element, 'bpmn:Event') && !!getEventDefinition(element, 'bpmn:ConditionalEventDefinition')
   );
@@ -48,7 +48,7 @@ export function isConditionEventDefinition(element: Base): boolean {
  * 是否启动事件
  * @param element
  */
-export function isExtendStartEvent(element: Base): boolean {
+export function isExtendStartEvent(element: Connection): boolean {
   return is(element, 'bpmn:StartEvent');
 }
 
@@ -56,10 +56,9 @@ export function isExtendStartEvent(element: Base): boolean {
  * 是否连接线
  * @param element
  */
-export function isCanbeConditional(element: Base): boolean {
-  // return (is(element, 'bpmn:SequenceFlow') && isConditionalSource((element as ConnectionLike)?.source)) || isConditionEventDefinition(element);
+export function isCanbeConditional(element: Connection): boolean {
   return (
-    (is(element, 'bpmn:SequenceFlow') && isConditionalSource(element.source)) ||
+    (is(element, 'bpmn:SequenceFlow') && isConditionalSource(element.source as Base)) ||
     isConditionEventDefinition(element)
   );
 }
@@ -69,7 +68,7 @@ export function isCanbeConditional(element: Base): boolean {
  * 获取条件变量的值
  * @param element
  */
-export function getVariableNameValue(element: Base) {
+export function getVariableNameValue(element: Connection) {
   if (getConditionalEventDefinition(element)) {
     return getConditionalEventDefinition(element).get('variableName');
   }
@@ -81,7 +80,11 @@ export function getVariableNameValue(element: Base) {
  * @param element
  * @param value
  */
-export function setVariableNameValue(modeler: Modeler, element: Base, value: string | undefined) {
+export function setVariableNameValue(
+  modeler: Modeler,
+  element: Connection,
+  value: string | undefined
+) {
   const modeling = getModeling(modeler);
   const eventDefinition = getConditionalEventDefinition(element);
   if (eventDefinition && modeling) {
@@ -94,7 +97,7 @@ export function setVariableNameValue(modeler: Modeler, element: Base, value: str
  * 获取条件事件的值
  * @param element
  */
-export function getVariableEventsValue(element: Base) {
+export function getVariableEventsValue(element: Connection) {
   if (getConditionalEventDefinition(element)) {
     return getConditionalEventDefinition(element).get('variableEvents');
   }
@@ -106,7 +109,11 @@ export function getVariableEventsValue(element: Base) {
  * @param element
  * @param value
  */
-export function setVariableEventsValue(modeler: Modeler, element: Base, value: string | undefined) {
+export function setVariableEventsValue(
+  modeler: Modeler,
+  element: Connection,
+  value: string | undefined
+) {
   const modeling = getModeling(modeler);
   const eventDefinition = getConditionalEventDefinition(element);
   if (eventDefinition && modeling) {
@@ -119,7 +126,7 @@ export function setVariableEventsValue(modeler: Modeler, element: Base, value: s
  * 获取元素条件的值
  * @param element
  */
-export function getConditionTypeValue(element: Base): string {
+export function getConditionTypeValue(element: Connection): string {
   const conditionExpression = getConditionExpression(element);
   if (conditionExpression) {
     return conditionExpression.get('language') === undefined ? 'expression' : 'script';
@@ -136,7 +143,7 @@ export function getConditionTypeValue(element: Base): string {
  * @param element
  * @param value
  */
-export function setConditionTypeValue(modeler: Modeler, element: Base | any, value: string) {
+export function setConditionTypeValue(modeler: Modeler, element: Connection, value: string) {
   if (!value || value === 'none' || value === 'default') {
     updateCondition(modeler, element);
     return setDefaultCondition(modeler, element as Connection, value === 'default');
@@ -162,7 +169,7 @@ export function setConditionTypeValue(modeler: Modeler, element: Base | any, val
  * 获取条件表达式的值
  * @param element
  */
-export function getConditionExpressionValue(element: Base): string | undefined {
+export function getConditionExpressionValue(element: Connection): string | undefined {
   const conditionExpression = getConditionExpression(element);
   if (conditionExpression) {
     return conditionExpression.get('body');
@@ -177,7 +184,7 @@ export function getConditionExpressionValue(element: Base): string | undefined {
  */
 export function setConditionExpressionValue(
   modeler: Modeler,
-  element: Base,
+  element: Connection,
   body: string | undefined
 ) {
   const parent = is(element, 'bpmn:SequenceFlow')
@@ -198,7 +205,10 @@ export function setConditionExpressionValue(
  * @param modeler
  * @param element
  */
-export function getConditionScriptTypeValue(modeler: Modeler, element: Base): string | undefined {
+export function getConditionScriptTypeValue(
+  modeler: Modeler,
+  element: Connection
+): string | undefined {
   const prefix = getProcessPrefix(modeler);
   const conditionExpression = getConditionExpression(element)!;
   console.log(conditionExpression);
@@ -215,7 +225,7 @@ export function getConditionScriptTypeValue(modeler: Modeler, element: Base): st
  */
 export function setConditionScriptTypeValue(
   modeler: Modeler,
-  element: Base,
+  element: Connection,
   value: string | undefined
 ) {
   const prefix = getProcessPrefix(modeler);
@@ -238,7 +248,7 @@ export function setConditionScriptTypeValue(
  * 获取脚本语言类型的值
  * @param element
  */
-export function getConditionScriptLanguageValue(element: Base): string | undefined {
+export function getConditionScriptLanguageValue(element: Connection): string | undefined {
   return getConditionExpression(element)?.get('language');
 }
 
@@ -262,9 +272,9 @@ export function setConditionScriptLanguageValue(
  * 获取元素脚本的值
  * @param element
  */
-export const getConditionScriptBodyValue = (element: Base): string | undefined => {
+export function getConditionScriptBodyValue(element: Connection): string | undefined {
   return getConditionExpression(element)?.get('body');
-};
+}
 
 /**
  * 设置元素脚本的值
@@ -274,7 +284,7 @@ export const getConditionScriptBodyValue = (element: Base): string | undefined =
  */
 export function setConditionScriptBodyValue(
   modeler: Modeler,
-  element: Base,
+  element: Connection,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -289,7 +299,7 @@ export function setConditionScriptBodyValue(
  */
 export function getConditionScriptResourceValue(
   modeler: Modeler,
-  element: Base
+  element: Connection
 ): string | undefined {
   const prefix = getProcessPrefix(modeler);
   return getConditionExpression(element)?.get(`${prefix}:resource`);
@@ -318,7 +328,7 @@ export function setConditionScriptResourceValue(
  * 获取事件的条件定义选项
  * @param element
  */
-export function getConditionTypeOptions(element: Base): Record<string, string>[] {
+export function getConditionTypeOptions(element: Connection): Record<string, string>[] {
   if (is(element, 'bpmn:SequenceFlow')) {
     return defaultConditionTypeOptions;
   }
@@ -357,7 +367,11 @@ function getConditionExpression(element: Base | ModdleElement): ModdleElement | 
  * @param element
  * @param condition
  */
-function updateCondition(modeler: Modeler, element: Base, condition?: string | ModdleElement) {
+function updateCondition(
+  modeler: Modeler,
+  element: Connection,
+  condition?: string | ModdleElement
+) {
   const modeling = getModeling(modeler);
   if (is(element, 'bpmn:SequenceFlow')) {
     modeling.updateProperties(element, { conditionExpression: condition });
@@ -376,5 +390,7 @@ function updateCondition(modeler: Modeler, element: Base, condition?: string | M
  */
 function setDefaultCondition(modeler: Modeler, element: Connection, isDefault: boolean) {
   const modeling = getModeling(modeler);
+  console.log('source', element.source);
+  console.log('default', element);
   modeling.updateProperties(element.source, { default: isDefault ? element : undefined });
 }

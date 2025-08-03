@@ -293,12 +293,12 @@ export function removeExtensionElements(
  * @param properties 元素的属性值
  * @param parent 元素的父元素
  */
-export const createModdleElement = (
+export function createModdleElement(
   modeller: Modeler,
   elementType: string,
   properties: Record<string, any>,
   parent?: Element | ModdleElement
-): ModdleElement => {
+): ModdleElement{
   const moddle = getModdle(modeller);
   const element = moddle.create(elementType, properties);
   parent && (element.$parent = parent);
@@ -309,7 +309,7 @@ export const createModdleElement = (
  * 获取监听器容器
  * @param element
  */
-export const getListenersContainer = (element: Base): ModdleElement => {
+export function getListenersContainer(element: Base): ModdleElement{
   const businessObject = getBusinessObject(element);
   return businessObject?.get('processRef') || businessObject;
 };

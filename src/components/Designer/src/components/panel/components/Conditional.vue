@@ -2,7 +2,6 @@
   import { propTypes } from '@/utils/propTypes';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { Base } from 'diagram-js/lib/model';
   import {
     getConditionExpressionValue,
     getConditionScriptBodyValue,
@@ -26,13 +25,14 @@
   } from '@/components/Designer/src/utils/condition';
   import { ConditionalForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { scriptTypeOptions } from '@/components/Designer/src/config/selectOptions';
+  import { Connection } from 'diagram-js/lib/model/Types';
 
   defineOptions({ name: 'Conditional' });
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<Connection>>(ACTIVE_ELEMENT);
 
   // 变量配置部分
   const varVisible = ref(false);
@@ -45,7 +45,7 @@
   /**
    * 获取元素变量
    */
-  function getElementVariables(element: Base) {
+  function getElementVariables(element: Connection) {
     varVisible.value = isConditionEventDefinition(element);
     variableName.value = getVariableNameValue(element);
     if (varVisible.value) {
@@ -57,7 +57,7 @@
   /**
    * 获取元素条件类型
    */
-  function getElementConditionType(element: Base) {
+  function getElementConditionType(element: Connection) {
     conditionData.value.conditionType = getConditionTypeValue(element);
     conditionData.value.conditionType === 'expression' && getConditionExpression(element);
     conditionData.value.conditionType === 'script' && getConditionScript(element);
@@ -66,7 +66,7 @@
   /**
    * 获取元素条件脚本
    */
-  function getConditionScript(element: Base) {
+  function getConditionScript(element: Connection) {
     conditionData.value.language = getConditionScriptLanguageValue(element);
     conditionData.value.scriptType = getConditionScriptTypeValue(modelerRef!.value, element);
     conditionData.value.body = getConditionScriptBodyValue(element);
@@ -76,7 +76,7 @@
   /**
    * 获取元素条件表达式
    */
-  function getConditionExpression(element: Base) {
+  function getConditionExpression(element: Connection) {
     conditionData.value.expression = getConditionExpressionValue(element);
   }
 
