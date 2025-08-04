@@ -50,7 +50,7 @@
       align: 'center',
     },
     {
-      title: t('bpmn.panel.propertyName'),
+      title: t('bpmn.panel.propertyValue'),
       key: 'value',
       align: 'center',
     },
