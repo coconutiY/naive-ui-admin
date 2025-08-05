@@ -69,3 +69,9 @@ export const loopCardinalityOptions = ref([
   { label: t('bpmn.panel.greaterThanOrEqual'), value: '>=' },
   { label: t('bpmn.panel.greaterThan'), value: '>' },
 ]);
+
+//全局事件范围选项
+export const scopeOptions = [
+  { label: t('bpmn.panel.processInstance'), value: 'processInstance' },
+  { label: t('bpmn.panel.global'), value: 'global' },
+];

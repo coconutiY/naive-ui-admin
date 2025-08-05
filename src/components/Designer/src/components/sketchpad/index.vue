@@ -35,6 +35,7 @@
       modelerRef.value = markRaw(modeler);
       initListening(modeler);
       await createNewDiagram(modeler);
+      console.log(modeler.getDefinitions(), 'modele.getDefinitions');
     } catch (error) {
       console.error(error);
     }

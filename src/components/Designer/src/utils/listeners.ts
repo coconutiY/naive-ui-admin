@@ -93,18 +93,9 @@ function updateListenerProperty(
     errorCode,
   } = props;
 
-  const updateProperty = (key: string, value: string) =>
+  function updateProperty(key: string, value: string) {
     modeling?.updateModdleProperties(element, listener, { [`${prefix}:${key}`]: value });
-  console.log(
-    event,
-    listenerClass,
-    delegateExpression,
-    entityType,
-    throwEvent,
-    signalName,
-    messageName,
-    errorCode
-  );
+  }
   event && updateProperty('event', event);
   listenerClass && updateProperty('class', listenerClass);
   delegateExpression && updateProperty('delegateExpression', delegateExpression);
@@ -132,22 +123,18 @@ export function getListenersContainer(element: Base): ModdleElement {
  * @param suffix 对应的消息类型
  */
 export function getGlobalEvents(
-  element: Base | undefined,
+  modeler: Modeler,
   suffix: 'Signal' | 'Escalation' | 'Error' | 'Message'
 ): ModdleElement[] {
-  if (!element) {
-    return [];
-  }
-  const businessObject = getBusinessObject(element);
-  const root = businessObject && businessObject.$parent;
-  return getGlobalEventsList(root, suffix);
+  const definitions = modeler.getDefinitions();
+  return getGlobalEventsList(definitions, suffix);
 }
 
 function getGlobalEventsList(
-  rootObject: ModdleElement,
+  definitions: ModdleElement,
   suffix: 'Signal' | 'Escalation' | 'Error' | 'Message'
 ): ModdleElement[] {
-  const events = filterElementsByType(rootObject.rootElements, `bpmn:${suffix}`);
+  const events = filterElementsByType(definitions.rootElements, `bpmn:${suffix}`);
   if (!events) {
     return [];
   }
@@ -171,15 +158,12 @@ export function addGlobalEvent(
     return;
   }
   const modeling = getModeling(modeler);
-  const businessObject = getBusinessObject(element);
-  const root = businessObject && businessObject.$parent;
-  if (root) {
-    const eventProp = getEventProps(eventForm, suffix);
-    const newEvent = createModdleElement(modeler, `bpmn:${suffix}`, { ...eventProp }, root);
-    modeling.updateModdleProperties(element, root, {
-      rootElements: [...root.get('rootElements'), newEvent],
-    });
-  }
+  const root = modeler.getDefinitions();
+  const eventProp = getEventProps(eventForm, suffix);
+  const newEvent = createModdleElement(modeler, `bpmn:${suffix}`, { ...eventProp }, root);
+  modeling.updateModdleProperties(element, root, {
+    rootElements: [...root.get('rootElements'), newEvent],
+  });
 }
 
 /**
@@ -198,9 +182,9 @@ export function removeGlobalEvent(modeler: Modeler, element: Base, props: Moddle
 
 /**
  * 编辑事件
- * @param modeler
- * @param element
- * @param props
+ * @param modeler 画布对象
+ * @param element 需要修改的事件
+ * @param props  事件对象
  */
 export function editGlobalEvent(
   modeler: Modeler,

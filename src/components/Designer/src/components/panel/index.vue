@@ -17,6 +17,7 @@
   const BaseInfo = defineAsyncComponent(() => import('./components/BaseInfo.vue'));
   const Documentations = defineAsyncComponent(() => import('./components/Documentations.vue'));
   const Conditional = defineAsyncComponent(() => import('./components/Conditional.vue'));
+  const GlobalEvents = defineAsyncComponent(() => import('./components/GlobalEvents.vue'));
   const JobExecution = defineAsyncComponent(() => import('./components/JobExecution.vue'));
   const AsyncContinuations = defineAsyncComponent(
     () => import('./components/AsyncContinuations.vue')
@@ -38,6 +39,7 @@
   const renderComponents = shallowRef<Component[]>([
     BaseInfo,
     Conditional,
+    GlobalEvents,
     JobExecution,
     ExtensionProperties,
     AsyncContinuations,

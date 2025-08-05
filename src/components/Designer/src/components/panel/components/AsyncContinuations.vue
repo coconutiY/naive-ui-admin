@@ -64,16 +64,16 @@
     </template>
     <template #default>
       <div class="async-continuations">
-        <n-form-item :label="$t('bpmn.panel.asyncBefore')" :labn-width="labelWidth">
+        <n-form-item :label="$t('bpmn.panel.asyncBefore')" :label-width="labelWidth">
           <n-switch v-model:value="acBefore" :on-update:value="updateElementACBefore" />
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.asyncAfter')" :labn-width="labelWidth">
+        <n-form-item :label="$t('bpmn.panel.asyncAfter')" :label-width="labelWidth">
           <n-switch v-model:value="acAfter" :on-update:value="updateElementACAfter" />
         </n-form-item>
         <n-form-item
           v-if="showExclusive"
           :label="$t('bpmn.panel.asyncExclusive')"
-          :labn-width="labelWidth"
+          :label-width="labelWidth"
         >
           <n-switch v-model:value="acExclusive" :on-update:value="updateElementACExclusive" />
         </n-form-item>

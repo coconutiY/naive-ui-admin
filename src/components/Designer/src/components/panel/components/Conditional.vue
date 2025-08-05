@@ -159,7 +159,7 @@
           <n-form-item
             key="variableName"
             :label="$t('bpmn.panel.variableName')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-input v-model:value="variableName" maxlength="32" @change="setElementVariableName" />
           </n-form-item>
@@ -167,7 +167,7 @@
             v-if="varEventVisible"
             key="variableEvent"
             :label="$t('bpmn.panel.variableEvents')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-input v-model:value="variableEvents" @change="setElementVariableEvents" />
           </n-form-item>
@@ -175,7 +175,7 @@
         <n-form-item
           key="condition"
           :label="$t('bpmn.panel.conditionType')"
-          :labn-width="labelWidth"
+          :label-width="labelWidth"
         >
           <n-select
             v-model:value="conditionData.conditionType"
@@ -187,7 +187,7 @@
           v-if="conditionData.conditionType && conditionData.conditionType === 'expression'"
           key="expression"
           :label="$t('bpmn.panel.conditionExpression')"
-          :labn-width="labelWidth"
+          :label-width="labelWidth"
         >
           <n-input v-model:value="conditionData.expression" @change="setConditionExpression" />
         </n-form-item>
@@ -195,7 +195,7 @@
           <n-form-item
             key="scriptType"
             :label="$t('bpmn.panel.scriptType')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-select
               v-model:value="conditionData.scriptType"
@@ -206,7 +206,7 @@
           <n-form-item
             key="scriptLanguage"
             :label="$t('bpmn.panel.scriptLanguage')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-input v-model:value="conditionData.language" @change="setConditionScriptLanguage" />
           </n-form-item>
@@ -214,7 +214,7 @@
             v-show="conditionData.scriptType === 'inline'"
             key="scriptBody"
             :label="$t('bpmn.panel.scriptBody')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-input
               v-model:value="conditionData.body"
@@ -226,7 +226,7 @@
             v-show="conditionData.scriptType === 'external'"
             key="scriptResource"
             :label="$t('bpmn.panel.scriptResource')"
-            :labn-width="labelWidth"
+            :label-width="labelWidth"
           >
             <n-input v-model:value="conditionData.resource" @change="setConditionScriptResource" />
           </n-form-item>

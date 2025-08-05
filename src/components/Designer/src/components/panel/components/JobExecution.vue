@@ -60,14 +60,14 @@
         <n-form-item
           v-if="tpVisible"
           :label="$t('bpmn.panel.taskPriority')"
-          :labn-width="labelWidth"
+          :label-width="labelWidth"
         >
           <n-input v-model="taskPriority" maxlength="32" @change="setExternalTaskPriority" />
         </n-form-item>
         <n-form-item
           v-if="rtVisible"
           :label="$t('bpmn.panel.retryTimeCycle')"
-          :labn-width="labelWidth"
+          :label-width="labelWidth"
         >
           <n-input v-model="retryTimeCycle" maxlength="32" @change="setRetryTimeCycle" />
         </n-form-item>
