@@ -18,6 +18,9 @@
   const Documentations = defineAsyncComponent(() => import('./components/Documentations.vue'));
   const Conditional = defineAsyncComponent(() => import('./components/Conditional.vue'));
   const GlobalEvents = defineAsyncComponent(() => import('./components/GlobalEvents.vue'));
+  const ExecutionListeners = defineAsyncComponent(
+    () => import('./components/ExecutionListeners.vue')
+  );
   const JobExecution = defineAsyncComponent(() => import('./components/JobExecution.vue'));
   const AsyncContinuations = defineAsyncComponent(
     () => import('./components/AsyncContinuations.vue')
@@ -40,6 +43,7 @@
     BaseInfo,
     Conditional,
     GlobalEvents,
+    ExecutionListeners,
     JobExecution,
     ExtensionProperties,
     AsyncContinuations,

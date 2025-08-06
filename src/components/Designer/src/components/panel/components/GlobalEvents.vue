@@ -8,7 +8,7 @@
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import { Base } from 'diagram-js/lib/model';
   import { ModdleElement } from 'moddle';
-  import { FormInst } from 'naive-ui';
+  import { type DataTableColumns, FormInst, NButton } from 'naive-ui';
   import { uuid } from '@/components/Designer/src/utils/tools';
   import {
     addGlobalEvent,
@@ -36,6 +36,51 @@
     escalationCode: '',
     errorCode: '',
   });
+  const columns: DataTableColumns<ModdleElement> = [
+    {
+      title: t('bpmn.panel.id'),
+      key: 'id',
+      align: 'center',
+    },
+    {
+      title: t('bpmn.panel.name'),
+      key: 'name',
+      align: 'center',
+    },
+    {
+      title: t('bpmn.panel.operations'),
+      key: 'actions',
+      align: 'center',
+      render(rowData: ModdleElement) {
+        return [
+          h(
+            NButton,
+            {
+              type: 'primary',
+              circle: true,
+              tertiary: true,
+              onClick: () => updateEventModal(rowData),
+            },
+            {
+              default: () => t('bpmn.panel.edit'),
+            }
+          ),
+          h(
+            NButton,
+            {
+              type: 'error',
+              circle: true,
+              tertiary: true,
+              onClick: () => removeEvent(rowData),
+            },
+            {
+              default: () => t('bpmn.panel.remove'),
+            }
+          ),
+        ];
+      },
+    },
+  ];
   const formRef = ref<FormInst | null>(null);
   const formRules = {};
   const activeElement = ref<ModdleElement>();
@@ -43,7 +88,14 @@
   const errorList = ref<ModdleElement[]>([]);
   const signalList = ref<ModdleElement[]>([]);
   const escalationList = ref<ModdleElement[]>([]);
-
+  const allLength = computed(() => {
+    return (
+      messageList.value.length +
+      errorList.value.length +
+      signalList.value.length +
+      escalationList.value.length
+    );
+  });
   /**
    * 打开事件新增表单
    * @param title
@@ -115,8 +167,13 @@
         ><icon-lucide-calendar-clock /> {{ t('bpmn.panel.globalEvents') }}</div
       >
     </template>
+    <template #header-extra>
+      <n-tag type="primary" round>
+        {{ allLength }}
+      </n-tag>
+    </template>
     <template #default>
-      <n-collapse>
+      <n-collapse arrow-placement="right">
         <n-collapse-item name="message">
           <template #header>
             <div class="collapse-title">
@@ -128,7 +185,7 @@
               {{ messageList.length }}
             </n-tag>
           </template>
-          <n-data-table :data="messageList" :columns="messageColumn" />
+          <n-data-table :data="messageList" :columns="columns" />
           <n-button type="primary" @click="openEventModal('Message')" secondary style="width: 100%">
             <template #icon>
               <n-icon>
@@ -147,7 +204,7 @@
               {{ errorList.length }}
             </n-tag>
           </template>
-          <n-data-table :data="errorList" :columns="errorColumn" />
+          <n-data-table :data="errorList" :columns="columns" />
           <n-button type="primary" @click="openEventModal('Error')" secondary style="width: 100%">
             <template #icon>
               <n-icon>
@@ -168,7 +225,7 @@
               {{ signalList.length }}
             </n-tag>
           </template>
-          <n-data-table :data="signalList" :columns="signalColumn" />
+          <n-data-table :data="signalList" :columns="columns" />
           <n-button type="primary" @click="openEventModal('Signal')" secondary style="width: 100%">
             <template #icon>
               <n-icon>
@@ -189,7 +246,7 @@
               {{ escalationList.length }}
             </n-tag>
           </template>
-          <n-data-table :data="escalationList" :columns="escalationColumns" />
+          <n-data-table :data="escalationList" :columns="columns" />
           <n-button
             type="primary"
             @click="openEventModal('Escalation')"
@@ -201,7 +258,7 @@
                 <icon-lucide-plus />
               </n-icon>
             </template>
-            <span>{{ $t('bpmn.panel.addEscalation') }}</span>
+            {{ t('bpmn.panel.addEscalation') }}
           </n-button>
         </n-collapse-item>
       </n-collapse>
@@ -239,7 +296,7 @@
         </n-form-item>
       </n-form>
       <template #footer>
-        <n-button type="primary" @click="saveEvent">{{ $t('bpmn.panel.confirm') }}</n-button>
+        <n-button type="primary" @click="saveEvent">{{ t('bpmn.panel.confirm') }}</n-button>
       </template>
     </n-card>
   </n-modal>
