@@ -6,29 +6,29 @@ import i18n from '@/lang';
 const { t } = i18n.global;
 
 export const scriptTypeOptions = ref<Record<string, string>[]>([
-  { label: t('bpmn.panel.externalResource') as string, value: 'external' },
-  { label: t('bpmn.panel.inlineScript') as string, value: 'inline' },
-  { label: t('bpmn.panel.none') as string, value: 'none' },
+  { label: t('bpmn.panel.externalResource'), value: 'external' },
+  { label: t('bpmn.panel.inlineScript'), value: 'inline' },
+  { label: t('bpmn.panel.none'), value: 'none' },
 ]);
 
 export const taskListenerEventTypes = ref<Record<string, string>[]>([
-  { label: t('bpmn.panel.create') as string, value: 'create' },
-  { label: t('bpmn.panel.assignment') as string, value: 'assignment' },
-  { label: t('bpmn.panel.complete') as string, value: 'complete' },
-  { label: t('bpmn.panel.update') as string, value: 'update' },
-  { label: t('bpmn.panel.delete') as string, value: 'delete' },
-  { label: t('bpmn.panel.timeout') as string, value: 'timeout' },
+  { label: t('bpmn.panel.create'), value: 'create' },
+  { label: t('bpmn.panel.assignment'), value: 'assignment' },
+  { label: t('bpmn.panel.complete'), value: 'complete' },
+  { label: t('bpmn.panel.update'), value: 'update' },
+  { label: t('bpmn.panel.delete'), value: 'delete' },
+  { label: t('bpmn.panel.timeout'), value: 'timeout' },
 ]);
 export const listenerTypeOptions = ref<Record<string, string>[]>([
-  { label: t('bpmn.panel.javaClass') as string, value: 'class' },
-  { label: t('bpmn.panel.expression') as string, value: 'expression' },
-  { label: t('bpmn.panel.delegateExpression') as string, value: 'delegateExpression' },
-  { label: t('bpmn.panel.script') as string, value: 'script' },
+  { label: t('bpmn.panel.javaClass'), value: 'class' },
+  { label: t('bpmn.panel.expression'), value: 'expression' },
+  { label: t('bpmn.panel.delegateExpression'), value: 'delegateExpression' },
+  { label: t('bpmn.panel.script'), value: 'script' },
 ]);
 
 export const fieldTypeList = ref([
-  { label: t('bpmn.panel.string') as string, value: 'string' },
-  { label: t('bpmn.panel.expression') as string, value: 'expression' },
+  { label: t('bpmn.panel.string'), value: 'string' },
+  { label: t('bpmn.panel.expression'), value: 'expression' },
 ]);
 
 // -------------------- 循环特征相关选项 ---------------//
@@ -38,10 +38,10 @@ export const MULTI_PARALLEL = 'Parallel';
 export const MULTI_SERIAL = 'Serial';
 export const MULTI_CYCLE = 'Cycle';
 export const multiTypeOptions = ref<{ label: string; value: MultiType }[]>([
-  { label: t('bpmn.panel.none') as string, value: MULTI_NONE },
-  { label: t('bpmn.panel.parallelMulti') as string, value: MULTI_PARALLEL },
-  { label: t('bpmn.panel.serialMulti') as string, value: MULTI_SERIAL },
-  { label: t('bpmn.panel.cycleMulti') as string, value: MULTI_CYCLE },
+  { label: t('bpmn.panel.none'), value: MULTI_NONE },
+  { label: t('bpmn.panel.parallelMulti'), value: MULTI_PARALLEL },
+  { label: t('bpmn.panel.serialMulti'), value: MULTI_SERIAL },
+  { label: t('bpmn.panel.cycleMulti'), value: MULTI_CYCLE },
 ]);
 //多实例完成条件快速配置选项
 export const COMPLETE_ALL = 'allComplete';
@@ -75,3 +75,21 @@ export const scopeOptions = [
   { label: t('bpmn.panel.processInstance'), value: 'processInstance' },
   { label: t('bpmn.panel.global'), value: 'global' },
 ];
+
+// 执行监听器
+export const listenerEventTypeOptions = ref<Record<string, string>[]>([
+  { label: t('bpmn.panel.start'), value: 'start' },
+  { label: t('bpmn.panel.end'), value: 'end' },
+  { label: t('bpmn.panel.take'), value: 'take' },
+]);
+export const listenerTypeOptions = ref<Record<string, string>[]>([
+  { label: t('bpmn.panel.javaClass'), value: 'class' },
+  { label: t('bpmn.panel.expression'), value: 'expression' },
+  { label: t('bpmn.panel.delegateExpression'), value: 'delegateExpression' },
+  { label: t('bpmn.panel.script'), value: 'script' },
+]);
+
+export const fieldTypeList = ref([
+  { label: t('bpmn.panel.string'), value: 'string' },
+  { label: t('bpmn.panel.expression'), value: 'expression' },
+]);

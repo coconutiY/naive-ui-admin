@@ -1,10 +1,24 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
   import { inject } from 'vue-demi';
-  import { Ref } from 'vue';
+  import { ref, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import { Base } from 'diagram-js/lib/model';
+  import { FormInst, FormRules } from 'naive-ui';
+  import {
+    addExecutionListener,
+    getDefaultEvent,
+    getExecutionListeners,
+    getExecutionListenerType,
+    removeExecutionListener,
+    updateExecutionListener,
+  } from '@/components/Designer/src/utils/listeners';
+  import { ModdleElement } from 'bpmn-js/lib/model/Types';
+  import { BpmnExecutionListener, BpmnField, BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+  import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+  import { is } from 'bpmn-js/lib/util/ModelUtil';
+  import { getScriptType } from '@/components/Designer/src/utils/tools';
 
   defineOptions({ name: 'ExecutionListeners' });
   defineProps({
@@ -14,6 +28,246 @@
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  let listenersRaw = markRaw<ModdleElement[]>([]);
+  let activeIndex = -1;
+  const modelVisible = ref(false);
+  const dialogModelVisible = ref(false);
+  const dialogActiveIndex = ref(-1);
+  const dialogModelTitle = ref(t('bpmn.panel.addField'));
+  const modelTitle = ref(t('bpmn.panel.addExecutionListener'));
+  const listeners = ref<ExecutionListenerForm[]>([]);
+  const newListener = ref<ExecutionListenerForm>({
+    event: getDefaultEvent(active!.value),
+    type: 'class',
+    fields: [],
+  });
+  const newField = ref<BpmnField>({
+    name: '',
+    fieldType: 'string',
+    expression: undefined,
+    stringValue: undefined,
+    string: undefined,
+  });
+  const formRef = ref<FormInst>();
+  const fieldFormRef = ref<FormInst>();
+  const formItemVisible = ref({
+    listenerType: 'class',
+    scriptType: 'none',
+  });
+  const formRules: FormRules = {
+    event: { required: true, trigger: ['blur', 'change'], message: t('bpmn.panel.rules.elEvent') },
+    type: { required: true, trigger: ['blur', 'change'], message: t('bpmn.panel.rules.elType') },
+  };
+  const dialogRules = ref({
+    name: { required: true, message: t('bpmn.panel.rules.fieldName'), trigger: ['blur', 'change'] },
+    fieldType: {
+      required: true,
+      message: t('bpmn.panel.rules.fieldType'),
+      trigger: ['blur', 'change'],
+    },
+    string: {
+      required: true,
+      message: t('bpmn.panel.rules.fieldString'),
+      trigger: ['blur', 'change'],
+    },
+    expression: {
+      required: true,
+      message: t('bpmn.panel.rules.fieldExpression'),
+      trigger: ['blur', 'change'],
+    },
+  });
+
+  /**
+   * 修改监听器类型
+   * @param value
+   */
+  function updateListenerType(value: string) {
+    formItemVisible.value.listenerType = value;
+  }
+
+  /**
+   * 修改脚本类型
+   * @param value
+   */
+  function updateScriptType(value: string) {
+    formItemVisible.value.scriptType = value;
+    newListener.value.script = {
+      scriptFormat: newListener.value.script?.scriptFormat,
+      scriptType: value,
+    };
+  }
+
+  /**
+   * 获取注入字段的类型
+   */
+  function getBpmnFields(fields: BpmnField[] | undefined) {
+    return fields
+      ? fields.map(
+          (field: BpmnField): BpmnField => ({
+            ...field,
+            fieldType: field.string ? 'string' : 'expression',
+          })
+        )
+      : [];
+  }
+
+  /**
+   * 重载执行监听器数据
+   */
+  function reloadExtensionListeners() {
+    modelVisible.value = false;
+    listenerEventTypeOptions.value = getExecutionListenerTypes(active!.value);
+    listenersRaw = markRaw(getExecutionListeners(modelerRef!.value, active!.value));
+    const list = listenersRaw.map(
+      (item: ModdleElement & BpmnExecutionListener): ExecutionListenerForm => ({
+        ...item,
+        fields: getBpmnFields(item.fields),
+        ...(item.script
+          ? {
+              script: {
+                ...item.script,
+                scriptType: getScriptType(item.script as ModdleElement & BpmnScript),
+              },
+            }
+          : {}),
+        type: getExecutionListenerType(modelerRef!.value, item),
+      })
+    );
+    listeners.value = JSON.parse(JSON.stringify(list));
+  }
+
+  /**
+   * 删除执行监听器
+   * @param index
+   */
+  function removeListener(index: number) {
+    const listener: ModdleElement = listenersRaw[index];
+    removeExecutionListener(modelerRef!.value, active!.value, listener);
+    reloadExtensionListeners();
+  }
+
+  /**
+   * 保存执行监听器并重载数据
+   */
+  async function saveExecutionListener() {
+    await formRef.value?.validate();
+    activeIndex === -1
+      ? addExecutionListener(modelerRef!.value, active!.value, newListener.value)
+      : updateExecutionListener(
+          modelerRef!.value,
+          active!.value,
+          newListener.value,
+          listenersRaw[activeIndex]
+        );
+    reloadExtensionListeners();
+  }
+
+  /**
+   * 打开执行监听器表单 <BR/>
+   * 若 <BR/>
+   * @param index 索引
+   * @param listenerData 监听器数据
+   */
+  async function openListenerModel(index: number, listenerData?: ExecutionListenerForm) {
+    activeIndex = index;
+    modelVisible.value = true;
+    resetForm();
+    modelTitle.value = listenerData
+      ? t('bpmn.panel.editExecutionListener')
+      : t('bpmn.panel.addExecutionListener');
+    listenerData && (newListener.value = JSON.parse(JSON.stringify(listenerData)));
+  }
+
+  /**
+   * 打开字段注入表单
+   */
+  async function openFieldModel() {
+    dialogModelTitle.value = t('bpmn.panel.addField');
+    dialogActiveIndex.value = -1;
+    dialogModelVisible.value = true;
+    resetFieldForm();
+  }
+
+  /**
+   * 关闭字段注入表单
+   */
+  function closeFieldModel() {
+    dialogModelVisible.value = false;
+  }
+
+  /**
+   * 保存字段数据
+   */
+  function saveField() {
+    fieldFormRef.value?.validate((valid) => {
+      if (valid) {
+        if (dialogActiveIndex.value === -1) {
+          newListener.value.fields?.push(JSON.parse(JSON.stringify(newField.value)));
+        } else {
+          newListener.value.fields &&
+            (newListener.value.fields[dialogActiveIndex.value] = JSON.parse(
+              JSON.stringify(newField.value)
+            ));
+        }
+        dialogModelVisible.value = false;
+      }
+    });
+  }
+
+  /**
+   * 删除注入字段
+   */
+  function editFieldRow(index: number, rowData: BpmnField) {
+    dialogActiveIndex.value = index;
+    dialogModelTitle.value = t('bpmn.panel.editField');
+    dialogModelVisible.value = true;
+    resetFieldForm();
+    newField.value = { ...rowData };
+  }
+
+  /**
+   * 删除注入字段
+   */
+  function deleteFieldRow(index: number) {
+    newListener.value.fields?.splice(index, 1);
+  }
+
+  /**
+   * 获取监听器类型
+   * @param element
+   */
+  function getExecutionListenerTypes(element: Base) {
+    if (is(element, 'bpmn:SequenceFlow')) {
+      return [{ label: t('bpmn.panel.take'), value: 'take' }];
+    }
+    return [
+      { label: t('bpmn.panel.start'), value: 'start' },
+      { label: t('bpmn.panel.end'), value: 'end' },
+    ];
+  }
+
+  /**
+   * 重置表单
+   */
+  function resetForm() {
+    formRef.value?.restoreValidation();
+    Object.assign(newListener.value, {
+      event: getDefaultEvent(active!.value),
+      type: 'class',
+      fields: [],
+    });
+  }
+
+  function resetFieldForm() {
+    fieldFormRef.value?.restoreValidation();
+    Object.assign(newField.value, {
+      name: '',
+      fieldType: 'string',
+      expression: undefined,
+      stringValue: undefined,
+      string: undefined,
+    });
+  }
 </script>
 
 <template>
@@ -31,7 +285,7 @@
         :max-height="400"
         :empty-text="t('global.dataEmpty')"
       />
-      <n-button type="primary" plain @click="openListenerModel(-1)" style="width: 100%">
+      <n-button type="primary" secondary @click="openListenerModel(-1)" style="width: 100%">
         <template #icon>
           <n-icon>
             <icon-lucide-plus />

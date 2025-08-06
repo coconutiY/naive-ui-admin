@@ -8,6 +8,9 @@ import {
 } from '@/components/Designer/src/config/bpmnEnums';
 import Modeler from 'bpmn-js/lib/Modeler';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
+import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
+import { ScriptForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+import { BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 
 /**
  * 空格正则表达式
@@ -146,6 +149,33 @@ export function validateId(idValue: string) {
 
     return 'ID 必须符合 BPMN 规范';
   }
+}
+
+/**
+ * 创建脚本
+ * @param modeler
+ * @param props
+ */
+export function createScript(modeler: Modeler, props: ScriptForm): ModdleElement {
+  const prefix = getProcessPrefix(modeler);
+  const moddle = getModdle(modeler);
+  const { scriptFormat, value, resource } = props;
+
+  return moddle.create(`${prefix}:Script`, { scriptFormat, value, resource });
+}
+
+/**
+ * 获取脚本类型
+ * @param script
+ */
+export function getScriptType(script: ModdleElement & BpmnScript) {
+  if (script.get('resource')) {
+    return 'External Resource';
+  }
+  if (script.get('value')) {
+    return 'Inline Script';
+  }
+  return 'none';
 }
 
 /**

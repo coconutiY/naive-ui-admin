@@ -1,47 +1,24 @@
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { Base } from 'diagram-js/lib/model';
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
-import { EventListenerForm, ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import {
+  EventListenerForm,
+  ExecutionListenerForm,
+  TaskListenerForm,
+  ThrowEventForm,
+} from '/#/bpmn/bpmn-moddle/bpmn-form';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
-import { getModdle, getModeling } from '@/components/Designer/src/utils/tools';
+import { createScript, getModdle, getModeling } from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
 import {
   addExtensionElements,
   createModdleElement,
   getExtensionElementsList,
+  removeExtensionElements,
 } from '@/components/Designer/src/utils/baseInfo';
-
-/**
- * 获取事件监听器列表 execution listener list
- * @param modeler
- * @param element
- */
-export function getExecutionListeners(modeler: Modeler, element: Base): ModdleElement[] {
-  const prefix = getProcessPrefix(modeler);
-  const businessObject = getListenersContainer(element);
-  return getExtensionElementsList(businessObject, `${prefix}:EventListener `);
-}
-
-/**
- * 创建一个新的事件监听器并且修改元素的业务对象 《BR/>
- * create an empty execution listener and update element's businessObject
- * @param modeler
- * @param element
- */
-export function addEmptyExtensionListener(modeler: Modeler, element: Base) {
-  const prefix = getProcessPrefix(modeler);
-  const moddle = getModdle(modeler);
-  if (!moddle) {
-    return;
-  }
-  const listener = moddle.create(`${prefix}:ExecutionListener`, {
-    event: getDefaultEvent(element),
-    class: '',
-  });
-  const businessObject = getListenersContainer(element);
-  addExtensionElements(modeler, element, businessObject, listener);
-}
+import { LISTENER_ALLOWED_TYPES } from '@/components/Designer/src/config/bpmnEnums';
+import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 
 /**
  * 根据props创建一个事件监听器
@@ -60,53 +37,6 @@ export function addEventListener(modeler: Modeler, element: Base, props: EventLi
 }
 
 /**
- * 获取默认事件
- * @param element
- */
-export function getDefaultEvent(element: Base) {
-  return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
-}
-
-/**
- * 更新监听器属性
- * @param modeler
- * @param element
- * @param listener
- * @param props
- */
-function updateListenerProperty(
-  modeler: Modeler,
-  element: Base,
-  listener: ModdleElement,
-  props: EventListenerForm
-) {
-  const modeling = getModeling(modeler);
-  const prefix = getProcessPrefix(modeler);
-  const {
-    event,
-    class: listenerClass,
-    delegateExpression,
-    entityType,
-    throwEvent,
-    signalName,
-    messageName,
-    errorCode,
-  } = props;
-
-  function updateProperty(key: string, value: string) {
-    modeling?.updateModdleProperties(element, listener, { [`${prefix}:${key}`]: value });
-  }
-  event && updateProperty('event', event);
-  listenerClass && updateProperty('class', listenerClass);
-  delegateExpression && updateProperty('delegateExpression', delegateExpression);
-  entityType && updateProperty('entityType', entityType);
-  throwEvent && updateProperty('throwEvent', throwEvent);
-  signalName && updateProperty('signalName', signalName);
-  messageName && updateProperty('messageName', messageName);
-  errorCode && updateProperty('errorCode', errorCode);
-}
-
-/**
  * 获取监听器容器
  * @param element
  */
@@ -119,7 +49,7 @@ export function getListenersContainer(element: Base): ModdleElement {
 
 /**
  * 根据事件类型获取事件
- * @param element 当前panel选中的bpmn元素
+ * @param modeler
  * @param suffix 对应的消息类型
  */
 export function getGlobalEvents(
@@ -244,4 +174,182 @@ function getEventProps(
 function filterElementsByType(objectList: ModdleElement[], type: string) {
   const list = objectList || [];
   return list.filter((element) => is(element, type));
+}
+
+//--- 执行监听器 ExecutionalListeners -----//
+
+const EXECUTIONAL_SUFFIX = 'ExecutionListener';
+
+/**
+ * 获取执行监听器列表 execution listener list
+ * @param modeler
+ * @param element
+ */
+export function getExecutionListeners(modeler: Modeler, element: Base): ModdleElement[] {
+  const prefix = getProcessPrefix(modeler);
+  const businessObject = getListenersContainer(element);
+  return getExtensionElementsList(businessObject, `${prefix}:${EXECUTIONAL_SUFFIX}`);
+}
+
+/**
+ * 创建一个新的执行监听器并且修改元素的业务对象 《BR/>
+ * create an empty execution listener and update element's businessObject
+ * @param modeler
+ */
+export function addEmptyExtensionListener(modeler: Modeler, element: Base) {
+  const prefix = getProcessPrefix(modeler);
+  const moddle = getModdle(modeler);
+  const listener = moddle!.create(`${prefix}:${EXECUTIONAL_SUFFIX}`, {
+    event: getDefaultEvent(element),
+    class: '',
+  });
+  const businessObject = getListenersContainer(element);
+  addExtensionElements(modeler, element, businessObject, listener);
+}
+
+/**
+ * 根据props创建一个执行监听器
+ * @param modeler
+ * @param element
+ * @param props
+ */
+export function addExecutionListener(
+  modeler: Modeler,
+  element: Base,
+  props: ExecutionListenerForm
+) {
+  const prefix = getProcessPrefix(modeler);
+  const moddle = getModdle(modeler);
+  const businessObject = getListenersContainer(element);
+  const listener = moddle!.create(`${prefix}:${EXECUTIONAL_SUFFIX}`, {});
+  updateListenerProperty(modeler, element, listener, props);
+  addExtensionElements(modeler, element, businessObject, listener);
+}
+
+/**
+ * 修改执行监听器的属性
+ * @param modeler
+ * @param element
+ * @param props
+ * @param listener
+ */
+export function updateExecutionListener(
+  modeler: Modeler,
+  element: Base,
+  props: ExecutionListenerForm,
+  listener: ModdleElement
+) {
+  removeExtensionElements(modeler, element, getListenersContainer(element), listener);
+  addExecutionListener(modeler, element, props);
+}
+
+/**
+ * 单个移除执行监听器
+ * @param modeler
+ * @param element
+ * @param listener
+ */
+export function removeExecutionListener(modeler: Modeler, element: Base, listener: ModdleElement) {
+  removeExtensionElements(modeler, element, getListenersContainer(element), listener);
+}
+
+/**
+ * 是否可执行
+ * @param element
+ */
+export function isExecutable(element: Base) {
+  if (isAny(element, LISTENER_ALLOWED_TYPES)) {
+    return true;
+  }
+  if (is(element, 'bpmn:Participant')) {
+    return !!element.businessObject.processRef;
+  }
+  return false;
+}
+
+/**
+ * 获取监听器类型
+ * @param modeler
+ * @param listener
+ */
+export function getExecutionListenerType(modeler: Modeler, listener: ModdleElement) {
+  return getListenerType(modeler, listener, EXECUTIONAL_SUFFIX);
+}
+
+/**
+ * 获取默认事件
+ * @param element
+ */
+export function getDefaultEvent(element: Base) {
+  return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
+}
+
+//--- 通用 Common -----//
+/**
+ * 更新执行/任务监听器属性
+ * @param modeler
+ * @param element
+ * @param listener
+ * @param props
+ */
+export function updateListenerProperty(
+  modeler: Modeler,
+  element: Base,
+  listener: ModdleElement,
+  props: ExecutionListenerForm | TaskListenerForm
+) {
+  const modeling = getModeling(modeler);
+  const prefix = getProcessPrefix(modeler);
+  const { event, class: listenerClass, expression, delegateExpression, script, fields } = props;
+  const updateProperty = (key: string, value: string) =>
+    modeling.updateModdleProperties(element, listener, { [`${prefix}:${key}`]: value });
+  event && updateProperty('event', event);
+  listenerClass && updateProperty('class', listenerClass);
+  expression && updateProperty('expression', expression);
+  delegateExpression && updateProperty('delegateExpression', delegateExpression);
+
+  if (script) {
+    const bpmnScript = createScript(modeler, script);
+    modeling?.updateModdleProperties(element, listener, { script: bpmnScript });
+  }
+  if (fields) {
+    const bpmnFields = fields.map((field: BpmnField) => {
+      return createFieldObject(modeler, field);
+    });
+    modeling.updateModdleProperties(element, listener, { fields: bpmnFields });
+  }
+}
+
+/**
+ * 创建 监听器的注入字段 实例
+ * @param modeler
+ * @param field
+ */
+export function createFieldObject(modeler: Modeler, field: BpmnField) {
+  const moddle = getModdle(modeler);
+  const prefix = getProcessPrefix(modeler);
+  const { name, fieldType, string, expression } = field;
+  const fieldConfig = fieldType === 'string' ? { name, string } : { name, expression };
+  return moddle!.create(`${prefix}:Field`, fieldConfig);
+}
+
+/**
+ * 获取监听器类型
+ * @param modeler
+ * @param listener
+ * @param suffix
+ */
+export function getListenerType(
+  modeler: Modeler,
+  listener: ModdleElement,
+  suffix: 'ExecutionListener' | 'TaskListener'
+) {
+  const prefix = getProcessPrefix(modeler);
+  if (isAny(listener, [`${prefix}:${suffix}`])) {
+    if (listener.get(`${prefix}:class`)) return 'class';
+    if (listener.get(`${prefix}:expression`)) return 'expression';
+    if (listener.get(`${prefix}:delegateExpression`)) return 'delegateExpression';
+    if (listener.get('script')) return 'script';
+  }
+  return '';
 }
