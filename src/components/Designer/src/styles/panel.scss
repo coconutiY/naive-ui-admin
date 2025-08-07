@@ -70,7 +70,16 @@
     margin-left: 6px;
   }
 }
-
+.drawer-footer{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  .n-button {
+    flex: 1;
+    margin: 6px;
+  }
+}
 .n-button.inline-large-button{
   width: 100%;
   margin: 12px 0 0;

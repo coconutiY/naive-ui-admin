@@ -1,11 +1,9 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
-  import { inject } from 'vue-demi';
-  import { ref, Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import { Base } from 'diagram-js/lib/model';
-  import { FormInst, FormRules } from 'naive-ui';
+  import { type DataTableColumns, FormInst, FormRules, NButton } from 'naive-ui';
   import {
     addExecutionListener,
     getDefaultEvent,
@@ -17,7 +15,6 @@
   import { ModdleElement } from 'bpmn-js/lib/model/Types';
   import { BpmnExecutionListener, BpmnField, BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
   import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
-  import { is } from 'bpmn-js/lib/util/ModelUtil';
   import { getScriptType } from '@/components/Designer/src/utils/tools';
   import { listenerTypeOptions } from '@/components/Designer/src/config/selectOptions';
 
@@ -26,6 +23,8 @@
     labelWidth: propTypes.number.def(80),
   });
   const { t } = useI18n();
+  const lucideSquarePen = defineAsyncComponent(() => import('~icons/lucide/square-pen'));
+  const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
@@ -37,6 +36,62 @@
   const dialogModelTitle = ref(t('bpmn.panel.addField'));
   const modelTitle = ref(t('bpmn.panel.addExecutionListener'));
   const listeners = ref<ExecutionListenerForm[]>([]);
+  const listenerColumns: DataTableColumns<ExecutionListenerForm> = [
+    {
+      title: t('bpmn.panel.index'),
+      key: 'index',
+      align: 'center',
+    },
+    {
+      title: t('bpmn.panel.executionListenerEventType'),
+      key: 'event',
+      align: 'center',
+      render(rowData: ExecutionListenerForm) {
+        return t(`bpmn.panel.${rowData.event}`);
+      },
+    },
+    {
+      title: t('bpmn.panel.executionListenerType'),
+      key: 'type',
+      align: 'center',
+      render(rowData: ExecutionListenerForm) {
+        return t(`bpmn.panel.${rowData.type}`);
+      },
+    },
+    {
+      title: t('bpmn.panel.operations'),
+      key: 'actions',
+      align: 'center',
+      render(rowData: ExecutionListenerForm, rowIndex: number) {
+        return [
+          h(
+            NButton,
+            {
+              type: 'primary',
+              circle: true,
+              tertiary: true,
+              onClick: () => openListenerModel(rowIndex, rowData),
+            },
+            {
+              icon: () => lucideSquarePen,
+            }
+          ),
+          h(
+            NButton,
+            {
+              type: 'error',
+              circle: true,
+              tertiary: true,
+              onClick: () => removeListener(rowIndex),
+            },
+            {
+              icon: () => lucideMinus,
+            }
+          ),
+        ];
+      },
+    },
+  ];
   const newListener = ref<ExecutionListenerForm>({
     event: getDefaultEvent(active!.value),
     type: 'class',
@@ -78,7 +133,6 @@
     },
   });
 
-  const listenerEventTypeOptions = ref<{ label: string; value: string }[]>([]);
   /**
    * 修改监听器类型
    * @param value
@@ -118,7 +172,6 @@
    */
   function reloadExtensionListeners() {
     modelVisible.value = false;
-    listenerEventTypeOptions.value = getExecutionListenerTypes(active!.value);
     listenersRaw = markRaw(getExecutionListeners(modelerRef!.value, active!.value));
     const list = listenersRaw.map(
       (item: ModdleElement & BpmnExecutionListener): ExecutionListenerForm => ({
@@ -235,20 +288,6 @@
   }
 
   /**
-   * 获取监听器类型
-   * @param element
-   */
-  function getExecutionListenerTypes(element: Base) {
-    if (is(element, 'bpmn:SequenceFlow')) {
-      return [{ label: t('bpmn.panel.take'), value: 'take' }];
-    }
-    return [
-      { label: t('bpmn.panel.start'), value: 'start' },
-      { label: t('bpmn.panel.end'), value: 'end' },
-    ];
-  }
-
-  /**
    * 重置表单
    */
   function resetForm() {
@@ -270,6 +309,15 @@
       string: undefined,
     });
   }
+
+  watch(
+    () => active?.value,
+    (value) => {
+      if (value) {
+        reloadExtensionListeners();
+      }
+    }
+  );
 </script>
 
 <template>
@@ -281,9 +329,8 @@
     </template>
     <template #default>
       <n-data-table
-        size="small"
         :data="listeners"
-        :fit="true"
+        :columns="listenerColumns"
         :max-height="400"
         :empty-text="t('global.dataEmpty')"
       />
@@ -298,131 +345,137 @@
     </template>
   </n-collapse-item>
   <!-- 监听器抽屉 -->
-  <n-drawer v-model="modelVisible" :title="modelTitle">
-    <n-form ref="formRef" :model="newListener" :rules="formRules" :label-width="labelWidth">
-      <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
-        <n-select v-model:value="newListener.event" :options="listenerEventTypeOptions" />
-      </n-form-item>
-      <n-form-item path="type" :label="t('bpmn.panel.executionListenerType')">
-        <n-select
-          v-model:value="newListener.type"
-          @change="updateListenerType"
-          :options="listenerTypeOptions"
-        />
-      </n-form-item>
-      <n-form-item
-        v-if="formItemVisible.listenerType === 'class'"
-        path="class"
-        :label="t('bpmn.panel.javaClass')"
-      >
-        <n-input v-model:value="newListener.class" @keydown.enter.prevent />
-      </n-form-item>
-      <n-form-item
-        v-if="formItemVisible.listenerType === 'expression'"
-        path="expression"
-        :label="t('bpmn.panel.expression')"
-      >
-        <n-input v-model:value="newListener.expression" @keydown.enter.prevent />
-      </n-form-item>
-      <n-form-item
-        v-if="formItemVisible.listenerType === 'delegateExpression'"
-        path="delegateExpression"
-        :label="t('bpmn.panel.delegateExpression')"
-      >
-        <n-input v-model:value="newListener.delegateExpression" @keydown.enter.prevent />
-      </n-form-item>
-      <template v-if="formItemVisible.listenerType === 'script' && newListener.script">
-        <n-form-item
-          key="scriptFormat"
-          path="script.scriptFormat"
-          :label="$t('bpmn.panel.scriptFormat')"
-        >
-          <n-input v-model:value="newListener.script.scriptFormat" @keydown.enter.prevent />
+  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="500">
+    <n-drawer-content>
+      <n-form ref="formRef" :model="newListener" :rules="formRules" :label-width="labelWidth">
+        <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
+          <n-select v-model:value="newListener.event" :options="listenerEventTypeOptions" />
         </n-form-item>
-        <n-form-item key="scriptType" path="script.scriptType" :label="$t('bpmn.panel.scriptType')">
+        <n-form-item path="type" :label="t('bpmn.panel.executionListenerType')">
           <n-select
-            v-model:value="newListener.script.scriptType"
-            @change="updateScriptType"
-            :options="scriptTypeOptions"
+            v-model:value="newListener.type"
+            :on-update:value="updateListenerType"
+            :options="listenerTypeOptions"
           />
         </n-form-item>
         <n-form-item
-          v-if="formItemVisible.scriptType === 'inline'"
-          key="scriptContent"
-          path="script.value"
-          :label="t('bpmn.panel.scriptBody')"
+          v-if="formItemVisible.listenerType === 'class'"
+          path="class"
+          :label="t('bpmn.panel.javaClass')"
         >
-          <n-input
-            v-model:value="newListener.script.value"
-            type="textarea"
-            @keydown.enter.prevent
-          />
+          <n-input v-model:value="newListener.class" @keydown.enter.prevent />
         </n-form-item>
         <n-form-item
-          v-if="formItemVisible.scriptType === 'external'"
-          key="scriptResource"
-          path="script.resource"
-          :label="t('bpmn.panel.scriptResource')"
+          v-if="formItemVisible.listenerType === 'expression'"
+          path="expression"
+          :label="t('bpmn.panel.expression')"
         >
-          <n-input v-model:value="newListener.script.resource" @keydown.enter.prevent />
+          <n-input v-model:value="newListener.expression" @keydown.enter.prevent />
         </n-form-item>
-      </template>
-    </n-form>
-    <div class="field-content">
-      <n-divider>
-        <div class="divider-panel">
-          <icon-lucide-folder-input />
-          <span>{{ $t('bpmn.panel.injectField') }}</span>
-        </div>
-      </n-divider>
-      <n-data-table :data="newListener['fields']" />
-      <n-button type="primary" plain @click="openFieldModel">
-        <template #icon>
-          <n-icon>
-            <icon-lucide-plus />
-          </n-icon>
+        <n-form-item
+          v-if="formItemVisible.listenerType === 'delegateExpression'"
+          path="delegateExpression"
+          :label="t('bpmn.panel.delegateExpression')"
+        >
+          <n-input v-model:value="newListener.delegateExpression" @keydown.enter.prevent />
+        </n-form-item>
+        <template v-if="formItemVisible.listenerType === 'script' && newListener.script">
+          <n-form-item
+            key="scriptFormat"
+            path="script.scriptFormat"
+            :label="t('bpmn.panel.scriptFormat')"
+          >
+            <n-input v-model:value="newListener.script.scriptFormat" @keydown.enter.prevent />
+          </n-form-item>
+          <n-form-item
+            key="scriptType"
+            path="script.scriptType"
+            :label="t('bpmn.panel.scriptType')"
+          >
+            <n-select
+              v-model:value="newListener.script.scriptType"
+              :on-update:value="updateScriptType"
+              :options="scriptTypeOptions"
+            />
+          </n-form-item>
+          <n-form-item
+            v-if="formItemVisible.scriptType === 'inline'"
+            key="scriptContent"
+            path="script.value"
+            :label="t('bpmn.panel.scriptBody')"
+          >
+            <n-input
+              v-model:value="newListener.script.value"
+              type="textarea"
+              @keydown.enter.prevent
+            />
+          </n-form-item>
+          <n-form-item
+            v-if="formItemVisible.scriptType === 'external'"
+            key="scriptResource"
+            path="script.resource"
+            :label="t('bpmn.panel.scriptResource')"
+          >
+            <n-input v-model:value="newListener.script.resource" @keydown.enter.prevent />
+          </n-form-item>
         </template>
-        {{ $t('bpmn.panel.addField') }}
-      </n-button>
-    </div>
-    <template #footer>
-      <div class="drawer-footer">
-        <n-button @click="modelVisible = false">{{ $t('global.cancel') }}</n-button>
-        <n-button type="primary" @click="saveExecutionListener">{{
-          $t('bpmn.panel.confirm')
-        }}</n-button>
+      </n-form>
+      <div class="field-content">
+        <n-divider>
+          <div class="divider-panel">
+            <icon-lucide-folder-input />
+            <span>{{ t('bpmn.panel.injectField') }}</span>
+          </div>
+        </n-divider>
+        <n-data-table :data="newListener['fields']" />
+        <n-button type="primary" secondary @click="openFieldModel" style="width: 100%">
+          <template #icon>
+            <n-icon>
+              <icon-lucide-plus />
+            </n-icon>
+          </template>
+          {{ t('bpmn.panel.addField') }}
+        </n-button>
       </div>
-    </template>
+      <template #footer>
+        <div class="drawer-footer">
+          <n-button @click="modelVisible = false">{{ t('global.cancel') }}</n-button>
+          <n-button type="primary" @click="saveExecutionListener">{{
+            t('bpmn.panel.confirm')
+          }}</n-button>
+        </div>
+      </template>
+    </n-drawer-content>
   </n-drawer>
   <!-- 字段弹窗 -->
   <n-modal v-model="dialogModelVisible">
     <n-card :title="dialogModelTitle" :style="{ width: '640px' }">
       <n-form ref="fieldFormRef" :model="newField" :rules="dialogRules" :label-width="labelWidth">
-        <n-form-item prop="name" :label="$t('bpmn.panel.fieldName')">
+        <n-form-item prop="name" :label="t('bpmn.panel.fieldName')">
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>
-        <n-form-item prop="fieldType" :label="$t('bpmn.panel.fieldType')">
+        <n-form-item prop="fieldType" :label="t('bpmn.panel.fieldType')">
           <n-select v-model:value="newField.fieldType" :options="fieldTypeList" />
         </n-form-item>
         <n-form-item
           prop="string"
           v-if="newField.fieldType === 'string'"
-          :label="$t('bpmn.panel.fieldValue')"
+          :label="t('bpmn.panel.fieldValue')"
         >
           <n-input type="textarea" v-model:value="newField.string" clearable />
         </n-form-item>
         <n-form-item
           prop="expression"
           v-if="newField.fieldType === 'expression'"
-          :label="$t('bpmn.panel.expression')"
+          :label="t('bpmn.panel.expression')"
         >
           <n-input type="textarea" v-model:value="newField.expression" clearable />
         </n-form-item>
       </n-form>
       <template #footer>
         <span class="modal-footer">
-          <n-button @click="closeFieldModel">{{ $t('global.cancel') }}</n-button>
-          <n-button type="primary" @click="saveField">{{ $t('bpmn.panel.confirm') }}</n-button>
+          <n-button @click="closeFieldModel">{{ t('global.cancel') }}</n-button>
+          <n-button type="primary" @click="saveField">{{ t('bpmn.panel.confirm') }}</n-button>
         </span>
       </template>
     </n-card>
