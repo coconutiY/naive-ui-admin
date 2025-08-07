@@ -19,6 +19,7 @@
   import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { is } from 'bpmn-js/lib/util/ModelUtil';
   import { getScriptType } from '@/components/Designer/src/utils/tools';
+  import { listenerTypeOptions } from '@/components/Designer/src/config/selectOptions';
 
   defineOptions({ name: 'ExecutionListeners' });
   defineProps({
@@ -77,6 +78,7 @@
     },
   });
 
+  const listenerEventTypeOptions = ref<{ label: string; value: string }[]>([]);
   /**
    * 修改监听器类型
    * @param value

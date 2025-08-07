@@ -19,17 +19,7 @@ export const taskListenerEventTypes = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.delete'), value: 'delete' },
   { label: t('bpmn.panel.timeout'), value: 'timeout' },
 ]);
-export const listenerTypeOptions = ref<Record<string, string>[]>([
-  { label: t('bpmn.panel.javaClass'), value: 'class' },
-  { label: t('bpmn.panel.expression'), value: 'expression' },
-  { label: t('bpmn.panel.delegateExpression'), value: 'delegateExpression' },
-  { label: t('bpmn.panel.script'), value: 'script' },
-]);
 
-export const fieldTypeList = ref([
-  { label: t('bpmn.panel.string'), value: 'string' },
-  { label: t('bpmn.panel.expression'), value: 'expression' },
-]);
 
 // -------------------- 循环特征相关选项 ---------------//
 //循环特征
