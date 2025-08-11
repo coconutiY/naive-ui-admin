@@ -2,7 +2,6 @@ import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { Base } from 'diagram-js/lib/model';
 import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import {
-  EventListenerForm,
   ExecutionListenerForm,
   TaskListenerForm,
   ThrowEventForm,
@@ -19,22 +18,6 @@ import {
 } from '@/components/Designer/src/utils/baseInfo';
 import { LISTENER_ALLOWED_TYPES } from '@/components/Designer/src/config/bpmnEnums';
 import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
-
-/**
- * 根据props创建一个事件监听器
- * @param modeler
- * @param element
- * @param props
- */
-export function addEventListener(modeler: Modeler, element: Base, props: EventListenerForm) {
-  const prefix = getProcessPrefix(modeler);
-  const moddle = getModdle(modeler);
-  const businessObject = getListenersContainer(element);
-  const listener = moddle!.create(`${prefix}:EventListener`, {});
-  console.log(props, 'props');
-  updateListenerProperty(modeler, element, listener, props);
-  addExtensionElements(modeler, element, businessObject, listener);
-}
 
 /**
  * 获取监听器容器

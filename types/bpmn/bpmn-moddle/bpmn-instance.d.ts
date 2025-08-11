@@ -25,17 +25,6 @@ export declare interface BpmnExecutionListener {
   fields?: BpmnField[];
 }
 
-export declare interface BpmnEventListener {
-  event: string;
-  class?: string;
-  delegateExpression?: string;
-  entityType?: string;
-  throwEvent?: 'message' | 'signal' | 'error' | 'globalSignal' | '';
-  messageName?: string;
-  signalName?: string;
-  errorCode?: string;
-}
-
 /**
  * 任务监听器，event等属性值因引擎而异，此为camunda
  */

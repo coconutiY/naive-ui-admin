@@ -33,7 +33,9 @@
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
 
   const drawerVisible = ref(true);
-  const drawerIcon = shallowRef(lucideChevronsLeft);
+  const drawerIcon = computed(() =>
+    drawerVisible.value ? lucideChevronsRight : lucideChevronsLeft
+  );
   const iconName = ref<string>('Process');
   const activeType = ref<string>('');
   const title = ref<string | undefined>('');

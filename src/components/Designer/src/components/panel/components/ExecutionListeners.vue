@@ -32,14 +32,21 @@
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
-  let listenersRaw = markRaw<ModdleElement[]>([]);
-  let activeIndex = -1;
-  const modelVisible = ref(false);
-  const dialogModelVisible = ref(false);
-  const dialogActiveIndex = ref(-1);
-  const dialogModelTitle = ref(t('bpmn.panel.addField'));
+
+  // 模态框
   const modelTitle = ref(t('bpmn.panel.addExecutionListener'));
+  const modelVisible = ref(false);
+  const dialogModelTitle = ref(t('bpmn.panel.addField'));
+  const dialogModelVisible = ref(false);
+
+  //索引
+  const activeIndex = ref(-1);
+  const dialogActiveIndex = ref(-1);
+
+  let listenersRaw = markRaw<ModdleElement[]>([]);
+
   const listeners = ref<ExecutionListenerForm[]>([]);
+  //监听器列表配置
   const listenerColumns: DataTableColumns<ExecutionListenerForm> = [
     {
       title: t('bpmn.panel.index'),
@@ -96,11 +103,70 @@
       },
     },
   ];
+  //注入字段列表
+  const fieldsColumn: DataTableColumns<BpmnField> = [
+    {
+      title: t('bpmn.panel.fieldName'),
+      key: 'name',
+      align: 'center',
+    },
+    {
+      title: t('bpmn.panel.fieldType'),
+      key: 'fieldType',
+      align: 'center',
+      render(rowData: BpmnField) {
+        return t(`bpmn.panel.${rowData.fieldType}`);
+      },
+    },
+    {
+      title: t('bpmn.panel.fieldValue'),
+      key: 'value',
+      align: 'center',
+      render(rowData: BpmnField) {
+        return rowData.string ?? rowData.expression;
+      },
+    },
+    {
+      title: t('bpmn.panel.operations'),
+      key: 'actions',
+      align: 'center',
+      render(rowData: BpmnField, rowIndex: number) {
+        return [
+          h(
+            NButton,
+            {
+              type: 'primary',
+              circle: true,
+              tertiary: true,
+              onClick: () => editFieldRow(rowIndex, rowData),
+            },
+            {
+              icon: () => lucideSquarePen,
+            }
+          ),
+          h(
+            NButton,
+            {
+              type: 'error',
+              circle: true,
+              tertiary: true,
+              onClick: () => removeFieldRow(rowIndex),
+            },
+            {
+              icon: () => lucideMinus,
+            }
+          ),
+        ];
+      },
+    },
+  ];
+  //监听器表单
   const newListener = ref<ExecutionListenerForm>({
     event: getDefaultEvent(active!.value),
     type: 'class',
     fields: [],
   });
+  //字段注入表单
   const newField = ref<BpmnField>({
     name: '',
     fieldType: 'string',
@@ -108,17 +174,22 @@
     stringValue: undefined,
     string: undefined,
   });
+  //监听器表单实例
   const formRef = ref<FormInst>();
+  //注入表单实例
   const fieldFormRef = ref<FormInst>();
+  //控制注入字段表单
   const formItemVisible = ref({
     listenerType: 'class',
     scriptType: 'none',
   });
-  const formRules: FormRules = {
+  //监听器表单规则
+  const listenerRules: FormRules = {
     event: { required: true, trigger: ['blur', 'change'], message: t('bpmn.panel.rules.elEvent') },
     type: { required: true, trigger: ['blur', 'change'], message: t('bpmn.panel.rules.elType') },
   };
-  const dialogRules = ref({
+  //注入字段表单规则
+  const fieldRules = ref({
     name: { required: true, message: t('bpmn.panel.rules.fieldName'), trigger: ['blur', 'change'] },
     fieldType: {
       required: true,
@@ -210,13 +281,13 @@
    */
   async function saveExecutionListener() {
     await formRef.value?.validate();
-    activeIndex === -1
+    activeIndex.value === -1
       ? addExecutionListener(modelerRef!.value, active!.value, newListener.value)
       : updateExecutionListener(
           modelerRef!.value,
           active!.value,
           newListener.value,
-          listenersRaw[activeIndex]
+          listenersRaw[activeIndex.value]
         );
     reloadExtensionListeners();
   }
@@ -228,7 +299,7 @@
    * @param listenerData 监听器数据
    */
   async function openListenerModel(index: number, listenerData?: ExecutionListenerForm) {
-    activeIndex = index;
+    activeIndex.value = index;
     modelVisible.value = true;
     resetForm();
     modelTitle.value = listenerData
@@ -258,16 +329,16 @@
    * 保存字段数据
    */
   function saveField() {
-    fieldFormRef.value?.validate((valid) => {
-      if (valid) {
+    fieldFormRef.value?.validate((errors) => {
+      if (!errors) {
         if (dialogActiveIndex.value === -1) {
           newListener.value.fields?.push(JSON.parse(JSON.stringify(newField.value)));
-        } else {
-          newListener.value.fields &&
-            (newListener.value.fields[dialogActiveIndex.value] = JSON.parse(
-              JSON.stringify(newField.value)
-            ));
+        } else if (newListener.value.fields) {
+          newListener.value.fields[dialogActiveIndex.value] = JSON.parse(
+            JSON.stringify(newField.value)
+          );
         }
+        console.log(newListener.value.fields, 'fields');
         dialogModelVisible.value = false;
       }
     });
@@ -287,7 +358,7 @@
   /**
    * 删除注入字段
    */
-  function deleteFieldRow(index: number) {
+  function removeFieldRow(index: number) {
     newListener.value.fields?.splice(index, 1);
   }
 
@@ -351,7 +422,7 @@
   <!-- 监听器抽屉 -->
   <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="500">
     <n-drawer-content>
-      <n-form ref="formRef" :model="newListener" :rules="formRules" :label-width="labelWidth">
+      <n-form ref="formRef" :model="newListener" :rules="listenerRules" :label-width="labelWidth">
         <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
           <n-select v-model:value="newListener.event" :options="listenerEventTypeOptions" />
         </n-form-item>
@@ -431,7 +502,7 @@
             <span>{{ t('bpmn.panel.injectField') }}</span>
           </div>
         </n-divider>
-        <n-data-table :data="newListener['fields']" />
+        <n-data-table :data="newListener.fields" :columns="fieldsColumn" />
         <n-button type="primary" secondary @click="openFieldModel" style="width: 100%">
           <template #icon>
             <n-icon>
@@ -454,7 +525,7 @@
   <!-- 字段弹窗 -->
   <n-modal v-model:show="dialogModelVisible">
     <n-card :title="dialogModelTitle" :style="{ width: '640px' }">
-      <n-form ref="fieldFormRef" :model="newField" :rules="dialogRules" :label-width="labelWidth">
+      <n-form ref="fieldFormRef" :model="newField" :rules="fieldRules" :label-width="labelWidth">
         <n-form-item path="name" :label="t('bpmn.panel.fieldName')">
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>
