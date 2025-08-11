@@ -20,7 +20,6 @@ export const taskListenerEventTypes = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.timeout'), value: 'timeout' },
 ]);
 
-
 // -------------------- 循环特征相关选项 ---------------//
 //循环特征
 export const MULTI_NONE = 'None';
@@ -69,8 +68,8 @@ export const scopeOptions = [
 // 执行监听器
 export const listenerEventTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.start'), value: 'start' },
-  { label: t('bpmn.panel.end'), value: 'end' },
   { label: t('bpmn.panel.take'), value: 'take' },
+  { label: t('bpmn.panel.end'), value: 'end' },
 ]);
 export const listenerTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.javaClass'), value: 'class' },
@@ -79,7 +78,7 @@ export const listenerTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.script'), value: 'script' },
 ]);
 
-export const fieldTypeList = ref([
+export const fieldTypeList = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.string'), value: 'string' },
   { label: t('bpmn.panel.expression'), value: 'expression' },
 ]);

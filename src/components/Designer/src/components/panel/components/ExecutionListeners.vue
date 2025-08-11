@@ -16,7 +16,11 @@
   import { BpmnExecutionListener, BpmnField, BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
   import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { getScriptType } from '@/components/Designer/src/utils/tools';
-  import { listenerTypeOptions } from '@/components/Designer/src/config/selectOptions';
+  import {
+    fieldTypeList,
+    listenerEventTypeOptions,
+    listenerTypeOptions,
+  } from '@/components/Designer/src/config/selectOptions';
 
   defineOptions({ name: 'ExecutionListeners' });
   defineProps({
@@ -448,24 +452,24 @@
     </n-drawer-content>
   </n-drawer>
   <!-- 字段弹窗 -->
-  <n-modal v-model="dialogModelVisible">
+  <n-modal v-model:show="dialogModelVisible">
     <n-card :title="dialogModelTitle" :style="{ width: '640px' }">
       <n-form ref="fieldFormRef" :model="newField" :rules="dialogRules" :label-width="labelWidth">
-        <n-form-item prop="name" :label="t('bpmn.panel.fieldName')">
+        <n-form-item path="name" :label="t('bpmn.panel.fieldName')">
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>
-        <n-form-item prop="fieldType" :label="t('bpmn.panel.fieldType')">
+        <n-form-item path="fieldType" :label="t('bpmn.panel.fieldType')">
           <n-select v-model:value="newField.fieldType" :options="fieldTypeList" />
         </n-form-item>
         <n-form-item
-          prop="string"
+          path="string"
           v-if="newField.fieldType === 'string'"
           :label="t('bpmn.panel.fieldValue')"
         >
           <n-input type="textarea" v-model:value="newField.string" clearable />
         </n-form-item>
         <n-form-item
-          prop="expression"
+          path="expression"
           v-if="newField.fieldType === 'expression'"
           :label="t('bpmn.panel.expression')"
         >
