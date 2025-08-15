@@ -5,6 +5,14 @@ import i18n from '@/lang';
 
 const { t } = i18n.global;
 
+
+export const defaultConditionTypeOptions: Record<string, string>[] = [
+  { label: '无条件( None )', value: 'none' },
+  { label: '默认路径( Default )', value: 'default' },
+  { label: '条件表达式( Expression )', value: 'expression' },
+  // { label: '条件脚本( Script )', value: 'script' },
+];
+
 export const scriptTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.externalResource'), value: 'external' },
   { label: t('bpmn.panel.inlineScript'), value: 'inline' },
@@ -75,7 +83,7 @@ export const listenerTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.javaClass'), value: 'class' },
   { label: t('bpmn.panel.expression'), value: 'expression' },
   { label: t('bpmn.panel.delegateExpression'), value: 'delegateExpression' },
-  { label: t('bpmn.panel.script'), value: 'script' },
+  // { label: t('bpmn.panel.script'), value: 'script' },
 ]);
 
 export const fieldTypeList = ref<Record<string, string>[]>([

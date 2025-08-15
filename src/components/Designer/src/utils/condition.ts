@@ -6,6 +6,7 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import { Connection } from 'diagram-js/lib/model/Types';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { createModdleElement } from '@/components/Designer/src/utils/baseInfo';
+import { defaultConditionTypeOptions } from '@/components/Designer/src/config/selectOptions';
 
 /**
  * 配置项可见性 <BR/>
@@ -16,12 +17,6 @@ const CONDITIONAL_SOURCES = [
   'bpmn:ExclusiveGateway',
   'bpmn:InclusiveGateway',
   'bpmn:ComplexGateway',
-];
-const defaultConditionTypeOptions: Record<string, string>[] = [
-  { label: '无条件( None )', value: 'none' },
-  { label: '默认路径( Default )', value: 'default' },
-  { label: '条件表达式( Expression )', value: 'expression' },
-  { label: '条件脚本( Script )', value: 'script' },
 ];
 
 /**
