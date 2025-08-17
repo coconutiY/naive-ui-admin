@@ -49,11 +49,6 @@
   //监听器列表配置
   const listenerColumns: DataTableColumns<ExecutionListenerForm> = [
     {
-      title: t('bpmn.panel.index'),
-      key: 'index',
-      align: 'center',
-    },
-    {
       title: t('bpmn.panel.executionListenerEventType'),
       key: 'event',
       align: 'center',
@@ -84,7 +79,7 @@
               onClick: () => openListenerModel(rowIndex, rowData),
             },
             {
-              icon: () => lucideSquarePen,
+              icon: () => h(lucideSquarePen),
             }
           ),
           h(
@@ -96,7 +91,7 @@
               onClick: () => removeListener(rowIndex),
             },
             {
-              icon: () => lucideMinus,
+              icon: () => h(lucideMinus),
             }
           ),
         ];
@@ -141,7 +136,7 @@
               onClick: () => editFieldRow(rowIndex, rowData),
             },
             {
-              icon: () => lucideSquarePen,
+              icon: () => h(lucideSquarePen),
             }
           ),
           h(
@@ -153,7 +148,7 @@
               onClick: () => removeFieldRow(rowIndex),
             },
             {
-              icon: () => lucideMinus,
+              icon: () => h(lucideMinus),
             }
           ),
         ];
