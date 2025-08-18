@@ -21,6 +21,9 @@
   const ExecutionListeners = defineAsyncComponent(
     () => import('./components/ExecutionListeners.vue')
   );
+  const TaskListeners = defineAsyncComponent(
+    () => import('./components/TaskListeners.vue')
+  );
   const JobExecution = defineAsyncComponent(() => import('./components/JobExecution.vue'));
   const AsyncContinuations = defineAsyncComponent(
     () => import('./components/AsyncContinuations.vue')
@@ -45,6 +48,7 @@
     BaseInfo,
     Conditional,
     GlobalEvents,
+    TaskListeners,
     ExecutionListeners,
     JobExecution,
     ExtensionProperties,
@@ -57,7 +61,6 @@
    */
   function changeVisible() {
     drawerVisible.value = !drawerVisible.value;
-    drawerIcon.value = drawerVisible.value ? lucideChevronsRight : lucideChevronsLeft;
   }
 
   function reloadData() {
