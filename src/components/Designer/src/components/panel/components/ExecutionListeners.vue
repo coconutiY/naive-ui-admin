@@ -76,7 +76,7 @@
               type: 'primary',
               circle: true,
               tertiary: true,
-              onClick: () => openListenerModel(rowIndex, rowData),
+              onClick: () => openListenerDrawer(rowIndex, rowData),
             },
             {
               icon: () => h(lucideSquarePen),
@@ -293,7 +293,7 @@
    * @param index 索引
    * @param listenerData 监听器数据
    */
-  async function openListenerModel(index: number, listenerData?: ExecutionListenerForm) {
+  async function openListenerDrawer(index: number, listenerData?: ExecutionListenerForm) {
     activeIndex.value = index;
     modelVisible.value = true;
     resetForm();
@@ -404,7 +404,7 @@
         :max-height="400"
         :empty-text="t('global.dataEmpty')"
       />
-      <n-button type="primary" secondary @click="openListenerModel(-1)" style="width: 100%">
+      <n-button type="primary" secondary @click="openListenerDrawer(-1)" style="width: 100%">
         <template #icon>
           <n-icon>
             <icon-lucide-plus />
