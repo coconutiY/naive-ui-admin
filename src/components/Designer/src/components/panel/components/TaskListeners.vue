@@ -6,6 +6,7 @@
   import { getDefaultEvent } from '@/components/Designer/src/utils/listeners';
   import { ExecutionListenerForm, TaskListenerForm } from "/#/bpmn/bpmn-moddle/bpmn-form";
   import {
+    fieldTypeOptions,
     listenerTypeOptions,
     taskListenerEventTypes,
   } from '@/components/Designer/src/config/selectOptions';
@@ -146,7 +147,7 @@
   ];
   //监听器表单
   const newListener = ref<ExecutionListenerForm>({
-    event: getDefaultEvent(active!.value),
+    event: 'create',
     type: 'class',
     fields: [],
   });
@@ -218,7 +219,7 @@
   function resetForm() {
     formRef.value?.restoreValidation();
     Object.assign(newListener.value, {
-      event: getDefaultEvent(active!.value),
+      event: 'create',
       type: 'class',
       fields: [],
     });
@@ -261,7 +262,7 @@
     </template>
   </n-collapse-item>
   <!-- 监听器抽屉 -->
-  <n-drawer v-model="modelVisible" :title="modelTitle">
+  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="600">
     <n-drawer-content>
       <n-form ref="formRef" :model="newListener" :rules="listenerRules" :label-width="labelWidth">
         <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
@@ -367,7 +368,7 @@
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>
         <n-form-item path="fieldType" :label="t('bpmn.panel.fieldType')">
-          <n-select v-model:value="newField.fieldType" :options="fieldTypeList" />
+          <n-select v-model:value="newField.fieldType" :options="fieldTypeOptions" />
         </n-form-item>
         <n-form-item
           path="string"

@@ -17,7 +17,7 @@
   import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { getScriptType } from '@/components/Designer/src/utils/tools';
   import {
-    fieldTypeList,
+    fieldTypeOptions,
     listenerEventTypeOptions,
     listenerTypeOptions,
   } from '@/components/Designer/src/config/selectOptions';
@@ -415,7 +415,7 @@
     </template>
   </n-collapse-item>
   <!-- 监听器抽屉 -->
-  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="500">
+  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="600">
     <n-drawer-content>
       <n-form ref="formRef" :model="newListener" :rules="listenerRules" :label-width="labelWidth">
         <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
@@ -525,7 +525,7 @@
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>
         <n-form-item path="fieldType" :label="t('bpmn.panel.fieldType')">
-          <n-select v-model:value="newField.fieldType" :options="fieldTypeList" />
+          <n-select v-model:value="newField.fieldType" :options="fieldTypeOptions" />
         </n-form-item>
         <n-form-item
           path="string"

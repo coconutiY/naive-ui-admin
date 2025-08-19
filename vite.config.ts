@@ -55,6 +55,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       include: ['@iconify/iconify'],
       exclude: ['vue-demi'],
     },
+    css: {
+      preprocessorOptions: {
+        scss: {
+          // api: 'modern-compiler',
+        },
+      },
+    },
     build: {
       target: 'es2015',
       cssTarget: 'chrome80',

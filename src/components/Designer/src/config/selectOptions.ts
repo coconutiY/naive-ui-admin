@@ -52,6 +52,7 @@ export const completeOptions = ref([
   { label: t('bpmn.panel.completeNum'), value: COMPLETE_NUM },
   { label: t('bpmn.panel.expression'), value: COMPLETE_EXPRESSION },
 ]);
+
 //标准循环测试位置
 export const loopTestOptions = ref([
   { label: t('bpmn.panel.loopBefore'), value: true },
@@ -73,12 +74,14 @@ export const scopeOptions = [
   { label: t('bpmn.panel.global'), value: 'global' },
 ];
 
-// 执行监听器
+// 执行监听器事件类型
 export const listenerEventTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.start'), value: 'start' },
   { label: t('bpmn.panel.take'), value: 'take' },
   { label: t('bpmn.panel.end'), value: 'end' },
 ]);
+
+// 监听器类型
 export const listenerTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.javaClass'), value: 'class' },
   { label: t('bpmn.panel.expression'), value: 'expression' },
@@ -86,7 +89,8 @@ export const listenerTypeOptions = ref<Record<string, string>[]>([
   // { label: t('bpmn.panel.script'), value: 'script' },
 ]);
 
-export const fieldTypeList = ref<Record<string, string>[]>([
+//字段类型
+export const fieldTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.string'), value: 'string' },
   { label: t('bpmn.panel.expression'), value: 'expression' },
 ]);
