@@ -1,13 +1,12 @@
 import { Ref } from 'vue';
 import Modeler from 'bpmn-js/lib/Modeler';
 import type { BaseViewerOptions } from 'bpmn-js/lib/BaseViewer';
-import { ViewerOptions } from 'diagram-js/lib/model';
 import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
 import EmptyXml from '@/components/Designer/src/utils/emptyXml';
 
 export function initModeler(
   designer: Ref<HTMLElement | undefined>,
-  modelerModules: ViewerOptions<Element>
+  modelerModules: BaseViewerOptions
 ) {
   const options: BaseViewerOptions = {
     container: designer?.value as HTMLElement,

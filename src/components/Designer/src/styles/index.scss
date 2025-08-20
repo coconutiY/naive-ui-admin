@@ -32,17 +32,23 @@
   background-color: rgba(0, 0, 0, .3);
 }
 
-.djs-context-pad .entry{
+//选中元素后右侧工具的图标背景
+.djs-context-pad .entry {
   background-color: unset;
+}
+
+// 隐藏新版的选中后的svg图标边框
+.djs-container svg:focus {
+  outline: none;
 }
 
 // 流程校验
 .bjsl-icon-error,
 .bjsl-button-error,
 .bjsl-button,
-// 以及增强的palette插件
+  // 以及增强的palette插件
 .djs-palette,
-//小地图的部分组件
+  //小地图的部分组件
 .bts-toggle-mode,
 .djs-minimap div.toggle,
   //隐藏bpmn的logo （侵权，但好像camunda不管CN市场）

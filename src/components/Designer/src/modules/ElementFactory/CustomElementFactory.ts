@@ -9,13 +9,8 @@ type ElementConfig = Record<string, Dimensions>;
 
 class CustomElementFactory extends ElementFactory {
   _config: ElementConfig | undefined;
-  constructor(
-    config: Record<string, Dimensions>,
-    bpmnFactory: BpmnFactory,
-    moddle: BpmnModdle,
-    translate: any
-  ) {
-    super(bpmnFactory, moddle, translate);
+  constructor(config: Record<string, Dimensions>, bpmnFactory: BpmnFactory, moddle: BpmnModdle) {
+    super(bpmnFactory, moddle);
     this._config = config;
   }
 

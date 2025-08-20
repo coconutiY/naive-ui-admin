@@ -33,6 +33,9 @@ import minimapModule from 'diagram-js-minimap';
 // 网格线背景
 import GridLineModule from 'diagram-js-grid-bg';
 
+// 键盘绑定
+import bpmnKeyboardBindings from 'bpmn-js/lib/features/keyboard';
+
 /**
  * 画布初始化相关配置
  */
@@ -83,9 +86,8 @@ export default function initModules(): ModulesAndModdles {
   // 设置 流程模拟
   modules.push(TokenSimulationModule);
   // 设置键盘事件绑定
-  options['keyboard'] = {
-    bindTo: document,
-  };
+  modules.push(bpmnKeyboardBindings);
+  //元素仓库
   modules.push(ElementFactory);
   // 创建/追加元素插件
   modules.push(CreateAppendAnythingModule);
