@@ -1,5 +1,5 @@
 import {
-  BpmnExecutionListener,
+  BpmnExecutionListener, BpmnField,
   BpmnScript,
   BpmnTaskListener,
   BpmnThrowEvent,
@@ -9,9 +9,10 @@ export declare interface ScriptForm extends BpmnScript {
   scriptType?: string;
 }
 
-export declare interface ExecutionListenerForm extends BpmnExecutionListener {
+export declare interface ExecutionListenerForm {
+  event: string;
   type: string;
-  script?: ScriptForm;
+  fields: BpmnField[];
 }
 export declare interface TaskListenerForm extends BpmnTaskListener {
   type: string;

@@ -22,7 +22,7 @@ export declare interface BpmnExecutionListener {
   class?: string;
   delegateExpression?: string;
   script?: BpmnScript;
-  fields?: BpmnField[];
+  fields: BpmnField[];
 }
 
 /**

@@ -19,6 +19,8 @@
     labelWidth: propTypes.number.def(80),
   });
   const { t } = useI18n();
+  const lucideSquarePen = defineAsyncComponent(() => import('~icons/lucide/square-pen'));
+  const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
@@ -35,14 +37,14 @@
 
   let listenersRaw = markRaw<ModdleElement[]>([]);
 
-  const listeners = ref<ExecutionListenerForm[]>([]);
+  const listeners = ref<TaskListenerForm[]>([]);
   //监听器列表配置
-  const listenerColumns: DataTableColumns<ExecutionListenerForm> = [
+  const listenerColumns: DataTableColumns<TaskListenerForm> = [
     {
       title: t('bpmn.panel.executionListenerEventType'),
       key: 'event',
       align: 'center',
-      render(rowData: ExecutionListenerForm) {
+      render(rowData: TaskListenerForm) {
         return t(`bpmn.panel.${rowData.event}`);
       },
     },
@@ -50,7 +52,7 @@
       title: t('bpmn.panel.executionListenerType'),
       key: 'type',
       align: 'center',
-      render(rowData: ExecutionListenerForm) {
+      render(rowData: TaskListenerForm) {
         return t(`bpmn.panel.${rowData.type}`);
       },
     },
@@ -58,7 +60,7 @@
       title: t('bpmn.panel.operations'),
       key: 'actions',
       align: 'center',
-      render(rowData: ExecutionListenerForm, rowIndex: number) {
+      render(rowData: TaskListenerForm, rowIndex: number) {
         return [
           h(
             NButton,
@@ -146,7 +148,7 @@
     },
   ];
   //监听器表单
-  const newListener = ref<ExecutionListenerForm>({
+  const newListener = ref<TaskListenerForm>({
     event: 'create',
     type: 'class',
     fields: [],
@@ -341,7 +343,7 @@
           </div>
         </n-divider>
         <n-data-table :data="newListener.fields" />
-        <n-button type="primary" plain @click="openFieldModel">
+        <n-button type="primary" secondary @click="openFieldModel" style="width: 100%">
           <template #icon>
             <n-icon>
               <icon-lucide-plus />
@@ -363,7 +365,7 @@
   <!-- 字段弹窗 -->
   <n-modal v-model:show="dialogModelVisible">
     <n-card :title="dialogModelTitle" :style="{ width: '640px' }">
-      <n-form ref="fieldFormRef" :model="newField" :rules="dialogRules" :label-width="labelWidth">
+      <n-form ref="fieldFormRef" :model="newField" :rules="fieldRules" :label-width="labelWidth">
         <n-form-item path="name" :label="t('bpmn.panel.fieldName')">
           <n-input v-model:value="newField.name" clearable />
         </n-form-item>

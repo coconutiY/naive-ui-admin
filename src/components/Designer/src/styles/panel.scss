@@ -1,37 +1,48 @@
 .designer_panel {
+  height: 100%;
   flex-shrink: 0;
   position: relative;
   left: -4px;
 }
 
 .drawers_btn {
+  z-index: 10;
   width: 18px;
   height: 64px;
+  top: 50%;
+  transform: translate(-100%, -50%);
   position: absolute;
-  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
-  // 使其在屏幕中间
-  top: 50%;
-  // 向左侧偏移，使其出现在屏幕
-  transform: translate(-100%, -50%);
   cursor: pointer;
   border-radius: 10px 0 0 10px;
   box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .3);
-  text-align: center;
   background-color: #f3f3f3;
 }
 
 .card {
-  min-height: calc(100vh - 110px);
+  height: 100%;
+  max-height: calc(100vh - 120px);
   box-shadow: -2px 0 6px 0 rgba(0, 0, 0, .1);
   width: 27vw;
   min-width: 460px;
   max-width: 560px;
-  //:deep(.n-card__content) {
-  //  padding: 10px 12px 10px;
-  //}
+  :deep(.n-card-header) {
+    background-color: #f5f5f7;
+  }
+  :deep(.n-card__content) {
+    //max-height: calc(100vh - 150px);
+    padding-top: 6px;
+    overflow: auto;
+    -ms-overflow-style: none;
+    ::-webkit-scrollbar {
+      width: 0 !important;
+    }
+    .n-scrollbar-rail{
+      transform: translateX(5px);
+    }
+  }
 }
 
 .panel-header {
@@ -49,7 +60,7 @@
   align-items: center;
 }
 
-.title {
+.bpmn-title {
   height: 100%;
   max-height: 30px;
   margin: 0;
@@ -57,7 +68,8 @@
   font-size: 18px;
   line-height: 30px;
 }
-.collapse-title{
+
+.collapse-title {
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -66,21 +78,25 @@
 .divider-panel {
   display: flex;
   align-items: center;
+
   span {
     margin-left: 6px;
   }
 }
-.drawer-footer{
+
+.drawer-footer {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
+
   .n-button {
     flex: 1;
     margin: 6px;
   }
 }
-.n-button.inline-large-button{
-  width: 100%;
-  margin: 12px 0 0;
-}
+
+//.n-button.inline-large-button {
+//  width: 100%;
+//  margin: 12px 0 0;
+//}

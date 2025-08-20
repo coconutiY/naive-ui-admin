@@ -18,16 +18,16 @@
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
+  const { t } = useI18n();
   const lucideSquarePen = defineAsyncComponent(() => import('~icons/lucide/square-pen'));
   const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
-  const { t } = useI18n();
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
 
   const propertyRef = ref<FormInst | null>(null);
-  const activerPropertyIndex = ref(-1);
-  const activerPropertyTitle = ref(t('bpmn.panel.addExtensionProperties'));
+  const activePropertyIndex = ref(-1);
+  const activePropertyTitle = ref(t('bpmn.panel.addExtensionProperties'));
   const extensions = ref<BpmnExtensionProperty[]>([]);
   const propertiesRaw = ref<any[]>([]);
   const newProperty = ref<BpmnExtensionProperty>({ name: '', value: '' });
@@ -93,16 +93,15 @@
     resetForm();
     propertiesRaw.value = markRaw(getExtensionProperties(modelerRef!.value, active!.value));
     extensions.value = JSON.parse(JSON.stringify(propertiesRaw.value));
-    await nextTick();
     modelVisible.value = false;
   }
 
   async function editProperty(index: number, poperty: BpmnExtensionProperty) {
-    activerPropertyIndex.value = index;
-    activerPropertyTitle.value = t('bpmn.panel.editExtensionProperties');
+    activePropertyIndex.value = index;
+    activePropertyTitle.value = t('bpmn.panel.editExtensionProperties');
     modelVisible.value = true;
     propertyRef.value;
-    Object.assign(modelVisible.value, poperty);
+    Object.assign(newProperty.value, poperty);
   }
 
   function removeProperty(propIndex: number) {
@@ -114,14 +113,14 @@
     propertyRef.value?.validate((errors) => {
       console.log(errors, 'errors');
       if (!errors) {
-        if (activerPropertyIndex.value === -1) {
+        if (activePropertyIndex.value === -1) {
           addExtensionProperty(modelerRef!.value, active!.value, toRaw(newProperty.value));
         } else {
           editExtensionProperty(
             modelerRef!.value,
             active!.value,
             newProperty.value,
-            activerPropertyIndex.value
+            activePropertyIndex.value
           );
         }
         reloadExtensionProperties();
@@ -129,8 +128,8 @@
     });
   }
   async function openPropertyModel() {
-    activerPropertyIndex.value = -1;
-    activerPropertyTitle.value = t('bpmn.panel.addExtensionProperties');
+    activePropertyIndex.value = -1;
+    activePropertyTitle.value = t('bpmn.panel.addExtensionProperties');
     resetForm();
     modelVisible.value = true;
   }
@@ -156,7 +155,7 @@
   <n-collapse-item name="ExtensionProperties">
     <template #header>
       <div class="collapse-title"
-        ><icon-lucide-file-cog /> {{ $t('bpmn.panel.extensionProperties') }}</div
+        ><icon-lucide-file-cog /> {{ t('bpmn.panel.extensionProperties') }}</div
       >
     </template>
     <template #default>
@@ -168,13 +167,13 @@
           :fit="true"
           :max-height="400"
         />
-        <n-button type="primary" secondary class="inline-large-button" @click="openPropertyModel">
+        <n-button type="primary" secondary @click="openPropertyModel" style="width: 100%">
           <template #icon>
             <n-icon>
               <icon-lucide-plus />
             </n-icon>
           </template>
-          {{ $t('bpmn.panel.addExtensionProperties') }}
+          {{ t('bpmn.panel.addExtensionProperties') }}
         </n-button>
       </div>
     </template>
@@ -183,22 +182,22 @@
     <n-card
       :bordered="false"
       size="small"
-      :title="activerPropertyTitle"
+      :title="activePropertyTitle"
       closable
       @close="() => (modelVisible = false)"
       style="width: 500px"
     >
       <n-form ref="propertyRef" :model="newProperty" :rules="rules" :label-width="labelWidth">
-        <n-form-item path="name" :label="$t('bpmn.panel.propertyName')" required>
+        <n-form-item path="name" :label="t('bpmn.panel.propertyName')" required>
           <n-input v-model:value="newProperty.name" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item path="value" :label="$t('bpmn.panel.propertyValue')" required>
+        <n-form-item path="value" :label="t('bpmn.panel.propertyValue')" required>
           <n-input v-model:value="newProperty.value" @keydown.enter.prevent />
         </n-form-item>
       </n-form>
       <template #footer>
         <n-button type="primary" size="medium" @click="saveProperty">{{
-          $t('bpmn.panel.confirm')
+          t('bpmn.panel.confirm')
         }}</n-button>
       </template>
     </n-card>

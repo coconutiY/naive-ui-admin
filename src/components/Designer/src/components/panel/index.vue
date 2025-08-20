@@ -21,9 +21,7 @@
   const ExecutionListeners = defineAsyncComponent(
     () => import('./components/ExecutionListeners.vue')
   );
-  const TaskListeners = defineAsyncComponent(
-    () => import('./components/TaskListeners.vue')
-  );
+  const TaskListeners = defineAsyncComponent(() => import('./components/TaskListeners.vue'));
   const JobExecution = defineAsyncComponent(() => import('./components/JobExecution.vue'));
   const AsyncContinuations = defineAsyncComponent(
     () => import('./components/AsyncContinuations.vue')
@@ -39,9 +37,9 @@
   const drawerIcon = computed(() =>
     drawerVisible.value ? lucideChevronsRight : lucideChevronsLeft
   );
-  const iconName = ref<string>('Process');
-  const activeType = ref<string>('');
-  const title = ref<string | undefined>('');
+  const iconName = ref('Process');
+  const activeType = ref('');
+  const title = ref('');
   // const elementName = ref<string>('Process');
   // const collapseKey = ref<any[]>([])
   const renderComponents = shallowRef<Component[]>([
@@ -68,9 +66,7 @@
       const translate = modelerRef!.value.get<Translate>(MODELER_TRANSLATE);
       activeType.value = translate(active!.value.type.split(':')[1]);
       const iconKey = bpmnIconKey(active!.value);
-      // 设置panel的标题
       title.value = translate(activeType.value);
-      // 设置标题的icon
       iconName.value = bpmnIcons[iconKey];
     }
   }
@@ -90,19 +86,21 @@
     <div class="drawers_btn" @click="changeVisible">
       <component :is="drawerIcon" />
     </div>
-    <n-card class="card" v-show="drawerVisible" header-style="background-color: #f5f5f7;">
+    <n-card class="card" v-show="drawerVisible">
       <template #header>
         <div class="panel-header">
           <BpmnIcon :name="iconName" />
-          <span class="title">{{ title }}</span>
+          <span class="bpmn-title">{{ title }}</span>
         </div>
       </template>
       <template #default>
-        <n-collapse arrow-placement="right">
-          <template v-for="renderComponent in renderComponents" :key="renderComponent">
-            <component :is="renderComponent" v-if="active" />
-          </template>
-        </n-collapse>
+        <n-scrollbar :size="1">
+          <n-collapse arrow-placement="right">
+            <template v-for="renderComponent in renderComponents" :key="renderComponent">
+              <component :is="renderComponent" v-if="active" />
+            </template>
+          </n-collapse>
+        </n-scrollbar>
       </template>
     </n-card>
   </div>
