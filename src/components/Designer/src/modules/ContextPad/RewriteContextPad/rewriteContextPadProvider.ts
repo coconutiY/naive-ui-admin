@@ -1,4 +1,7 @@
-import ContextPadProvider from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
+import ContextPadProvider, {
+  ContextPadConfig,
+  Translate,
+} from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
 import { Injector } from 'didi';
 import EventBus from 'diagram-js/lib/core/EventBus';
 import ContextPad from 'diagram-js/lib/features/context-pad/ContextPad';
@@ -9,6 +12,7 @@ import Create from 'diagram-js/lib/features/create/Create';
 import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
 import Canvas from 'diagram-js/lib/core/Canvas';
 import Rules from 'diagram-js/lib/features/rules/Rules';
+import AppendPreview from 'bpmn-js/lib/features/append-preview/AppendPreview';
 
 class RewriteContextPadProvider extends ContextPadProvider {
   // @ts-ignore
@@ -30,7 +34,7 @@ class RewriteContextPadProvider extends ContextPadProvider {
   // @ts-ignore
   private _rules: Rules;
   constructor(
-    config: any,
+    config: ContextPadConfig,
     injector: Injector,
     eventBus: EventBus,
     contextPad: ContextPad,
@@ -41,7 +45,8 @@ class RewriteContextPadProvider extends ContextPadProvider {
     popupMenu: PopupMenu,
     canvas: Canvas,
     rules: Rules,
-    translate: any
+    translate: Translate,
+    appendPreview: AppendPreview
   ) {
     super(
       config,
@@ -55,7 +60,8 @@ class RewriteContextPadProvider extends ContextPadProvider {
       popupMenu,
       canvas,
       rules,
-      translate
+      translate,
+      appendPreview
     );
 
     this._contextPad = contextPad;

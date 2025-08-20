@@ -12,10 +12,6 @@ declare interface BpmnField {
   fieldType?: 'string' | 'expression';
 }
 
-declare interface BpmnExtensionElements {
-  values: any[];
-}
-
 export declare interface BpmnExecutionListener {
   event: string;
   expression?: string;

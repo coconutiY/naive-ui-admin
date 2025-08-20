@@ -1,9 +1,23 @@
 import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
-import { Base } from 'diagram-js/lib/model';
-import Canvas, { Position } from 'diagram-js/lib/core/Canvas';
-import { InternalEvent } from 'diagram-js/lib/core/EventBus';
+import Canvas, { CanvasViewbox } from 'diagram-js/lib/core/Canvas';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { isAppendAction } from '@/components/Designer/src/utils/tools';
+import { Element, Shape } from 'diagram-js/lib/model/Types';
+import { Point } from 'diagram-js/lib/util/Types';
+
+interface InternalEvent {
+  type: string; // 发生的事件名称，但是很快会被置为undefined
+  element: Element;
+  elements: Element[];
+  shape: Shape;
+  originalEvent: MouseEvent;
+  context: object; // 有点复杂，有兴趣的朋友可以研究
+  gfx?: SVGElement;
+  svg?: SVGElement;
+  viewport?: SVGElement;
+  viewbox?: CanvasViewbox;
+  pad?: object; // 见 Element.pad
+}
 
 export default function enhancementContextmenu(modeler: Modeler) {
   const config: any = {
@@ -27,7 +41,7 @@ export default function enhancementContextmenu(modeler: Modeler) {
     if (config.templateChooser) {
       // 1. 更改元素类型
       //2. 创建新元素 (仅开启模板扩展时可以)
-      if (!isAppendAction(element)) {
+      if (!element && !isAppendAction(element)) {
         openPopupMenu(modeler, element, originalEvent, 'replace');
       } else {
         openPopupMenu(modeler, element, originalEvent, 'create');
@@ -36,8 +50,8 @@ export default function enhancementContextmenu(modeler: Modeler) {
   });
 }
 
-const openPopupMenu = (modeler: Modeler, element: Base, event: MouseEvent, type: string) => {
-  const popupMenu: PopupMenu = modeler.get('popupMenu');
+const openPopupMenu = (modeler: Modeler, element: Element, event: MouseEvent, type: string) => {
+  const popupMenu: PopupMenu = modeler.get<PopupMenu>('popupMenu');
   const canvas: Canvas = modeler.get('canvas');
   if (type === 'replace') {
     if (popupMenu && !popupMenu.isEmpty(element, 'bpmn-replace')) {
@@ -57,8 +71,8 @@ const openPopupMenu = (modeler: Modeler, element: Base, event: MouseEvent, type:
     }
   } else {
     const rootElement = canvas.getRootElement();
-    const position: Position = getContextMenuPosition(event);
-    popupMenu.open(rootElement as Base, 'bpmn-create', position, {
+    const position: Point = getContextMenuPosition(event);
+    popupMenu.open(rootElement as Element, 'bpmn-create', position, {
       title: '创建元素',
       width: 300,
       search: true,
@@ -80,7 +94,7 @@ const openPopupMenu = (modeler: Modeler, element: Base, event: MouseEvent, type:
  * @param event
  * @param offset
  */
-const getContextMenuPosition = (event: MouseEvent, offset?: boolean): Position => {
+const getContextMenuPosition = (event: MouseEvent, offset?: boolean): Point => {
   return {
     x: event.clientX + (offset ? 10 : 0),
     y: event.clientY + (offset ? 25 : 0),

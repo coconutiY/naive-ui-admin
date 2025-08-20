@@ -129,7 +129,7 @@ declare module 'bpmn-js-token-simulation/lib/features/context-pads/ContextPads' 
     closeContextPads(parent: any): void;
     closeElementContextPads(element: any): void;
   }
-}
+}pnpm
 declare module 'bpmn-js-token-simulation/lib/features/disable-modeling/DisableModeling' {
   export default class DisableModeling {}
 }

@@ -1,5 +1,6 @@
 import {
-  BpmnExecutionListener, BpmnField,
+  BpmnExecutionListener,
+  BpmnField,
   BpmnScript,
   BpmnTaskListener,
   BpmnThrowEvent,
