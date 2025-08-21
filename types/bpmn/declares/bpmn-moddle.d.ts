@@ -1,711 +1,378 @@
 declare module 'bpmn-moddle' {
-  import { Moddle, Package, ModdleElement } from 'moddle';
+  import { Moddle } from 'moddle';
 
-  export { Moddle, Package, ModdleElement };
+  /**
+   * BPMN-Moddle类 - 扩展自Moddle，专门用于BPMN 2.0模型
+   */
+  export class BpmnModdle extends Moddle {
+    /**
+     * 创建BPMN-Moddle实例
+     * @param packages BPMN包配置
+     * @param options 选项配置
+     */
+    constructor(packages?: BpmnPackages, options?: BpmnModdleOptions);
 
-  type ParseResult = {
-    rootElement: ModdleElement;
-    references: object[];
-    warnings: Error[];
-    elementsById: { [key: string]: ModdleElement };
-  };
-  type ParseError = {
-    warnings: Error[];
-  };
+    /**
+     * 创建BPMN元素
+     * @param type BPMN元素类型
+     * @param attrs 元素属性
+     * @param options 创建选项
+     */
+    create(type: BpmnElementType, attrs?: any, options?: BpmnCreateOptions): BpmnElement;
 
-  type SerializationResult = {
-    xml: string;
-  };
+    /**
+     * 从XML创建BPMN模型
+     * @param xml XML字符串
+     * @param options 选项
+     */
+    fromXML(xml: string, options?: FromXMLOptions): Promise<BpmnParseResult>;
 
-  // bpmn.json 原始类型
-  export interface RootElement extends BaseElement {
-    id?: string;
+    /**
+     * 将BPMN模型转换为XML
+     * @param definitions BPMN定义对象
+     * @param options 选项
+     */
+    toXML(definitions: BpmnDefinitions, options?: ToXMLOptions): Promise<string>;
+
+    /**
+     * 获取BPMN类型描述符
+     * @param type BPMN类型名称
+     */
+    getBpmnTypeDescriptor(type: string): BpmnTypeDescriptor;
+
+    /**
+     * 获取所有BPMN类型
+     */
+    getBpmnTypes(): BpmnTypeDescriptor[];
   }
-  export interface BaseElement extends ModdleElement {
-    id?: string;
-    documentation?: Documentation;
-    extensionDefinitions?: ExtensionDefinition[];
-    extensionElements?: ExtensionElements;
+
+  /**
+   * BPMN包配置接口
+   */
+  export interface BpmnPackages {
+    /** BPMN核心包 */
+    bpmn?: BpmnPackage;
+    /** BPMN扩展包 */
+    bpmndi?: BpmnDiPackage;
+    /** DC包（图形元素） */
+    dc?: DcPackage;
+    /** DI包（图表交换） */
+    di?: DiPackage;
+    /** 自定义包 */
+    [key: string]: any;
   }
-  export interface Interface extends RootElement {
+
+  /**
+   * BPMN包接口
+   */
+  export interface BpmnPackage {
+    /** 包名 */
+    name: string;
+    /** 包URI */
+    uri: string;
+    /** 包前缀 */
+    prefix: string;
+    /** 类型定义 */
+    types: BpmnTypeDescriptor[];
+    /** 属性定义 */
+    properties: BpmnPropertyDescriptor[];
+  }
+
+  /**
+   * BPMN类型描述符接口
+   */
+  export interface BpmnTypeDescriptor {
+    /** 类型名 */
+    name: string;
+    /** 类型描述 */
+    description?: string;
+    /** 父类型 */
+    extends?: string;
+    /** 属性定义 */
+    properties: BpmnPropertyDescriptor[];
+    /** 是否抽象 */
+    abstract?: boolean;
+    /** 是否根类型 */
+    root?: boolean;
+  }
+
+  /**
+   * BPMN属性描述符接口
+   */
+  export interface BpmnPropertyDescriptor {
+    /** 属性名 */
+    name: string;
+    /** 属性类型 */
+    type: string;
+    /** 是否必需 */
+    required?: boolean;
+    /** 默认值 */
+    default?: any;
+    /** 是否计算属性 */
+    computed?: boolean;
+    /** 是否引用 */
+    isReference?: boolean;
+    /** 是否ID */
+    isId?: boolean;
+  }
+
+  /**
+   * BPMN元素类型联合类型
+   */
+  export type BpmnElementType = 
+    | 'bpmn:Definitions'
+    | 'bpmn:Process'
+    | 'bpmn:Task'
+    | 'bpmn:UserTask'
+    | 'bpmn:ServiceTask'
+    | 'bpmn:ScriptTask'
+    | 'bpmn:StartEvent'
+    | 'bpmn:EndEvent'
+    | 'bpmn:IntermediateThrowEvent'
+    | 'bpmn:IntermediateCatchEvent'
+    | 'bpmn:BoundaryEvent'
+    | 'bpmn:ExclusiveGateway'
+    | 'bpmn:ParallelGateway'
+    | 'bpmn:InclusiveGateway'
+    | 'bpmn:EventBasedGateway'
+    | 'bpmn:SequenceFlow'
+    | 'bpmn:DataObject'
+    | 'bpmn:DataStore'
+    | 'bpmn:DataInput'
+    | 'bpmn:DataOutput'
+    | 'bpmn:Participant'
+    | 'bpmn:Lane'
+    | 'bpmn:SubProcess'
+    | 'bpmn:CallActivity'
+    | 'bpmn:Transaction'
+    | 'bpmn:AdHocSubProcess'
+    | 'bpmn:EventSubProcess'
+    | 'bpmn:TextAnnotation'
+    | 'bpmn:Association'
+    | 'bpmn:Group'
+    | 'bpmn:Category'
+    | 'bpmn:Collaboration'
+    | 'bpmn:Choreography'
+    | 'bpmn:ChoreographyTask'
+    | 'bpmn:ChoreographySubProcess'
+    | 'bpmn:GlobalTask'
+    | string;
+
+  /**
+   * BPMN元素基础接口
+   */
+  export interface BpmnElement {
+    /** 元素ID */
+    id?: string;
+    /** 元素类型 */
+    $type: string;
+    /** 父元素 */
+    $parent?: BpmnElement;
+    /** 子元素 */
+    $children?: BpmnElement[];
+    /** 元素属性 */
+    [key: string]: any;
+  }
+
+  /**
+   * BPMN定义接口
+   */
+  export interface BpmnDefinitions extends BpmnElement {
+    /** 目标命名空间 */
+    targetNamespace: string;
+    /** 根元素 */
+    rootElements: BpmnElement[];
+    /** 图表信息 */
+    diagrams?: BpmnDiagram[];
+    /** 导入 */
+    imports?: BpmnImport[];
+    /** 扩展 */
+    extensions?: BpmnExtension[];
+  }
+
+  /**
+   * BPMN流程接口
+   */
+  export interface BpmnProcess extends BpmnElement {
+    /** 流程名称 */
     name?: string;
-    operations?: Operation[];
-    implementationRef?: string;
-  }
-  export interface Operation extends BaseElement {
-    name?: string;
-    inMessageRef?: Message;
-    outMessageRef?: Message;
-    errorRef?: Error[];
-    implementationRef?: string;
-  }
-  export interface EndPoint extends RootElement {
-    id?: string;
-  }
-  export interface Auditing extends BaseElement {
-    id?: string;
-  }
-  export interface GlobalTask extends CallableElement {
-    resources?: ResourceRole[];
-  }
-  export interface Monitoring extends BaseElement {
-    id?: string;
-  }
-  export interface Performer extends ResourceRole {
-    id?: string;
-  }
-  export interface Process extends FlowElementsContainer, CallableElement {
-    processType?: ProcessType;
-    isClosed?: boolean;
-    auditing?: Auditing;
-    monitoring?: Monitoring;
-    properties?: Property[];
-    laneSets?: LaneSet[];
-    flowElements?: FlowElement[];
-    artifacts?: Artifact[];
-    resources?: ResourceRole[];
-    correlationSubscriptions?: CorrelationSubscription[];
-    supports?: Process[];
-    definitionalCollaborationRef?: Collaboration[];
+    /** 是否可执行 */
     isExecutable?: boolean;
+    /** 流程元素 */
+    flowElements?: BpmnElement[];
+    /** 参与者 */
+    participants?: BpmnParticipant[];
+    /** 泳道 */
+    lanes?: BpmnLane[];
   }
-  export interface Lane extends BaseElement {
+
+  /**
+   * BPMN活动接口
+   */
+  export interface BpmnActivity extends BpmnElement {
+    /** 活动名称 */
     name?: string;
-    partitionElementRef?: BaseElement[];
-    partitionElement?: BaseElement;
-    flowNodeRef?: FlowNode[];
-    childLaneSet?: LaneSet[];
+    /** 输入流 */
+    incoming?: BpmnSequenceFlow[];
+    /** 输出流 */
+    outgoing?: BpmnSequenceFlow[];
+    /** 边界事件 */
+    boundaryEventRefs?: BpmnBoundaryEvent[];
   }
-  export interface LaneSet extends BaseElement {
-    lanes?: Lane[];
+
+  /**
+   * BPMN事件接口
+   */
+  export interface BpmnEvent extends BpmnElement {
+    /** 事件名称 */
     name?: string;
+    /** 输入流 */
+    incoming?: BpmnSequenceFlow[];
+    /** 输出流 */
+    outgoing?: BpmnSequenceFlow[];
+    /** 事件定义 */
+    eventDefinitions?: BpmnEventDefinition[];
   }
-  export interface GlobalManualTask extends GlobalTask {
-    id?: string;
-  }
-  export interface ManualTask extends Task {
-    id?: string;
-  }
-  export interface UserTask extends Task {
-    renderings?: Rendering[];
-    implementation?: string;
-  }
-  export interface Rendering extends BaseElement {
-    id?: string;
-  }
-  export interface HumanPerformer extends Performer {
-    id?: string;
-  }
-  export interface PotentialOwner extends HumanPerformer {
-    id?: string;
-  }
-  export interface GlobalUserTask extends GlobalTask {
-    implementation?: string;
-    renderings?: Rendering[];
-  }
-  export interface Gateway extends FlowNode {
-    gatewayDirection?: GatewayDirection;
-  }
-  export interface EventBasedGateway extends Gateway {
-    instantiate: boolean;
-    eventGatewayType?: EventBasedGatewayType;
-  }
-  export interface ComplexGateway extends Gateway {
-    activationCondition?: Expression;
-    default?: SequenceFlow;
-  }
-  export interface ExclusiveGateway extends Gateway {
-    default?: SequenceFlow;
-  }
-  export interface InclusiveGateway extends Gateway {
-    default?: SequenceFlow;
-  }
-  export interface ParallelGateway extends Gateway {
-    id?: string;
-  }
-  export interface Relationship extends BaseElement {
-    type?: string;
-    direction?: RelationshipDirection;
-    source?: Element[];
-    target?: Element[];
-  }
-  export interface Extension {
-    mustUnderstand: boolean; //"default": false
-    definition?: ExtensionDefinition;
-  }
-  export interface ExtensionDefinition {
-    name?: string; //"default": false
-    extensionAttributeDefinitions?: ExtensionAttributeDefinition[];
-  }
-  export interface ExtensionAttributeDefinition {
+
+  /**
+   * BPMN网关接口
+   */
+  export interface BpmnGateway extends BpmnElement {
+    /** 网关名称 */
     name?: string;
-    type?: string;
-    isReference: boolean;
-    extensionAttributeDefinitions?: ExtensionAttributeDefinition[];
-    extensionDefinition?: ExtensionDefinition;
+    /** 输入流 */
+    incoming?: BpmnSequenceFlow[];
+    /** 输出流 */
+    outgoing?: BpmnSequenceFlow[];
+    /** 网关方向 */
+    gatewayDirection?: 'Unspecified' | 'Converging' | 'Diverging' | 'Mixed';
   }
-  export interface ExtensionElements {
-    valueRef?: Element;
-    values?: Element[];
-    extensionAttributeDefinition?: ExtensionAttributeDefinition;
-  }
-  export interface Documentation extends BaseElement {
-    text?: string;
-    textFormat: string;
-  }
-  export interface Event extends FlowNode, InteractionNode {
-    properties?: Property[];
-  }
-  export interface IntermediateCatchEvent extends CatchEvent {
-    id?: string;
-  }
-  export interface IntermediateThrowEvent extends ThrowEvent {
-    id?: string;
-  }
-  export interface EndEvent extends ThrowEvent {
-    id?: string;
-  }
-  export interface StartEvent extends CatchEvent {
-    isInterrupting: boolean;
-  }
-  export interface ThrowEvent extends Event {
-    dataInputs?: DataInput[];
-    dataInputAssociations?: DataInputAssociation[];
-    inputSet?: InputSet;
-    eventDefinitions?: EventDefinition[];
-    eventDefinitionRef?: EventDefinition[];
-  }
-  export interface CatchEvent extends Event {
-    parallelMultiple: boolean;
-    dataOutputs?: DataOutput[];
-    dataOutputAssociations?: DataOutputAssociation[];
-    outputSet?: OutputSet;
-    eventDefinitions?: EventDefinition[];
-    eventDefinitionRef?: EventDefinition[];
-  }
-  export interface BoundaryEvent extends CatchEvent {
-    cancelActivity: boolean;
-    attachedToRef?: Activity;
-  }
-  export interface EventDefinition extends RootElement {
-    id?: string;
-  }
-  export interface CancelEventDefinition extends EventDefinition {
-    id?: string;
-  }
-  export interface ErrorEventDefinition extends EventDefinition {
-    errorRef?: Error;
-  }
-  export interface TerminateEventDefinition extends EventDefinition {
-    id?: string;
-  }
-  export interface EscalationEventDefinition extends EventDefinition {
-    escalationRef?: Escalation;
-  }
-  export interface Escalation extends RootElement {
-    structureRef?: ItemDefinition;
+
+  /**
+   * BPMN序列流接口
+   */
+  export interface BpmnSequenceFlow extends BpmnElement {
+    /** 序列流名称 */
     name?: string;
-    escalationCode?: string;
+    /** 源元素 */
+    sourceRef: BpmnElement;
+    /** 目标元素 */
+    targetRef: BpmnElement;
+    /** 条件表达式 */
+    conditionExpression?: BpmnExpression;
   }
-  export interface CompensateEventDefinition extends EventDefinition {
-    waitForCompletion: boolean;
-    activityRef?: Activity;
-  }
-  export interface TimerEventDefinition extends EventDefinition {
-    timeDate?: Expression;
-    timeCycle?: Expression;
-    timeDuration?: Expression;
-  }
-  export interface LinkEventDefinition extends EventDefinition {
-    name?: string;
-    target?: LinkEventDefinition;
-    source?: LinkEventDefinition;
-  }
-  export interface MessageEventDefinition extends EventDefinition {
-    messageRef?: Message;
-    operationRef?: Operation;
-  }
-  export interface ConditionalEventDefinition extends EventDefinition {
-    condition?: Expression;
-  }
-  export interface SignalEventDefinition extends EventDefinition {
-    signalRef?: Signal;
-  }
-  export interface Signal extends RootElement {
-    name?: string;
-    structureRef?: ItemDefinition;
-  }
-  export interface ImplicitThrowEvent extends ThrowEvent {
-    id?: string;
-  }
-  export interface DataState extends BaseElement {
-    name?: string;
-  }
-  export interface ItemAwareElement extends BaseElement {
-    itemSubjectRef?: ItemDefinition;
-    dataState?: DataState;
-  }
-  export interface DataAssociation extends BaseElement {
-    sourceRef?: ItemAwareElement;
-    targetRef?: ItemAwareElement;
-    transformation?: FormalExpression;
-    assignment?: Assignment;
-  }
-  export interface DataInput extends ItemAwareElement {
-    name?: string;
-    isCollection: boolean;
-    inputSetRef?: InputSet[];
-    inputSetWithOptional?: InputSet[];
-    inputSetWithWhileExecuting?: InputSet[];
-  }
-  export interface DataOutput extends ItemAwareElement {
-    name?: string;
-    isCollection: boolean;
-    outputSetRef?: OutputSet[];
-    outputSetWithOptional?: OutputSet[];
-    outputSetWithWhileExecuting?: OutputSet[];
-  }
-  export interface InputSet extends BaseElement {
-    name?: string;
-    dataInputRefs?: DataInput[];
-    optionalInputRefs?: DataInput[];
-    whileExecutingInputRefs?: DataInput[];
-    outputSetRefs?: OutputSet[];
-  }
-  export interface OutputSet extends BaseElement {
-    name?: string;
-    dataOutputRefs?: DataOutput[];
-    inputSetRefs?: InputSet[];
-    optionalOutputRefs?: DataOutput[];
-    whileExecutingOutputRefs?: DataOutput[];
-  }
-  export interface Property extends ItemAwareElement {
-    name?: string;
-  }
-  export interface DataInputAssociation extends DataAssociation {
-    id?: string;
-  }
-  export interface DataOutputAssociation extends DataAssociation {
-    id?: string;
-  }
-  export interface InputOutputSpecification extends BaseElement {
-    dataInputs?: DataInput[];
-    dataOutputs?: DataOutput[];
-    inputSets?: InputSet[];
-    outputSets?: OutputSet[];
-  }
-  export interface DataObject extends FlowElement, ItemAwareElement {
-    isCollection: boolean;
-  }
-  export interface isCollection {
-    inputDataRef?: InputSet;
-    outputDataRef?: OutputSet;
-    operationRef?: Operation;
-  }
-  export interface Assignment extends BaseElement {
-    from?: Expression;
-    to?: Expression;
-  }
-  export interface DataStore extends RootElement, ItemAwareElement {
-    name?: string;
-    capacity?: number;
-    isUnlimited: boolean;
-  }
-  export interface Category extends RootElement, ItemAwareElement {
-    name?: string;
-    capacity?: number;
-    isUnlimited: boolean;
-  }
-  export interface DataStoreReference extends ItemAwareElement, FlowElement {
-    dataStoreRef?: DataStore;
-  }
-  export interface DataObjectReference extends ItemAwareElement, FlowElement {
-    dataObjectRef?: DataObject;
-  }
-  export interface ConversationNode extends BaseElement, InteractionNode {
-    name?: string;
-    messageFlows?: MessageFlow[];
-    CorrelationKeys?: CorrelationKey[];
-    participants?: Participant[];
-  }
-  export interface ConversationLink extends BaseElement {
-    sourceRef?: InteractionNode;
-    targetRef?: InteractionNode;
-    name?: string;
-  }
-  export interface ConversationAssociation extends BaseElement {
-    innerConversationNodeRef?: ConversationNode;
-    outerConversationNodeRef?: ConversationNode;
-  }
-  export interface CallConversation extends ConversationNode {
-    calledCollaborationRef?: Collaboration;
-    participantAssociations?: ParticipantAssociation[];
-  }
-  export interface Conversation extends ConversationNode {
-    id?: string;
-  }
-  export interface SubConversation extends ConversationNode {
-    conversationNodes?: ConversationNode[];
-  }
-  export interface conversationNodes extends BaseElement, InteractionNode {
-    name?: string;
-    participantRef?: Participant[];
-    messageFlowRefs?: MessageFlow[];
-    correlationKeys?: CorrelationKey[];
-  }
-  export interface GlobalConversation extends Collaboration {
-    id?: string;
-  }
-  export interface PartnerEntity extends RootElement {
-    name?: string;
-    participantRef?: Participant[];
-  }
-  export interface PartnerRole extends RootElement {
-    name?: string;
-    participantRef?: Participant[];
-  }
-  export interface CorrelationProperty extends RootElement {
-    name?: string;
-    correlationPropertyRetrievalExpression?: CorrelationPropertyRetrievalExpression[];
-    type?: ItemDefinition;
-  }
-  export interface Error extends RootElement {
-    name?: string;
-    errorCode?: string;
-    structureRef?: ItemDefinition;
-  }
-  export interface CorrelationKey extends BaseElement {
-    correlationPropertyRef?: CorrelationProperty[];
-    name?: string;
-  }
-  export interface Expression extends BaseElement {
+
+  /**
+   * BPMN表达式接口
+   */
+  export interface BpmnExpression extends BpmnElement {
+    /** 表达式内容 */
     body?: string;
-  }
-  export interface FormalExpression extends Expression {
+    /** 表达式语言 */
     language?: string;
-    evaluatesToTypeRef?: ItemDefinition;
-  }
-  export interface Message extends RootElement {
-    language?: string;
-    itemRef?: ItemDefinition;
-  }
-  export interface ItemDefinition extends RootElement {
-    itemKind?: ItemKind;
-    structureRef?: string;
-    isCollection: boolean;
-    import?: Import;
-  }
-  export interface FlowElement extends BaseElement {
-    name?: string;
-    auditing?: Auditing;
-    monitoring?: Monitoring;
-    categoryValueRef?: CategoryValue[];
-  }
-  export interface SequenceFlow extends FlowElement {
-    conditionExpression?: Expression;
-    isImmediate?: boolean;
-    sourceRef?: FlowNode;
-    targetRef?: FlowNode;
-  }
-  export interface FlowElementsContainer extends BaseElement {
-    laneSets?: LaneSet[];
-    flowElements?: FlowElement[];
-  }
-  export interface CallableElement extends RootElement {
-    name?: string;
-    ioSpecification?: InputOutputSpecification;
-    supportedInterfaceRefs?: Interface[];
-    ioBinding?: InputOutputBinding[];
-  }
-  export interface FlowNode extends FlowElement {
-    incoming?: SequenceFlow[];
-    outgoing?: SequenceFlow[];
-    lanes?: Lane[];
-  }
-  export interface CorrelationPropertyRetrievalExpression extends BaseElement {
-    messagePath?: FormalExpression;
-    messageRef?: Message;
-  }
-  export interface CorrelationPropertyBinding extends BaseElement {
-    dataPath?: FormalExpression;
-    correlationPropertyRef?: CorrelationProperty;
-  }
-  export interface Resource extends RootElement {
-    name?: string;
-    resourceParameters?: ResourceParameter[];
-  }
-  export interface ResourceParameter extends RootElement {
-    name?: string;
-    isRequired?: boolean;
-    type?: ItemDefinition;
-  }
-  export interface CorrelationSubscription extends BaseElement {
-    correlationKeyRef?: CorrelationKey[];
-    correlationPropertyBinding?: CorrelationPropertyBinding[];
-  }
-  export interface MessageFlow extends BaseElement {
-    name?: string;
-    sourceRef?: InteractionNode;
-    targetRef?: InteractionNode;
-    messageRef?: Message;
-  }
-  export interface MessageFlowAssociation extends BaseElement {
-    innerMessageFlowRef?: MessageFlow;
-    outerMessageFlowRef?: MessageFlow;
-  }
-  export interface InteractionNode {
-    incomingConversationLinks?: ConversationLink[];
-    outgoingConversationLinks?: ConversationLink[];
-  }
-  export interface Participant extends BaseElement, InteractionNode {
-    name?: string;
-    interfaceRef?: Interface[];
-    participantMultiplicity?: ParticipantMultiplicity;
-    endPointRefs?: EndPoint[];
-    processRef?: Process;
-  }
-  export interface ParticipantAssociation extends BaseElement {
-    innerParticipantRef?: Participant;
-    outerParticipantRef?: Participant;
-  }
-  export interface ParticipantMultiplicity extends BaseElement {
-    minimum: number;
-    maximum: number;
-  }
-  export interface Collaboration extends RootElement {
-    name?: string;
-    isClosed?: boolean;
-    participants?: Participant[];
-    messageFlows?: MessageFlow[];
-    artifacts?: Artifact[];
-    conversations?: ConversationNode[];
-    conversationAssociations?: ConversationAssociation[];
-    participantAssociations?: ParticipantAssociation[];
-    messageFlowAssociations?: MessageFlowAssociation[];
-    correlationKeys?: CorrelationKey[];
-    choreographyRef?: Choreography[];
-    conversationLinks?: ConversationLink[];
-  }
-  export interface ChoreographyActivity extends FlowNode {
-    initiatingParticipantRef?: Participant;
-    participantRefs?: Participant[];
-    correlationKeys?: CorrelationKey[];
-    loopType: ChoreographyLoopType;
-  }
-  export interface CallChoreography extends ChoreographyActivity {
-    calledChoreographyRef?: Choreography;
-    participantAssociations?: ParticipantAssociation[];
-  }
-  export interface ChoreographyTask extends ChoreographyActivity {
-    messageFlowRef?: MessageFlow[];
-  }
-  export interface Choreography extends Collaboration, FlowElementsContainer {}
-  export interface GlobalChoreographyTask extends Choreography {
-    initiatingParticipantRef?: Participant;
-  }
-  export interface TextAnnotation extends Artifact {
-    text?: string;
-    textFormat?: string;
-  }
-  export interface Group extends Artifact {
-    categoryValueRef?: CategoryValue[];
-  }
-  export interface Association extends Artifact {
-    associationDirection?: AssociationDirection[];
-    sourceRef?: BaseElement[];
-    targetRef?: BaseElement[];
-  }
-  export interface Category extends RootElement {
-    categoryValue?: CategoryValue[];
-    name?: string;
-  }
-  export interface Artifact extends BaseElement {
-    id?: string;
-  }
-  export interface CategoryValue extends BaseElement {
-    categorizedFlowElements?: FlowElement[];
-    value?: string;
-  }
-  export interface Activity extends FlowNode {
-    isForCompensation: boolean;
-    default?: SequenceFlow;
-    ioSpecification?: InputOutputSpecification;
-    boundaryEventRefs?: BoundaryEvent[];
-    properties?: Property[];
-    dataInputAssociations?: DataInputAssociation[];
-    dataOutputAssociations?: DataOutputAssociation[];
-    startQuantity: number;
-    resources?: ResourceRole[];
-    completionQuantity: number;
-    loopCharacteristics?: LoopCharacteristics;
-  }
-  export interface ServiceTask extends Task {
-    implementation?: string;
-    operationRef?: Operation;
-  }
-  export interface SubProcess extends Activity, FlowElementsContainer, InteractionNode {
-    triggeredByEvent: boolean;
-    artifacts?: Artifact[];
-  }
-  export interface LoopCharacteristics extends BaseElement {
-    id?: string;
-  }
-  export interface MultiInstanceLoopCharacteristics extends LoopCharacteristics {
-    isSequential: boolean;
-    behavior?: MultiInstanceBehavior;
-    loopCardinality?: Expression;
-    loopDataInputRef?: ItemAwareElement;
-    loopDataOutputRef?: ItemAwareElement;
-    inputDataItem?: DataInput;
-    outputDataItem?: DataOutput;
-    complexBehaviorDefinition?: ComplexBehaviorDefinition;
-    completionCondition?: Expression;
-    oneBehaviorEventRef?: EventDefinition[];
-    noneBehaviorEventRef?: EventDefinition[];
-  }
-  export interface StandardLoopCharacteristics extends LoopCharacteristics {
-    testBefore: boolean;
-    loopCondition?: Expression;
-    loopMaximum?: number;
-  }
-  export interface CallActivity extends Activity, InteractionNode {
-    calledElement?: string;
-  }
-  export interface Task extends Activity, InteractionNode {}
-  export interface SendTask extends Task {
-    implementation?: string;
-    operationRef?: Operation;
-    messageRef?: Message;
-  }
-  export interface ReceiveTask extends Task {
-    implementation?: string;
-    instantiate: boolean;
-    operationRef?: Operation;
-    messageRef?: Message;
-  }
-  export interface ScriptTask extends Task {
-    scriptFormat?: string;
-    script?: string;
-  }
-  export interface BusinessRuleTask extends Task {
-    implementation?: string;
-  }
-  export interface AdHocSubProcess extends SubProcess {
-    completionCondition?: Expression;
-    ordering?: AdHocOrdering;
-    cancelRemainingInstances: boolean;
-  }
-  export interface Transaction extends SubProcess {
-    protocal?: string;
-    method?: string;
-  }
-  export interface GlobalScriptTask extends GlobalTask {
-    scriptLanguage?: string;
-    script?: string;
-  }
-  export interface GlobalBusinessRuleTask extends GlobalTask {
-    implementation?: string;
-  }
-  export interface CompletionCondition extends BaseElement {
-    condition?: FormalExpression;
-    event?: ImplicitThrowEvent;
-  }
-  export interface ResourceRole extends BaseElement {
-    name?: string;
-    resourceRef?: Resource;
-    resourceParameterBindings?: ResourceParameterBinding[];
-    resourceAssignmentExpression?: ResourceAssignmentExpression;
-  }
-  export interface ResourceParameterBinding extends BaseElement {
-    expression?: Expression;
-    parameterRef?: ResourceParameter;
-  }
-  export interface ResourceAssignmentExpression extends BaseElement {
-    expression?: Expression;
-  }
-  export interface Import {
-    importType?: string;
-    location?: string;
-    namespace?: string;
-  }
-  export interface Definitions extends BaseElement {
-    name?: string;
-    targetNamespace?: string;
-    expressionLanguage: string;
-    typeLanguage: string;
-    imports?: Import[];
-    extensions?: Extension[];
-    rootElements?: RootElement[];
-    diagrams?: any[]; // bpmndi:BPMNDiagram
-    exporters?: string;
-    relationships?: Relationship[];
-    exporterVersion?: string;
-  }
-  export interface InputOutputBinding {
-    inputDataRef?: InputSet;
-    outputDataRef?: OutputSet;
-    operationRef?: Operation;
-  }
-  export interface ComplexBehaviorDefinition extends BaseElement {
-    condition?: FormalExpression;
-    event?: ImplicitThrowEvent[];
   }
 
-  export enum ProcessType {
-    None,
-    Public,
-    Private,
-  }
-  export enum GatewayDirection {
-    Unspecified,
-    Convergent,
-    Diverging,
-    Mixed,
-  }
-  export enum EventBasedGatewayType {
-    Parallel,
-    Exclusive,
-  }
-  export enum RelationshipDirection {
-    None,
-    Forward,
-    Backward,
-    Both,
-  }
-  export enum ItemKind {
-    Physical,
-    Information,
-  }
-  export enum ChoreographyLoopType {
-    None,
-    Standard,
-    MultiInstanceSequential,
-    MultiInstanceParallel,
-  }
-  export enum AssociationDirection {
-    None,
-    One,
-    Both,
-  }
-  export enum MultiInstanceBehavior {
-    None,
-    One,
-    All,
-    Complex,
-  }
-  export enum AdHocOrdering {
-    Parallel,
-    Sequential,
+  /**
+   * BPMN事件定义接口
+   */
+  export interface BpmnEventDefinition extends BpmnElement {
+    /** 事件定义类型 */
+    $type: string;
   }
 
-  // 默认导出
-  export default class BpmnModdle extends Moddle {
-    constructor(packages?: Package[], options?: object);
-    fromXML(
-      xmlStr: string,
-      typeName?: string | object,
-      options?: object
-    ): Promise<ParseResult | ParseError>;
-    toXML(element: string, options?: object): Promise<SerializationResult | Error>;
+  /**
+   * BPMN参与者接口
+   */
+  export interface BpmnParticipant extends BpmnElement {
+    /** 参与者名称 */
+    name?: string;
+    /** 关联流程 */
+    processRef?: BpmnProcess;
   }
+
+  /**
+   * BPMN泳道接口
+   */
+  export interface BpmnLane extends BpmnElement {
+    /** 泳道名称 */
+    name?: string;
+    /** 流程元素引用 */
+    flowNodeRefs?: BpmnElement[];
+  }
+
+  /**
+   * BPMN边界事件接口
+   */
+  export interface BpmnBoundaryEvent extends BpmnEvent {
+    /** 附加到的活动 */
+    attachedToRef: BpmnActivity;
+    /** 是否取消活动 */
+    cancelActivity?: boolean;
+  }
+
+  /**
+   * BPMN图表接口
+   */
+  export interface BpmnDiagram extends BpmnElement {
+    /** 图表名称 */
+    name?: string;
+    /** 图表元素 */
+    plane?: BpmnPlane;
+  }
+
+  /**
+   * BPMN平面接口
+   */
+  export interface BpmnPlane extends BpmnElement {
+    /** 业务元素引用 */
+    bpmnElement?: BpmnElement;
+    /** 图形元素 */
+    planeElement?: BpmnDiElement[];
+  }
+
+  /**
+   * BPMN图形元素接口
+   */
+  export interface BpmnDiElement extends BpmnElement {
+    /** 业务元素引用 */
+    bpmnElement?: BpmnElement;
+  }
+
+  /**
+   * BPMN导入接口
+   */
+  export interface BpmnImport extends BpmnElement {
+    /** 导入类型 */
+    importType: string;
+    /** 位置 */
+    location: string;
+    /** 命名空间 */
+    namespace: string;
+  }
+
+  /**
+   * BPMN扩展接口
+   */
+  export interface BpmnExtension extends BpmnElement {
+    /** 扩展定义 */
+    definition?: string;
+    /** 扩展元素 */
+    values?: BpmnElement[];
+  }
+
+  // 其他接口类型别名
+  export type BpmnDiPackage = any;
+  export type DcPackage = any;
+  export type DiPackage = any;
+  export type BpmnModdleOptions = any;
+  export type BpmnCreateOptions = any;
+  export type FromXMLOptions = any;
+  export type ToXMLOptions = any;
+  export type BpmnParseResult = any;
+  export type BpmnValidationResult = any;
+
+  /**
+   * 默认导出BpmnModdle类
+   */
+  export default BpmnModdle;
 }
