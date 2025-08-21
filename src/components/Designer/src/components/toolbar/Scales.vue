@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Canvas, { Viewbox } from 'diagram-js/lib/core/Canvas';
+  import Canvas, { CanvasViewbox } from 'diagram-js/lib/core/Canvas';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ref, watch } from 'vue';
   import { MODELER, MODELER_CANVAS } from '@/components/Designer/src/config/bpmnEnums';
@@ -8,16 +8,33 @@
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const canvasRef = ref<Canvas>();
 
+  /**
+   * 重置视图缩放
+   * @param newScale 倍率
+   */
   function zoomReset(newScale: number | 'fit-viewport') {
-    canvasRef.value &&
-      canvasRef.value.zoom(newScale, newScale === 'fit-viewport' ? undefined : { x: 0, y: 0 });
+    if (canvasRef.value) {
+      // 此处必须解除vue代理标记，否则newScale为 fit-viewport会报错
+      toRaw(canvasRef.value).zoom(
+        newScale,
+        newScale === 'fit-viewport' ? undefined : { x: 0, y: 0 }
+      );
+    }
   }
 
+  /**
+   * 缩小
+   * @param newScale 倍率
+   */
   function zoomOut(newScale?: number) {
     currentScale.value = newScale || Math.floor(currentScale.value * 100 - 0.1 * 100) / 100;
     zoomReset(currentScale.value);
   }
 
+  /**
+   * 放大
+   * @param newScale 倍率
+   */
   function zoomIn(newScale?: number) {
     currentScale.value = newScale || Math.floor(currentScale.value * 100 + 0.1 * 100) / 100;
     zoomReset(currentScale.value);
@@ -29,7 +46,7 @@
       const canvas = modelerRef?.value.get<Canvas>(MODELER_CANVAS);
       canvasRef.value = canvas;
       currentScale.value = canvas!.zoom();
-      modelerRef?.value.on('canvas.viewbox.changed', ({ viewbox }: { viewbox: Viewbox }) => {
+      modelerRef?.value.on('canvas.viewbox.changed', ({ viewbox }: { viewbox: CanvasViewbox }) => {
         currentScale.value = viewbox.scale;
       });
     }

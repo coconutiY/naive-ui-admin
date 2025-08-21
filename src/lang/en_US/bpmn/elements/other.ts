@@ -21,7 +21,8 @@ export default {
   'Append compensation activity': 'Append compensation activity',
   'Change type': 'Change type',
   'Connect using Association': 'Connect using Association',
-  'Connect using Sequence/MessageFlow or Association': 'Connect using Sequence/MessageFlow or Association',
+  'Connect using Sequence/MessageFlow or Association':
+    'Connect using Sequence/MessageFlow or Association',
   'Connect using DataInputAssociation': 'Connect using DataInputAssociation',
   Remove: 'Remove',
   'Activate the hand tool': 'Activate the hand tool',
@@ -72,14 +73,16 @@ export default {
   'Expanded Pool': 'Expanded Pool',
   'no parent for {element} in {parent}': 'no parent for {element} in {parent}',
   'no shape type specified': 'no shape type specified',
-  'flow elements must be children of pools/participants': 'flow elements must be children of pools/participants',
+  'flow elements must be children of pools/participants':
+    'flow elements must be children of pools/participants',
   'out of bounds release': 'out of bounds release',
   'more than {count} child lanes': 'more than {count} child lanes',
   'element required': 'element required',
   'diagram not part of bpmn:Definitions': 'diagram not part of bpmn:Definitions',
   'no diagram to display': 'no diagram to display',
   'no process or collaboration to display': 'no process or collaboration to display',
-  'element {element} referenced by {referenced}#{property} not yet drawn': 'element {element} referenced by {referenced}#{property} not yet drawn',
+  'element {element} referenced by {referenced}#{property} not yet drawn':
+    'element {element} referenced by {referenced}#{property} not yet drawn',
   'already rendered {element}': 'already rendered {element}',
   'failed to import {element}': 'failed to import {element}',
   Id: 'Id',
@@ -152,7 +155,8 @@ export default {
   Condition: 'Condition',
   'Variable Name': 'Variable Name',
   'Variable Event': 'Variable Event',
-  'Specify more than one variable change event as a comma separated list.': 'Specify more than one variable change event as a comma separated list.',
+  'Specify more than one variable change event as a comma separated list.':
+    'Specify more than one variable change event as a comma separated list.',
   'Wait for Completion': 'Wait for Completion',
   'Activity Ref': 'Activity Ref',
   'Version Tag': 'Version Tag',
@@ -185,10 +189,12 @@ export default {
   'Candidate starter groups': 'Candidate Starter Groups',
   'This maps to the process definition key.': 'This maps to the process definition key.。',
   'Candidate starter users': 'Candidate Starter Users',
-  'Specify more than one user as a comma separated list.': 'Specify more than one user as a comma separated list.',
+  'Specify more than one user as a comma separated list.':
+    'Specify more than one user as a comma separated list.',
   'Tasklist Configuration': 'Tasklist Configuration',
   Startable: 'Startable',
-  'Specify more than one group as a comma separated list.': 'Specify more than one group as a comma separated list.',
+  'Specify more than one group as a comma separated list.':
+    'Specify more than one group as a comma separated list.',
   'Execution listeners': 'Execution listeners',
   'Change element': 'Change element',
   SequenceFlow: 'SequenceFlow',
@@ -242,5 +248,5 @@ export default {
   'Process ID': 'Process ID',
   'Process name': 'Process name',
   'Process documentation': 'Process documentation',
-  Participant: 'Participant'
+  Participant: 'Participant',
 };
