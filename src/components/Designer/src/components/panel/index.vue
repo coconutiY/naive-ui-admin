@@ -8,8 +8,6 @@
     MODELER_TRANSLATE,
   } from '@/components/Designer/src/config/bpmnEnums';
   import { inject } from 'vue-demi';
-  import { Base } from 'diagram-js/lib/model';
-  import { Translate } from 'diagram-js/lib/i18n/translate';
   import bpmnIconKey from '@/components/Designer/src/utils/icon';
 
   const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));

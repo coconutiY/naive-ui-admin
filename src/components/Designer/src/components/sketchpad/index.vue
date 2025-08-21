@@ -12,15 +12,14 @@
     MODELER_REGISTRY,
   } from '@/components/Designer/src/config/bpmnEnums';
   import { debounce } from 'min-dash';
-  import { Connection, Label, Shape } from 'diagram-js/lib/model/Types';
-  import { Base } from 'diagram-js/lib/model';
+  import { Connection, Element, Label, Shape } from 'diagram-js/lib/model/Types';
   import ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
   import { ElementChangeParams, SelectionChangeParams } from '/#/bpmn/designer/settings';
 
   const emit = defineEmits(['update:xml']);
   const modelerRef = ref<Modeler>();
   provide<Ref<Modeler | undefined>>(MODELER, modelerRef);
-  const activeElement = ref<Base>();
+  const activeElement = ref<Element>();
   const activeId = computed(() => {
     return activeElement.value?.id;
   });
@@ -95,24 +94,27 @@
   /**
    * 设置选中元素，更新 store中的数据
    */
-  const setCurrentElement = debounce((element: Shape | Base | Connection | Label | undefined) => {
-    let elementRef = element;
-    // 如果不传入参数则显示流程配置,否则显示当前节点
-    if (!elementRef) {
-      const registry = modelerRef.value!.get<ElementRegistry>(MODELER_REGISTRY);
-      elementRef =
-        registry.find((el: Base) => el.type === 'bpmn:Process') ||
-        registry.find((el: Base) => el.type === 'bpmn:Collaboration');
+  const setCurrentElement = debounce(
+    (element: Shape | Element | Connection | Label | undefined) => {
+      let elementRef = element;
+      // 如果不传入参数则显示流程配置,否则显示当前节点
       if (!elementRef) {
-        throw new Error('未找到流程标签信息！');
+        const registry = modelerRef.value!.get<ElementRegistry>(MODELER_REGISTRY);
+        elementRef =
+          registry.find((el: Base) => el.type === 'bpmn:Process') ||
+          registry.find((el: Base) => el.type === 'bpmn:Collaboration');
+        if (!elementRef) {
+          throw new Error('未找到流程标签信息！');
+        }
       }
-    }
-    activeElement.value = markRaw(elementRef as Base);
-    console.log('activeElement', activeElement.value);
-    console.log(`选择的元素发生改变：
+      activeElement.value = markRaw(elementRef as Base);
+      console.log('activeElement', activeElement.value);
+      console.log(`选择的元素发生改变：
     ID: ${elementRef.id} , type: ${elementRef.type}
   `);
-  }, 100);
+    },
+    100
+  );
 
   onMounted(async () => {
     //阻止右键默认事件
