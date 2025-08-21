@@ -24,7 +24,7 @@ export default {
   'Message intermediate catch event': 'Message intermediate catch event',
   'Message intermediate throw event': 'Message intermediate throw event',
   'Timer intermediate catch event': 'Timer intermediate catch event',
-  'Escalation intermediate throw Event': 'Escalation intermediate throw Event',
+  'Escalation intermediate throw event': 'Escalation intermediate throw event',
   'Conditional intermediate catch event': 'Conditional intermediate catch event',
   'Link intermediate catch event': 'Link intermediate catch event',
   'Link intermediate throw event': 'Link intermediate throw event',

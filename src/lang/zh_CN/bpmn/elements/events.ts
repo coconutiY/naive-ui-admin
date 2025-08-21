@@ -24,7 +24,7 @@ export default {
   'Message intermediate catch event': '消息中间捕获事件',
   'Message intermediate throw event': '消息中间抛出事件',
   'Timer intermediate catch event': '定时中间捕获事件',
-  'Escalation intermediate throw Event': '升级中间抛出事件',
+  'Escalation intermediate throw event': '升级中间抛出事件',
   'Conditional intermediate catch event': '条件中间捕获事件',
   'Link intermediate catch event': '链接中间捕获事件',
   'Link intermediate throw event': '链接中间抛出事件',
