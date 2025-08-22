@@ -1,8 +1,9 @@
 import bpmn from './zh_CN/bpmn';
-import other from './zh_CN/bpmn/elements/other';
+import panel from './zh_CN/bpmn/elements/panel';
 import events from './zh_CN/bpmn/elements/events';
 import gateway from './zh_CN/bpmn/elements/gateway';
 import tasks from './zh_CN/bpmn/elements/tasks';
+import contextPad from './zh_CN/bpmn/elements/context';
 import lint from './zh_CN/bpmn/lint';
 import cron from './zh_CN/cron';
 import dept from './zh_CN/selector/dept';
@@ -15,7 +16,7 @@ export default {
       nickname: '昵称',
       username: '账号',
       placeholder: '请输入关键字',
-      filterData: '筛选'
+      filterData: '筛选',
     },
     success: '成功',
     fail: '失败',
@@ -35,12 +36,12 @@ export default {
     select: '选择',
     remove: '移除',
     operation: '操作',
-    dataEmpty: '暂无数据'
+    dataEmpty: '暂无数据',
   },
   // 路由国际化
   route: {
     dashboard: '首页',
-    document: '项目文档'
+    document: '项目文档',
   },
   // 登录页面国际化
   login: {
@@ -48,7 +49,7 @@ export default {
     password: '密码',
     login: '登 录',
     code: '请输入验证码',
-    copyright: ''
+    copyright: '',
   },
   navbar: {
     full: '全屏',
@@ -60,18 +61,19 @@ export default {
     selectTenant: '选择租户',
     layoutSetting: '布局设置',
     personalCenter: '个人中心',
-    logout: '退出登录'
+    logout: '退出登录',
   },
   bpmn: bpmn,
   elements: {
-    ...other,
+    ...panel,
     ...events,
     ...gateway,
     ...tasks,
-    ...lint
+    ...lint,
+    ...contextPad,
   },
   cron: cron,
   selector: {
-    dept: dept
-  }
+    dept:dept,
+  },
 };

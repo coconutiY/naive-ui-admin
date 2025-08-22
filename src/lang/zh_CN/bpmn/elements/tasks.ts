@@ -1,5 +1,4 @@
 export default {
-  Task: '任务',
   Tasks: '任务',
   'Send task': '发送任务',
   'Receive task': '接收任务',
@@ -16,14 +15,5 @@ export default {
   'Sub-process': '子流程',
   'Sub-processes': '子流程',
   'Event sub-process': '事件子流程',
-  SendTask: '发送任务',
-  ReceiveTask: '接收任务',
-  UserTask: '用户任务',
-  ManualTask: '手工任务',
-  BusinessRuleTask: '业务规则任务',
-  ServiceTask: '服务任务',
-  ScriptTask: '脚本任务',
-  CallActivity: '调用活动',
-  SubProcess: '子流程',
-  AdHocSubProcess: '特别子流程',
+  'Ad-hoc sub-process': '特别子流程',
 };

@@ -3,6 +3,7 @@ import other from './en_US/bpmn/elements/other';
 import events from './en_US/bpmn/elements/events';
 import gateway from './en_US/bpmn/elements/gateway';
 import tasks from './en_US/bpmn/elements/tasks';
+import context from './en_US/bpmn/elements/context';
 import lint from './en_US/bpmn/lint';
 import cron from './en_US/cron';
 
@@ -14,7 +15,7 @@ export default {
       nickname: 'Nickname',
       username: 'Acconut',
       placeholder: 'Please enter a keyword',
-      filterData: 'Filter Data'
+      filterData: 'Filter Data',
     },
     success: 'success',
     fail: 'fail',
@@ -34,12 +35,12 @@ export default {
     select: 'Select',
     remove: 'Remove',
     operation: 'Operation',
-    dataEmpty: 'Empty'
+    dataEmpty: 'Empty',
   },
   // 路由国际化
   route: {
     dashboard: 'Dashboard',
-    document: 'Document'
+    document: 'Document',
   },
   // 登录页面国际化
   login: {
@@ -47,7 +48,7 @@ export default {
     password: 'Password',
     login: 'Login',
     code: 'Verification Code',
-    copyright: ''
+    copyright: '',
   },
   // 导航栏国际化
   navbar: {
@@ -60,7 +61,7 @@ export default {
     selectTenant: 'Select Tenant',
     layoutSetting: 'Layout Setting',
     personalCenter: 'Personal Center',
-    logout: 'Logout'
+    logout: 'Logout',
   },
   bpmn: bpmn,
   elements: {
@@ -68,7 +69,8 @@ export default {
     ...events,
     ...gateway,
     ...tasks,
-    ...lint
+    ...context,
+    ...lint,
   },
-  cron: cron
+  cron: cron,
 };

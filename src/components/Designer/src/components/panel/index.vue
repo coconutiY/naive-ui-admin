@@ -9,6 +9,7 @@
   } from '@/components/Designer/src/config/bpmnEnums';
   import { inject } from 'vue-demi';
   import bpmnIconKey from '@/components/Designer/src/utils/icon';
+  import { Translate } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
 
   const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
   const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
@@ -64,8 +65,9 @@
       const translate = modelerRef!.value.get<Translate>(MODELER_TRANSLATE);
       activeType.value = translate(active!.value.type.split(':')[1]);
       const iconKey = bpmnIconKey(active!.value);
-      title.value = translate(activeType.value);
+      title.value = translate(iconKey);
       iconName.value = bpmnIcons[iconKey];
+      console.log(iconKey, '元素实际名称');
     }
   }
 

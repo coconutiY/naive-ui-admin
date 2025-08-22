@@ -1,5 +1,4 @@
 export default {
-  Task: 'Task',
   Tasks: 'Tasks',
   'Send task': 'Send task',
   'Receive task': 'Receive task',
@@ -16,14 +15,4 @@ export default {
   'Sub process': 'Sub process',
   'Sub processes': 'Sub processes',
   'Event sub process': 'Event sub process',
-  SendTask: 'SendTask',
-  ReceiveTask: 'ReceiveTask',
-  UserTask: 'UserTask',
-  ManualTask: 'ManualTask',
-  BusinessRuleTask: 'BusinessRuleTask',
-  ServiceTask: 'ServiceTask',
-  ScriptTask: 'ScriptTask',
-  CallActivity: 'CallActivity',
-  SubProcess: 'SubProcess',
-  AdHocSubProcess: 'AdHocSubProcess',
 };

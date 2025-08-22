@@ -1,0 +1,17 @@
+export default {
+  'Append end event': 'Append end event',
+  'Append gateway': 'Append gateway',
+  'Append task': 'Append task',
+  'Append intermediate/boundary event': 'Append intermediate/boundary event',
+  'Add text annotation': 'Add text annotation',
+  'Append receive task': 'Append receive task',
+  'Append message intermediate catch event': 'Append message intermediate catch event',
+  'Append timer intermediate catch event': 'Append timer intermediate catch event',
+  'Append conditional intermediate catch event': 'Append conditional intermediate catch event',
+  'Append signal intermediate catch event': 'Append signal intermediate catch event',
+  // 'Append {type}': '添加 {type}',
+  'Append compensation activity': 'Append compensation activity',
+  'Append element': 'Append element',
+  Delete: 'Delete',
+  'Connect to other element': 'Connect to other element',
+};
