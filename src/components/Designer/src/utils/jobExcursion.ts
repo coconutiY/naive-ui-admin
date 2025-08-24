@@ -4,21 +4,17 @@ import {
   getServiceTaskLikeBusinessObject,
 } from '@/components/Designer/src/utils/implType';
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
-import { Base } from 'diagram-js/lib/model';
-import { getModeling } from '@/components/Designer/src/utils/tools';
-import {
-  createModdleElement,
-  getExtensionElementsList,
-} from '@/components/Designer/src/utils/baseInfo';
+import { createElement, getModeling } from '@/components/Designer/src/utils/tools';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { isAsync } from '@/components/Designer/src/utils/asyncContinuations';
+import { getExtensionElements } from '@/components/Designer/src/utils/extensionProperties';
 
 /**
  * 是否显示重试周期
  * @param modeler
  * @param element bpmn元素
  */
-export function retryTimeCycleVisible(modeler: Modeler, element: Base): boolean {
+export function retryTimeCycleVisible(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   const businessObject = getBusinessObject(element);
   return (
@@ -32,7 +28,7 @@ export function retryTimeCycleVisible(modeler: Modeler, element: Base): boolean 
  * @param modeler
  * @param element bpmn元素
  */
-export function taskPriorityVisible(modeler: Modeler, element: Base): boolean {
+export function taskPriorityVisible(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   const businessObject = getBusinessObject(element);
   return (
@@ -48,7 +44,7 @@ export function taskPriorityVisible(modeler: Modeler, element: Base): boolean {
  * @param modeler
  * @param element bpmn元素
  */
-export function isJobExecutable(modeler: Modeler, element: Base): boolean {
+export function isJobExecutable(modeler: Modeler, element: BpmnElement): boolean {
   return retryTimeCycleVisible(modeler, element) || taskPriorityVisible(modeler, element);
 }
 
@@ -57,7 +53,7 @@ export function isJobExecutable(modeler: Modeler, element: Base): boolean {
  * @param modeler
  * @param element bpmn元素
  */
-export function getExternalTaskValue(modeler: Modeler, element: Base): string | undefined {
+export function getExternalTaskValue(modeler: Modeler, element: BpmnElement): string | undefined {
   const prefix = getProcessPrefix(modeler);
   const businessObject = getRelativeBusinessObject(modeler, element);
   return businessObject.get(`${prefix}:taskPriority`);
@@ -68,7 +64,11 @@ export function getExternalTaskValue(modeler: Modeler, element: Base): string | 
  * @param element bpmn元素
  * @param value 需要设置的值
  */
-export function setExternalTaskValue(modeler: Modeler, element: Base, value: string | undefined) {
+export function setExternalTaskValue(
+  modeler: Modeler,
+  element: BpmnElement,
+  value: string | undefined
+) {
   const prefix = getProcessPrefix(modeler);
   const modeling = getModeling(modeler);
   const businessObject = getRelativeBusinessObject(modeler, element);
@@ -82,10 +82,10 @@ export function setExternalTaskValue(modeler: Modeler, element: Base, value: str
  * @param modeler
  * @param element bpmn元素
  */
-export function getRetryTimeCycleValue(modeler: Modeler, element: Base): string | undefined {
+export function getRetryTimeCycleValue(modeler: Modeler, element: BpmnElement): string | undefined {
   const prefix = getProcessPrefix(modeler);
   const businessObject = getBusinessObject(element);
-  const failedJobRetryTimeCycle = getExtensionElementsList(
+  const failedJobRetryTimeCycle = getExtensionElements(
     businessObject,
     `${prefix}:FailedJobRetryTimeCycle`
   )[0];
@@ -94,17 +94,22 @@ export function getRetryTimeCycleValue(modeler: Modeler, element: Base): string 
 
 /**
  *  设置重试周期
+ * @param modeler
  * @param element bpmn元素
  * @param value 需要设置的值
  */
-export function setRetryTimeCycleValue(modeler: Modeler, element: Base, value: string | undefined) {
+export function setRetryTimeCycleValue(
+  modeler: Modeler,
+  element: BpmnElement,
+  value: string | undefined
+) {
   const prefix = getProcessPrefix(modeler);
   const modeling = getModeling(modeler);
   const businessObject = getBusinessObject(element);
 
   let extensionElements = businessObject.get('extensionElements');
   if (!extensionElements) {
-    extensionElements = createModdleElement(
+    extensionElements = createElement(
       modeler,
       'bpmn:ExtensionElements',
       { values: [] },
@@ -113,12 +118,12 @@ export function setRetryTimeCycleValue(modeler: Modeler, element: Base, value: s
     modeling?.updateModdleProperties(element, businessObject, { extensionElements });
   }
 
-  let failedJobRetryTimeCycle = getExtensionElementsList(
+  let failedJobRetryTimeCycle = getExtensionElements(
     businessObject,
     `${prefix}:FailedJobRetryTimeCycle`
   )[0];
   if (!failedJobRetryTimeCycle) {
-    failedJobRetryTimeCycle = createModdleElement(
+    failedJobRetryTimeCycle = createElement(
       modeler,
       `${prefix}:FailedJobRetryTimeCycle`,
       {},
@@ -137,7 +142,7 @@ export function setRetryTimeCycleValue(modeler: Modeler, element: Base, value: s
  * @param modeler
  * @param element bpmn元素
  */
-function isExternalTaskLike(modeler: Modeler, element: Base): boolean {
+function isExternalTaskLike(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   const bo = getServiceTaskLikeBusinessObject(element),
     type = bo && bo.get(`${prefix}:type`);
@@ -149,7 +154,7 @@ function isExternalTaskLike(modeler: Modeler, element: Base): boolean {
  * @param modeler
  * @param element bpmn元素
  */
-function getRelativeBusinessObject(modeler: Modeler, element: Base): ModdleElement {
+function getRelativeBusinessObject(modeler: Modeler, element: BpmnElement): ModdleElement {
   let businessObject;
   if (is(element, 'bpmn:Participant')) {
     businessObject = getBusinessObject(element).get('processRef');
@@ -165,7 +170,7 @@ function getRelativeBusinessObject(modeler: Modeler, element: Base): ModdleEleme
  * 是否定时事件
  * @param element bpmn元素
  */
-function isTimerEvent(element: Base): ModdleElement | undefined | false {
+function isTimerEvent(element: BpmnElement): ModdleElement | undefined | false {
   // return is(element, 'bpmn:Event') && getTimerEventDefinition(element);
   return is(element, 'bpmn:Event');
 }

@@ -24,6 +24,8 @@
   defineOptions({ name: 'BaseInfo' });
   defineProps({
     labelWidth: propTypes.number.def(80),
+    labelPlace: propTypes.string.def('left'),
+    formSize: propTypes.string.def('small'),
   });
   const { t } = useI18n();
   const message = useMessage();
@@ -55,13 +57,15 @@
   };
 
   function reloadGenerationData(active: Base) {
-    baseInfo.value.isProcess = active.type === 'bpmn:Process';
     baseInfo.value.elementId = active.id;
     baseInfo.value.elementName = getName(active) || '';
-    if (baseInfo.value.isProcess) {
+    if (active.type === 'bpmn:Process') {
       baseInfo.value.elementExecutable = getProcessExecutable(active);
       baseInfo.value.elementVersion = getProcessVersionTag(active) || '';
     }
+    if (active.type === 'bpmn:Participant') {
+    }
+    baseInfo.value.isProcess = active.type === 'bpmn:Process';
   }
   function updateElementName(value: string) {
     setName(modelerRef!.value, canvas.value, bpmnFactory.value, active!.value, value);
@@ -93,15 +97,21 @@
 <template>
   <n-collapse-item name="base-info">
     <template #header>
-      <div class="collapse-title"><icon-lucide-info /> {{ $t('bpmn.panel.general') }}</div>
+      <div class="collapse-title"><icon-lucide-info /> {{ t('bpmn.panel.general') }}</div>
     </template>
     <template #default>
-      <n-form :label-width="labelWidth" :rules="rules" :model="baseInfo">
-        <n-form-item :label="$t('bpmn.panel.id')" path="elementId" required>
+      <n-form
+        :label-width="labelWidth"
+        :label-placement="labelPlace"
+        :size="formSize"
+        :rules="rules"
+        :model="baseInfo"
+      >
+        <n-form-item :label="t('bpmn.panel.id')" path="elementId" required>
           <n-input v-model:value="baseInfo.elementId" maxlength="32" @change="updateElementId" />
         </n-form-item>
         <n-form-item
-          :label="baseInfo.isProcess ? $t('bpmn.panel.processName') : $t('bpmn.panel.nodeName')"
+          :label="baseInfo.isProcess ? t('bpmn.panel.processName') : t('bpmn.panel.nodeName')"
           path="elementName"
           required
         >
@@ -112,7 +122,7 @@
           />
         </n-form-item>
         <template v-if="baseInfo.isProcess">
-          <n-form-item key="version" :label="$t('bpmn.panel.version')" path="elementVersion">
+          <n-form-item key="version" :label="t('bpmn.panel.version')" path="elementVersion">
             <n-input
               v-model:value="baseInfo.elementVersion"
               maxlength="20"
@@ -121,7 +131,7 @@
           </n-form-item>
           <n-form-item
             key="executable"
-            :label="$t('bpmn.panel.executable')"
+            :label="t('bpmn.panel.executable')"
             path="elementExecutable"
           >
             <n-switch

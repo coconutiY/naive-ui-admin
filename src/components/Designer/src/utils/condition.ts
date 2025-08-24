@@ -1,11 +1,8 @@
-import { Base } from 'diagram-js/lib/model';
 import { isAny, is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
-import { getModeling } from '@/components/Designer/src/utils/tools';
+import { createElement, getModeling } from '@/components/Designer/src/utils/tools';
 import { getEventDefinition, getProcessPrefix } from '@/components/Designer/src/utils/implType';
 import Modeler from 'bpmn-js/lib/Modeler';
-import { Connection } from 'diagram-js/lib/model/Types';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
-import { createModdleElement } from '@/components/Designer/src/utils/baseInfo';
 import { defaultConditionTypeOptions } from '@/components/Designer/src/config/selectOptions';
 
 /**
@@ -24,7 +21,7 @@ const CONDITIONAL_SOURCES = [
  * 检查条件父节点是否符合条件
  * @param element
  */
-export function isConditionalSource(element: Connection | Base | Element | undefined) {
+export function isConditionalSource(element: BpmnElement) {
   return isAny(element, CONDITIONAL_SOURCES);
 }
 
@@ -33,7 +30,7 @@ export function isConditionalSource(element: Connection | Base | Element | undef
  * 检查元素是否为条件定义相关
  * @param element
  */
-export function isConditionEventDefinition(element: Connection): boolean {
+export function isConditionEventDefinition(element: BpmnElement): boolean {
   return (
     is(element, 'bpmn:Event') && !!getEventDefinition(element, 'bpmn:ConditionalEventDefinition')
   );
@@ -43,7 +40,7 @@ export function isConditionEventDefinition(element: Connection): boolean {
  * 是否启动事件
  * @param element
  */
-export function isExtendStartEvent(element: Connection): boolean {
+export function isExtendStartEvent(element: BpmnElement): boolean {
   return is(element, 'bpmn:StartEvent');
 }
 
@@ -51,9 +48,9 @@ export function isExtendStartEvent(element: Connection): boolean {
  * 是否连接线
  * @param element
  */
-export function isCanbeConditional(element: Connection): boolean {
+export function isCanbeConditional(element: BpmnElement): boolean {
   return (
-    (is(element, 'bpmn:SequenceFlow') && isConditionalSource(element.source as Base)) ||
+    (is(element, 'bpmn:SequenceFlow') && isConditionalSource(element.source)) ||
     isConditionEventDefinition(element)
   );
 }
@@ -63,7 +60,7 @@ export function isCanbeConditional(element: Connection): boolean {
  * 获取条件变量的值
  * @param element
  */
-export function getVariableNameValue(element: Connection) {
+export function getVariableNameValue(element: BpmnElement) {
   if (getConditionalEventDefinition(element)) {
     return getConditionalEventDefinition(element).get('variableName');
   }
@@ -77,7 +74,7 @@ export function getVariableNameValue(element: Connection) {
  */
 export function setVariableNameValue(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -92,7 +89,7 @@ export function setVariableNameValue(
  * 获取条件事件的值
  * @param element
  */
-export function getVariableEventsValue(element: Connection) {
+export function getVariableEventsValue(element: BpmnElement) {
   if (getConditionalEventDefinition(element)) {
     return getConditionalEventDefinition(element).get('variableEvents');
   }
@@ -106,7 +103,7 @@ export function getVariableEventsValue(element: Connection) {
  */
 export function setVariableEventsValue(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -121,7 +118,7 @@ export function setVariableEventsValue(
  * 获取元素条件的值
  * @param element
  */
-export function getConditionTypeValue(element: Connection): string {
+export function getConditionTypeValue(element: BpmnElement): string {
   const conditionExpression = getConditionExpression(element);
   if (conditionExpression) {
     return conditionExpression.get('language') === undefined ? 'expression' : 'script';
@@ -138,10 +135,10 @@ export function getConditionTypeValue(element: Connection): string {
  * @param element
  * @param value
  */
-export function setConditionTypeValue(modeler: Modeler, element: Connection, value: string) {
+export function setConditionTypeValue(modeler: Modeler, element: BpmnElement, value: string) {
   if (!value || value === 'none' || value === 'default') {
     updateCondition(modeler, element);
-    return setDefaultCondition(modeler, element as Connection, value === 'default');
+    return setDefaultCondition(modeler, element, value === 'default');
   }
   const attributes = {
     // body: '',
@@ -150,7 +147,7 @@ export function setConditionTypeValue(modeler: Modeler, element: Connection, val
   const parent = is(element, 'bpmn:SequenceFlow')
     ? getBusinessObject(element)
     : (getConditionalEventDefinition(element) as ModdleElement);
-  const formalExpressionElement = createModdleElement(
+  const formalExpressionElement = createElement(
     modeler,
     'bpmn:FormalExpression',
     attributes,
@@ -164,7 +161,7 @@ export function setConditionTypeValue(modeler: Modeler, element: Connection, val
  * 获取条件表达式的值
  * @param element
  */
-export function getConditionExpressionValue(element: Connection): string | undefined {
+export function getConditionExpressionValue(element: BpmnElement): string | undefined {
   const conditionExpression = getConditionExpression(element);
   if (conditionExpression) {
     return conditionExpression.get('body');
@@ -179,13 +176,13 @@ export function getConditionExpressionValue(element: Connection): string | undef
  */
 export function setConditionExpressionValue(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   body: string | undefined
 ) {
   const parent = is(element, 'bpmn:SequenceFlow')
     ? getBusinessObject(element)
     : (getConditionalEventDefinition(element) as ModdleElement);
-  const formalExpressionElement = createModdleElement(
+  const formalExpressionElement = createElement(
     modeler,
     'bpmn:FormalExpression',
     { body },
@@ -202,7 +199,7 @@ export function setConditionExpressionValue(
  */
 export function getConditionScriptTypeValue(
   modeler: Modeler,
-  element: Connection
+  element: BpmnElement
 ): string | undefined {
   const prefix = getProcessPrefix(modeler);
   const conditionExpression = getConditionExpression(element)!;
@@ -220,7 +217,7 @@ export function getConditionScriptTypeValue(
  */
 export function setConditionScriptTypeValue(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const prefix = getProcessPrefix(modeler);
@@ -243,7 +240,7 @@ export function setConditionScriptTypeValue(
  * 获取脚本语言类型的值
  * @param element
  */
-export function getConditionScriptLanguageValue(element: Connection): string | undefined {
+export function getConditionScriptLanguageValue(element: BpmnElement): string | undefined {
   return getConditionExpression(element)?.get('language');
 }
 
@@ -255,7 +252,7 @@ export function getConditionScriptLanguageValue(element: Connection): string | u
  */
 export function setConditionScriptLanguageValue(
   modeler: Modeler,
-  element: any,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -267,7 +264,7 @@ export function setConditionScriptLanguageValue(
  * 获取元素脚本的值
  * @param element
  */
-export function getConditionScriptBodyValue(element: Connection): string | undefined {
+export function getConditionScriptBodyValue(element: BpmnElement): string | undefined {
   return getConditionExpression(element)?.get('body');
 }
 
@@ -279,7 +276,7 @@ export function getConditionScriptBodyValue(element: Connection): string | undef
  */
 export function setConditionScriptBodyValue(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -294,7 +291,7 @@ export function setConditionScriptBodyValue(
  */
 export function getConditionScriptResourceValue(
   modeler: Modeler,
-  element: Connection
+  element: BpmnElement
 ): string | undefined {
   const prefix = getProcessPrefix(modeler);
   return getConditionExpression(element)?.get(`${prefix}:resource`);
@@ -308,7 +305,7 @@ export function getConditionScriptResourceValue(
  */
 export function setConditionScriptResourceValue(
   modeler: Modeler,
-  element: any,
+  element: BpmnElement,
   value: string | undefined
 ) {
   const modeling = getModeling(modeler);
@@ -323,7 +320,7 @@ export function setConditionScriptResourceValue(
  * 获取事件的条件定义选项
  * @param element
  */
-export function getConditionTypeOptions(element: Connection): Record<string, string>[] {
+export function getConditionTypeOptions(element: BpmnElement): Record<string, string>[] {
   if (is(element, 'bpmn:SequenceFlow')) {
     return defaultConditionTypeOptions;
   }
@@ -334,9 +331,7 @@ export function getConditionTypeOptions(element: Connection): Record<string, str
  * 获取条件事件定义
  * @param element
  */
-function getConditionalEventDefinition(
-  element: Base | ModdleElement
-): ModdleElement | false | undefined {
+function getConditionalEventDefinition(element: BpmnElement): ModdleElement | false | undefined {
   return !is(element, 'bpmn:Event')
     ? false
     : getEventDefinition(element, 'bpmn:ConditionalEventDefinition');
@@ -346,7 +341,7 @@ function getConditionalEventDefinition(
  * 获取给定元素的条件表达式的值
  * @param element
  */
-function getConditionExpression(element: Base | ModdleElement): ModdleElement | undefined {
+function getConditionExpression(element: BpmnElement): ModdleElement | undefined {
   const businessObject = getBusinessObject(element);
   if (is(businessObject, 'bpmn:SequenceFlow')) {
     return businessObject.get('conditionExpression');
@@ -364,7 +359,7 @@ function getConditionExpression(element: Base | ModdleElement): ModdleElement | 
  */
 function updateCondition(
   modeler: Modeler,
-  element: Connection,
+  element: BpmnElement,
   condition?: string | ModdleElement
 ) {
   const modeling = getModeling(modeler);
@@ -383,7 +378,7 @@ function updateCondition(
  * @param element
  * @param isDefault
  */
-function setDefaultCondition(modeler: Modeler, element: Connection, isDefault: boolean) {
+function setDefaultCondition(modeler: Modeler, element: BpmnElement, isDefault: boolean) {
   const modeling = getModeling(modeler);
   console.log('source', element.source);
   console.log('default', element);

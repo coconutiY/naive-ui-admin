@@ -1,29 +1,23 @@
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
-import { Base } from 'diagram-js/lib/model';
 import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import {
-  ExecutionListenerForm,
-  TaskListenerForm,
-  ThrowEventForm,
-} from '/#/bpmn/bpmn-moddle/bpmn-form';
+import { ListenersForm, ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
-import { createScript, getModdle, getModeling } from '@/components/Designer/src/utils/tools';
+import { createElement, getModdle, getModeling } from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
-import {
-  addExtensionElements,
-  createModdleElement,
-  getExtensionElementsList,
-  removeExtensionElements,
-} from '@/components/Designer/src/utils/baseInfo';
 import { LISTENER_ALLOWED_TYPES } from '@/components/Designer/src/config/bpmnEnums';
 import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import {
+  addExtensionElements,
+  getExtensionElements,
+  removeExtensionElements,
+} from '@/components/Designer/src/utils/extensionProperties';
 
 /**
  * 获取监听器容器
  * @param element
  */
-export function getListenersContainer(element: Base): ModdleElement {
+export function getListenersContainer(element: BpmnElement): ModdleElement {
   const businessObject = getBusinessObject(element);
   return businessObject?.get('processRef') || businessObject;
 }
@@ -63,7 +57,7 @@ function getGlobalEventsList(
  */
 export function addGlobalEvent(
   modeler: Modeler,
-  element: Base | undefined,
+  element: BpmnElement | undefined,
   suffix: 'Signal' | 'Escalation' | 'Error' | 'Message',
   eventForm: ThrowEventForm
 ) {
@@ -73,7 +67,7 @@ export function addGlobalEvent(
   const modeling = getModeling(modeler);
   const root = modeler.getDefinitions();
   const eventProp = getEventProps(eventForm, suffix);
-  const newEvent = createModdleElement(modeler, `bpmn:${suffix}`, { ...eventProp }, root);
+  const newEvent = createElement(modeler, `bpmn:${suffix}`, { ...eventProp }, root);
   modeling.updateModdleProperties(element, root, {
     rootElements: [...root.get('rootElements'), newEvent],
   });
@@ -85,7 +79,7 @@ export function addGlobalEvent(
  * @param element
  * @param props
  */
-export function removeGlobalEvent(modeler: Modeler, element: Base, props: ModdleElement) {
+export function removeGlobalEvent(modeler: Modeler, element: BpmnElement, props: ModdleElement) {
   const modeling = getModeling(modeler);
   const businessObject = getBusinessObject(element);
   const root = businessObject && businessObject.$parent;
@@ -168,18 +162,19 @@ const EXECUTIONAL_SUFFIX = 'ExecutionListener';
  * @param modeler
  * @param element
  */
-export function getExecutionListeners(modeler: Modeler, element: Base): ModdleElement[] {
+export function getExecutionListeners(modeler: Modeler, element: BpmnElement): ModdleElement[] {
   const prefix = getProcessPrefix(modeler);
   const businessObject = getListenersContainer(element);
-  return getExtensionElementsList(businessObject, `${prefix}:${EXECUTIONAL_SUFFIX}`);
+  return getExtensionElements(businessObject, `${prefix}:${EXECUTIONAL_SUFFIX}`);
 }
 
 /**
  * 创建一个新的执行监听器并且修改元素的业务对象 《BR/>
  * create an empty execution listener and update element's businessObject
  * @param modeler
+ * @param element
  */
-export function addEmptyExtensionListener(modeler: Modeler, element: Base) {
+export function addEmptyExtensionListener(modeler: Modeler, element: BpmnElement) {
   const prefix = getProcessPrefix(modeler);
   const moddle = getModdle(modeler);
   const listener = moddle!.create(`${prefix}:${EXECUTIONAL_SUFFIX}`, {
@@ -196,11 +191,7 @@ export function addEmptyExtensionListener(modeler: Modeler, element: Base) {
  * @param element
  * @param props
  */
-export function addExecutionListener(
-  modeler: Modeler,
-  element: Base,
-  props: ExecutionListenerForm
-) {
+export function addExecutionListener(modeler: Modeler, element: BpmnElement, props: ListenersForm) {
   const prefix = getProcessPrefix(modeler);
   const moddle = getModdle(modeler);
   const businessObject = getListenersContainer(element);
@@ -218,8 +209,8 @@ export function addExecutionListener(
  */
 export function updateExecutionListener(
   modeler: Modeler,
-  element: Base,
-  props: ExecutionListenerForm,
+  element: BpmnElement,
+  props: ListenersForm,
   listener: ModdleElement
 ) {
   removeExtensionElements(modeler, element, getListenersContainer(element), listener);
@@ -232,7 +223,11 @@ export function updateExecutionListener(
  * @param element
  * @param listener
  */
-export function removeExecutionListener(modeler: Modeler, element: Base, listener: ModdleElement) {
+export function removeExecutionListener(
+  modeler: Modeler,
+  element: BpmnElement,
+  listener: ModdleElement
+) {
   removeExtensionElements(modeler, element, getListenersContainer(element), listener);
 }
 
@@ -240,7 +235,7 @@ export function removeExecutionListener(modeler: Modeler, element: Base, listene
  * 是否可执行
  * @param element
  */
-export function isExecutable(element: Base) {
+export function isExecutable(element: BpmnElement) {
   if (isAny(element, LISTENER_ALLOWED_TYPES)) {
     return true;
   }
@@ -263,7 +258,7 @@ export function getExecutionListenerType(modeler: Modeler, listener: ModdleEleme
  * 获取默认事件
  * @param element
  */
-export function getDefaultEvent(element: Base) {
+export function getDefaultEvent(element: BpmnElement) {
   return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
 }
 
@@ -277,30 +272,27 @@ export function getDefaultEvent(element: Base) {
  */
 export function updateListenerProperty(
   modeler: Modeler,
-  element: Base,
+  element: BpmnElement,
   listener: ModdleElement,
-  props: ExecutionListenerForm | TaskListenerForm
+  props: ListenersForm
 ) {
   const modeling = getModeling(modeler);
   const prefix = getProcessPrefix(modeler);
-  const { event, class: listenerClass, expression, delegateExpression, script, fields } = props;
-  const updateProperty = (key: string, value: string) =>
-    modeling.updateModdleProperties(element, listener, { [`${prefix}:${key}`]: value });
-  event && updateProperty('event', event);
-  listenerClass && updateProperty('class', listenerClass);
-  expression && updateProperty('expression', expression);
-  delegateExpression && updateProperty('delegateExpression', delegateExpression);
-
-  if (script) {
-    const bpmnScript = createScript(modeler, script);
-    modeling?.updateModdleProperties(element, listener, { script: bpmnScript });
+  const { event, type, value, fields } = props;
+  const properties = { event: event };
+  if (type === 'class') {
+    properties[`${prefix}:class`] = value;
+  } else if (type === 'expression') {
+    properties[`${prefix}:expression`] = value;
+  } else if (type === 'delegateExpression') {
+    properties[`${prefix}:delegateExpression`] = value;
   }
   if (fields) {
-    const bpmnFields = fields.map((field: BpmnField) => {
+    properties[`fields`] = fields.map((field: BpmnField) => {
       return createFieldObject(modeler, field);
     });
-    modeling.updateModdleProperties(element, listener, { fields: bpmnFields });
   }
+  modeling.updateModdleProperties(element, listener, properties);
 }
 
 /**

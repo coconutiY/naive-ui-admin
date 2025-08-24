@@ -1,8 +1,6 @@
-
 import Modeler from 'bpmn-js/lib/Modeler';
 import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
 import { getModeling } from '@/components/Designer/src/utils/tools';
-import { Base } from 'diagram-js/lib/model';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 
@@ -12,7 +10,7 @@ import { ModdleElement } from 'bpmn-js/lib/model/Types';
  * @param modeler
  * @param element
  */
-export function getAsyncBefore(modeler: Modeler, element: Base): boolean {
+export function getAsyncBefore(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   return isAsyncBefore(element.businessObject, prefix);
 }
@@ -23,7 +21,7 @@ export function getAsyncBefore(modeler: Modeler, element: Base): boolean {
  * @param element
  * @param value
  */
-export function setAsyncBefore(modeler: Modeler, element: Base, value: boolean) {
+export function setAsyncBefore(modeler: Modeler, element: BpmnElement, value: boolean) {
   const prefix = getProcessPrefix(modeler);
   const modeling = getModeling(modeler);
   // overwrite the legacy `async` property, we will use the more explicit `asyncBefore`
@@ -38,7 +36,7 @@ export function setAsyncBefore(modeler: Modeler, element: Base, value: boolean) 
  * @param modeler
  * @param element
  */
-export function getAsyncAfter(modeler: Modeler, element: Base): boolean {
+export function getAsyncAfter(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   return isAsyncAfter(element.businessObject, prefix);
 }
@@ -49,7 +47,7 @@ export function getAsyncAfter(modeler: Modeler, element: Base): boolean {
  * @param element
  * @param value
  */
-export function setAsyncAfter(modeler: Modeler, element: Base, value: boolean) {
+export function setAsyncAfter(modeler: Modeler, element: BpmnElement, value: boolean) {
   const prefix = getProcessPrefix(modeler);
   const modeling = getModeling(modeler);
   modeling.updateModdleProperties(element, element.businessObject, {
@@ -62,7 +60,7 @@ export function setAsyncAfter(modeler: Modeler, element: Base, value: boolean) {
  * @param modeler
  * @param element
  */
-export function getExclusive(modeler: Modeler, element: Base): boolean {
+export function getExclusive(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   return isExclusive(element.businessObject, prefix);
 }
@@ -73,7 +71,7 @@ export function getExclusive(modeler: Modeler, element: Base): boolean {
  * @param element
  * @param value
  */
-export function setExclusive(modeler: Modeler, element: Base, value: boolean) {
+export function setExclusive(modeler: Modeler, element: BpmnElement, value: boolean) {
   const prefix = getProcessPrefix(modeler);
   const modeling = getModeling(modeler);
   modeling.updateModdleProperties(element, element.businessObject, {
@@ -87,7 +85,7 @@ export function setExclusive(modeler: Modeler, element: Base, value: boolean) {
  * @param modeler
  * @param element
  */
-export function isAsynchronous(modeler: Modeler, element: Base): boolean {
+export function isAsynchronous(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
   return is(element, `${prefix}:AsyncCapable`);
 }

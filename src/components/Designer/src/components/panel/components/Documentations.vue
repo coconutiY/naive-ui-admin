@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
   import { Base } from 'diagram-js/lib/model';
-  import { getDocumentValue, setDocumentValue } from '@/components/Designer/src/utils/baseInfo';
+  import { getDocument, setDocument } from '@/components/Designer/src/utils/baseInfo';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import Modeler from 'bpmn-js/lib/Modeler';
 
@@ -14,14 +14,14 @@
   const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
 
   function updateElementDoc(value: string) {
-    setDocumentValue(modeler!.value, active!.value, value);
+    setDocument(modeler!.value, active!.value, value);
   }
 
   watch(
     () => active?.value,
     (newVal) => {
       if (newVal) {
-        docValue.value = getDocumentValue(newVal);
+        docValue.value = getDocument(newVal);
       }
     }
   );

@@ -25,6 +25,7 @@ export default {
   'Change element': '修改元素',
   'Connect to other element': '与其他元素连接',
   'Conditional flow': '条件流',
+  Collection: '集合',
   Data: '数据',
   'Data store reference': '数据存储引用',
   'Data object reference': '数据对象引用',
@@ -38,7 +39,7 @@ export default {
   Participant: '池/参与者',
   Participants: '池/参与者',
   'Parallel multi-instance': '并行多重事件',
-  Process: '业务流程',
+  'Participant multiplicity': '池/参与者多重性',
   'Sequential multi-instance': '串行多重事件',
   'Sequence flow': '顺序流',
 };

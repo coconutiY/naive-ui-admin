@@ -1,4 +1,5 @@
 export default {
+  'flow elements must be children of pools/participants': '存在池/泳道时元素必须添加在其内部',
   // 'Activate the global connect tool': '激活全局连接工具',
   // 'Change type': '修改类型',
   // 'Connect using association': '使用关联连接',
@@ -48,7 +49,6 @@ export default {
   // 'Expanded Pool': '展开池',
   // 'no parent for {element} in {parent}': '在{parent}里，{element}没有父类',
   // 'no shape type specified': '没有指定的形状类型',
-  // 'flow elements must be children of pools/participants': '流元素必须是池/参与者的子类',
   // 'out of bounds release': 'out of bounds release',
   // 'more than {count} child lanes': '子道大于{count} ',
   // 'element required': '元素不能为空',

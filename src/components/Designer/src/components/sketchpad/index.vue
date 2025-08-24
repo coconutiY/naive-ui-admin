@@ -1,10 +1,6 @@
 <script setup lang="ts">
-  import { computed, markRaw, onMounted, provide, ref } from 'vue';
+  import { computed, markRaw, onMounted, provide, Ref, ref } from 'vue';
   import initModules from '@/components/Designer/src/components/sketchpad/modulesAndModdle';
-  import {
-    initModeler,
-    createNewDiagram,
-  } from '@/components/Designer/src/components/sketchpad/initModeler';
   import Modeler from 'bpmn-js/lib/Modeler';
   import {
     ACTIVE_ELEMENT,
@@ -12,14 +8,16 @@
     MODELER_REGISTRY,
   } from '@/components/Designer/src/config/bpmnEnums';
   import { debounce } from 'min-dash';
-  import { Connection, Element, Label, Shape } from 'diagram-js/lib/model/Types';
   import ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
   import { ElementChangeParams, SelectionChangeParams } from '/#/bpmn/designer/settings';
+  import EmptyXml from '@/components/Designer/src/utils/emptyXml';
+  import type { BaseViewerOptions } from 'bpmn-js/lib/BaseViewer';
+  import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
 
   const emit = defineEmits(['update:xml']);
   const modelerRef = ref<Modeler>();
   provide<Ref<Modeler | undefined>>(MODELER, modelerRef);
-  const activeElement = ref<Element>();
+  const activeElement = ref<BpmnElement>();
   const activeId = computed(() => {
     return activeElement.value?.id;
   });
@@ -27,19 +25,66 @@
 
   const bpmnCanvas = ref<HTMLElement>();
 
+  /**
+   * 初始化流程图
+   */
   async function init() {
     try {
       const modelerModules = initModules();
-      const modeler = initModeler(bpmnCanvas, modelerModules);
+      const options: BaseViewerOptions = {
+        container: bpmnCanvas.value as HTMLElement,
+        additionalModules: modelerModules[0] || [],
+        moddleExtensions: modelerModules[1] || {},
+        ...modelerModules[2],
+      };
+      const modeler: Modeler = new Modeler(options);
+      enhancementContextmenu(modeler);
       modelerRef.value = markRaw(modeler);
       initListening(modeler);
       await createNewDiagram(modeler);
-      console.log(modeler.getDefinitions(), 'modele.getDefinitions');
     } catch (error) {
       console.error(error);
     }
   }
 
+  /**
+   * 创建一个新的流程图
+   * @param modeler 流程modeler对象
+   * @param bpmnXml 流程xml字符串
+   * @param processId 流程id
+   * @param processName 流程名称
+   * @Step1 初始化存储和时间戳。
+   * @Step2 获取或设置流程ID、名称及引擎类型。
+   * @Step3 生成BPMN XML字符串（若未提供则使用默认模板）。
+   * @Step4 导入XML到Modeler并处理可能产生的警告信息。
+   */
+  async function createNewDiagram(
+    modeler: Modeler,
+    processId?: Ref<string>,
+    bpmnXml?: string,
+    processName?: string
+  ) {
+    try {
+      const timestamp = Date.now();
+      const relaId: string = processId?.value ? processId.value : `Process_${timestamp}`;
+      const relaName: string = processName || `流程_${timestamp}`;
+      const xmlString = bpmnXml || EmptyXml(relaId, relaName, 'camunda');
+      // const xmlString = bpmnXml || EmptyXml(relaId, relaName, 'flowable');
+      const { warnings } = await modeler.importXML(xmlString);
+      if (warnings && warnings.length) {
+        warnings.forEach((warn) => console.warn(warn));
+      }
+    } catch (error) {
+      console.error(
+        `[Process Designer Warn]: ${typeof error === 'string' ? error : (error as Error)?.message}`
+      );
+    }
+  }
+
+  /**
+   * 初始化监听事件
+   * @param modeler
+   */
   function initListening(modeler: Modeler) {
     /**
      * 导入完成后默认选中 process 节点，并设置panel内部表单
@@ -91,30 +136,31 @@
     // lintIssue.value = issues;
     // });
   }
+
   /**
    * 设置选中元素，更新 store中的数据
    */
-  const setCurrentElement = debounce(
-    (element: Shape | Element | Connection | Label | undefined) => {
-      let elementRef = element;
-      // 如果不传入参数则显示流程配置,否则显示当前节点
+  const setCurrentElement = debounce((element: BpmnElement | undefined) => {
+    let elementRef = element;
+    // 如果不传入参数则显示流程配置,否则显示当前节点
+    if (!elementRef) {
+      const registry = modelerRef.value!.get<ElementRegistry>(MODELER_REGISTRY);
+      console.log(registry);
+      // const definitionsElement = modelerRef.value!.getDefinitions();
+      elementRef =
+        registry.find((el: BpmnElement) => el.type === 'bpmn:Process') ||
+        registry.find((el: BpmnElement) => el.type === 'bpmn:Collaboration');
+      console.log('elementRef', registry);
       if (!elementRef) {
-        const registry = modelerRef.value!.get<ElementRegistry>(MODELER_REGISTRY);
-        elementRef =
-          registry.find((el: Base) => el.type === 'bpmn:Process') ||
-          registry.find((el: Base) => el.type === 'bpmn:Collaboration');
-        if (!elementRef) {
-          throw new Error('未找到流程标签信息！');
-        }
+        throw new Error('未找到流程标签信息！');
       }
-      activeElement.value = markRaw(elementRef as Base);
-      console.log('activeElement', activeElement.value);
-      console.log(`选择的元素发生改变：
+    }
+    activeElement.value = markRaw(elementRef);
+    console.log('activeElement', activeElement.value);
+    console.log(`选择的元素发生改变：
     ID: ${elementRef.id} , type: ${elementRef.type}
   `);
-    },
-    100
-  );
+  }, 100);
 
   onMounted(async () => {
     //阻止右键默认事件
@@ -130,7 +176,9 @@
     <Palette />
     <div class="designer_main">
       <Toolbar key="toolbar">
-        <template #save-btn> <slot name="save-btn"></slot></template>
+        <template #save-btn>
+          <slot name="save-btn"></slot>
+        </template>
       </Toolbar>
       <div ref="bpmnCanvas" class="designer_canvas"></div>
     </div>

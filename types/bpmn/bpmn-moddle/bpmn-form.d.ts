@@ -10,11 +10,19 @@ export declare interface ScriptForm extends BpmnScript {
   scriptType?: string;
 }
 
+export interface ListenersForm {
+  event: string;
+  type: 'expression' | 'class' | 'delegateExpression';
+  value: string | undefined;
+  fields: BpmnField[];
+}
+
 export declare interface ExecutionListenerForm {
   event: string;
   type: string;
   fields: BpmnField[];
 }
+
 export declare interface TaskListenerForm extends BpmnTaskListener {
   type: string;
   script?: ScriptForm;

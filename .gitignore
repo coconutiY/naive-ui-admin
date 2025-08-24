@@ -24,4 +24,6 @@ pnpm-lock.yaml
 *.njsproj
 *.sln
 *.sw?
-/components.d.ts
+components.d.ts
+auto-imports.d.ts
+/types/auto-imports.d.ts

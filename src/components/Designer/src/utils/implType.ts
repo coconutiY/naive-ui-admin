@@ -1,9 +1,9 @@
 import Modeler from 'bpmn-js/lib/Modeler';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { find } from 'min-dash';
-import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { Base } from 'diagram-js/lib/model';
-import { getExtensionElementsList } from '@/components/Designer/src/utils/baseInfo';
+import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import { getBusinessObject } from '@/components/Designer/src/utils/tools';
+import { getExtensionElements } from '@/components/Designer/src/utils/extensionProperties';
 type ImplementationType =
   | 'dmn'
   | 'connector'
@@ -30,7 +30,7 @@ export function getProcessPrefix(modeler: Modeler): string {
  * @param eventType
  */
 export function getEventDefinition(
-  element: Base | ModdleElement,
+  element: BpmnElement,
   eventType: string
 ): ModdleElement | undefined {
   const businessObject = getBusinessObject(element);
@@ -44,7 +44,7 @@ export function getEventDefinition(
  * 获取节点消息事件
  * @param element
  */
-export function getMessageEventDefinition(element: Base): ModdleElement | undefined {
+export function getMessageEventDefinition(element: BpmnElement): ModdleElement | undefined {
   if (is(element, 'bpmn:ReceiveTask')) {
     return getBusinessObject(element);
   }
@@ -56,7 +56,7 @@ export function getMessageEventDefinition(element: Base): ModdleElement | undefi
  * 是否服务任务 Check whether an element is ServiceTaskLike 检查元素是否为 'ServiceTaskLike'
  * @param element
  */
-export function isServiceTaskLike(element: Base | ModdleElement): boolean {
+export function isServiceTaskLike(element: BpmnElement): boolean {
   return is(element, `${getProcessPrefix}:ServiceTaskLike`);
 }
 
@@ -65,7 +65,7 @@ export function isServiceTaskLike(element: Base | ModdleElement): boolean {
  * @param modeler
  * @param element bpmn元素
  */
-export function isDmnCapable(modeler: Modeler, element: Base | ModdleElement): boolean {
+export function isDmnCapable(modeler: Modeler, element: BpmnElement): boolean {
   return is(element, `${getProcessPrefix(modeler)}:DmnCapable`);
 }
 
@@ -74,17 +74,17 @@ export function isDmnCapable(modeler: Modeler, element: Base | ModdleElement): b
  * @param modeler
  * @param element bpmn元素
  */
-export function isExternalCapable(modeler: Modeler, element: Base | ModdleElement): boolean {
+export function isExternalCapable(modeler: Modeler, element: BpmnElement): boolean {
   return is(element, `${getProcessPrefix(modeler)}:ExternalCapable`);
 }
 
 /**
  * getServiceTaskLikeBusinessObject
  * 获取一个 'ServiceTaskLike' 业务对象。
- * 如果给定的元素不是 'servicetasklike '，则返回 'false'
+ * 如果给定的元素不是 'servicetaskLike '，则返回 'false'
  * @param element
  */
-export function getServiceTaskLikeBusinessObject(element: Base | any): ModdleElement | false {
+export function getServiceTaskLikeBusinessObject(element: BpmnElement): ModdleElement | false {
   if (is(element, 'bpmn:IntermediateThrowEvent') || is(element, 'bpmn:EndEvent')) {
     const messageEventDefinition = getMessageEventDefinition(element);
     if (messageEventDefinition) {
@@ -109,7 +109,7 @@ export function getServiceTaskLikeBusinessObject(element: Base | any): ModdleEle
  * @param element
  * @returns
  */
-export function getImplementationType(modeler: Modeler, element: Base): ImplementationType {
+export function getImplementationType(modeler: Modeler, element: BpmnElement): ImplementationType {
   const prefix = getProcessPrefix(modeler);
   const businessObject =
     getListenerBusinessObject(modeler, element) || getServiceTaskLikeBusinessObject(element);
@@ -126,7 +126,7 @@ export function getImplementationType(modeler: Modeler, element: Base): Implemen
   }
 
   if (isServiceTaskLike(businessObject)) {
-    const connectors = getExtensionElementsList(businessObject, `${prefix}:Connector`);
+    const connectors = getExtensionElements(businessObject, `${prefix}:Connector`);
     if (connectors.length) {
       return 'connector';
     }
@@ -167,7 +167,7 @@ export function getImplementationType(modeler: Modeler, element: Base): Implemen
  */
 function getListenerBusinessObject(
   modeler: Modeler,
-  businessObject: Base | ModdleElement
+  businessObject: BpmnElement
 ): ModdleElement | undefined {
   const prefix = getProcessPrefix(modeler);
   if (isAny(businessObject, [`${prefix}:ExecutionListener`, `${prefix}:TaskListener`])) {

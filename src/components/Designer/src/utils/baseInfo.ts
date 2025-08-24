@@ -1,18 +1,16 @@
-import { Base } from 'diagram-js/lib/model';
-import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
+import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { ModdleElement } from 'moddle';
 import { add as collectionAdd } from 'diagram-js/lib/util/Collections';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
 import { Canvas } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
 import {
   getBpmnFactory,
-  getModdle,
+  getBusinessObject,
   getModeling,
   isIdValid,
 } from '@/components/Designer/src/utils/tools';
-import { Process } from 'bpmn-moddle';
 import Modeler from 'bpmn-js/lib/Modeler';
-import { without, isArray } from 'min-dash';
+import { without } from 'min-dash';
 
 // 文档格式
 const DOCUMENTATION_TEXT_FORMAT = 'text/plain';
@@ -22,7 +20,7 @@ const DOCUMENTATION_TEXT_FORMAT = 'text/plain';
  * 获取ID的值
  * @param element
  */
-export function getId(element: Base): string {
+export function getId(element: BpmnElement): string {
   return element.businessObject.id;
 }
 
@@ -32,7 +30,7 @@ export function getId(element: Base): string {
  * @param element
  * @param value
  */
-export function setId(modeler: Modeler, element: Base, value: string) {
+export function setId(modeler: Modeler, element: BpmnElement, value: string) {
   const errorMsg = isIdValid(element.businessObject, value);
   if (errorMsg && errorMsg.length) {
     throw new Error(errorMsg);
@@ -48,7 +46,7 @@ export function setId(modeler: Modeler, element: Base, value: string) {
  * 获取元素的 Name属性的值
  * @param element
  */
-export function getName(element: Base): string | undefined {
+export function getName(element: BpmnElement): string | undefined {
   if (isAny(element, ['bpmn:Collaboration', 'bpmn:DataAssociation', 'bpmn:Association'])) {
     return undefined;
   }
@@ -75,9 +73,9 @@ export function setName(
   modeler: Modeler,
   canvas: Canvas,
   bpmnFactory: BpmnFactory,
-  element: Base,
+  element: BpmnElement,
   value: string
-): void {
+) {
   if (isAny(element, ['bpmn:Collaboration', 'bpmn:DataAssociation', 'bpmn:Association'])) {
     return undefined;
   }
@@ -102,7 +100,7 @@ export function setName(
  * 获取流程是否可执行属性值
  * @param element
  */
-export function getProcessExecutable(element: Base) {
+export function getProcessExecutable(element: BpmnElement) {
   return !!element.businessObject.isExecutable;
 }
 
@@ -112,7 +110,7 @@ export function getProcessExecutable(element: Base) {
  * @param element
  * @param value
  */
-export function setProcessExecutable(modeler: Modeler, element: Base, value: boolean) {
+export function setProcessExecutable(modeler: Modeler, element: BpmnElement, value: boolean) {
   const modeling = getModeling(modeler);
   modeling.updateProperties(element, {
     isExecutable: value,
@@ -125,7 +123,7 @@ export function setProcessExecutable(modeler: Modeler, element: Base, value: boo
  * @param element
  * @param prefix
  */
-export function getProcessVersionTag(element: Base, prefix = 'camunda'): string | undefined {
+export function getProcessVersionTag(element: BpmnElement, prefix = 'camunda'): string | undefined {
   return element.businessObject.get(`${prefix}:versionTag`);
 }
 
@@ -138,7 +136,7 @@ export function getProcessVersionTag(element: Base, prefix = 'camunda'): string 
  */
 export function setProcessVersionTag(
   modeler: Modeler,
-  element: Base,
+  element: BpmnElement,
   value: string,
   prefix = 'camunda'
 ) {
@@ -154,7 +152,7 @@ export function setProcessVersionTag(
  * 获取文档的值
  * @param element
  */
-export function getDocumentValue(element: Base): string {
+export function getDocument(element: BpmnElement): string {
   const businessObject = element?.businessObject;
   const documentation = businessObject && findDocumentation(businessObject.get('documentation'));
   return documentation && documentation.text;
@@ -166,7 +164,7 @@ export function getDocumentValue(element: Base): string {
  * @param element
  * @param value
  */
-export function setDocumentValue(modeler: Modeler, element: Base, value: string | undefined) {
+export function setDocument(modeler: Modeler, element: BpmnElement, value: string | undefined) {
   const modeling = getModeling(modeler);
   const bpmnFactory = getBpmnFactory(modeler);
 
@@ -203,117 +201,6 @@ function findDocumentation(docs: any[]) {
   });
 }
 
-//--- 扩展元素 extensionElement -----//
-/**
- * 获取扩展元素集合 Get extension elements of business object. Optionally filter by type.
- * @param businessObject 业务对象
- * @param type
- */
-export function getExtensionElementsList(
-  businessObject: ModdleElement,
-  type?: string
-): ModdleElement[] {
-  const extensionElements = businessObject?.get('extensionElements');
-  if (!extensionElements) return [];
-
-  const values = extensionElements.get('values');
-  if (!values || !values.length) return [];
-
-  if (type) {
-    return values.filter((value: ModdleElement) => is(value, type));
-  }
-
-  return values;
-}
-
-/**
- * 添加扩展元素 Add one or more extension elements. Create bpmn:ExtensionElements if it doesn't exist.
- * @param modeler
- * @param element
- * @param businessObject
- * @param extensionElementToAdd 扩展元素
- */
-export function addExtensionElements(
-  modeler: Modeler,
-  element: Base,
-  businessObject: ModdleElement,
-  extensionElementToAdd: ModdleElement
-) {
-  const modeling = getModeling(modeler);
-  let extensionElements = businessObject.get('extensionElements');
-
-  // (1) create bpmn:ExtensionElements if it doesn't exist
-  if (!extensionElements) {
-    extensionElements = createModdleElement(
-      modeler,
-      'bpmn:ExtensionElements',
-      { values: [] },
-      businessObject
-    );
-    modeling?.updateModdleProperties(element, businessObject, { extensionElements });
-  }
-  extensionElementToAdd.$parent = extensionElements;
-
-  // (2) add extension element to list
-  modeling?.updateModdleProperties(element, extensionElements, {
-    values: [...extensionElements.get('values'), extensionElementToAdd],
-  });
-}
-
-/**
- * 移除扩展元素 Remove one or more extension elements. Remove bpmn:ExtensionElements afterwards if it's empty.
- * @param modeler
- * @param element
- * @param businessObject
- * @param extensionElementsToRemove
- */
-export function removeExtensionElements(
-  modeler: Modeler,
-  element: Base,
-  businessObject: ModdleElement,
-  extensionElementsToRemove: ModdleElement | ModdleElement[]
-) {
-  if (!isArray(extensionElementsToRemove)) {
-    extensionElementsToRemove = [extensionElementsToRemove];
-  }
-
-  const extensionElements = businessObject.get('extensionElements'),
-    values = extensionElements
-      .get('values')
-      .filter((value: any) => !extensionElementsToRemove.includes(value));
-
-  const modeling = getModeling(modeler);
-  modeling.updateModdleProperties(element, extensionElements, { values });
-}
-
-/**
- * 创建元素对象
- * @param modeller
- * @param elementType
- * @param properties 元素的属性值
- * @param parent 元素的父元素
- */
-export function createModdleElement(
-  modeller: Modeler,
-  elementType: string,
-  properties: Record<string, any>,
-  parent?: Element | ModdleElement
-): ModdleElement{
-  const moddle = getModdle(modeller);
-  const element = moddle.create(elementType, properties);
-  parent && (element.$parent = parent);
-  return element;
-};
-
-/**
- * 获取监听器容器
- * @param element
- */
-export function getListenersContainer(element: Base): ModdleElement{
-  const businessObject = getBusinessObject(element);
-  return businessObject?.get('processRef') || businessObject;
-};
-
 /**
  * 创建分类标签并设置分类的值
  * @param definitions
@@ -338,7 +225,7 @@ function createCategory(definitions: ModdleElement, bpmnFactory: BpmnFactory): M
  */
 function initializeCategory(
   businessObject: ModdleElement,
-  rootElement: Process,
+  rootElement: BpmnElement,
   bpmnFactory: BpmnFactory
 ) {
   const definitions = getBusinessObject(rootElement).$parent;

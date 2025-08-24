@@ -1,4 +1,4 @@
-import { isAny } from 'bpmn-js/lib/util/ModelUtil';
+import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { Moddle, ModdleElement } from 'bpmn-js/lib/model/Types';
 import Modeling from 'bpmn-js/lib/features/modeling/Modeling.js';
 import {
@@ -28,11 +28,6 @@ const QNAME_REGEX = /^([a-z][\w-.]*:)?[a-z_][\w-.]*$/i;
  * 根据 BPMN 模式（QName - 命名空间）进行 ID 验证
  */
 const ID_REGEX = /^[a-z_][\w-.]*$/i;
-
-/**
- * 空函数
- */
-export function noop() {}
 
 /**
  * 严格非空检查（适用于基础类型、数组、对象）
@@ -121,15 +116,12 @@ export function containsSpace(value: string) {
 export function isIdValid(element: ModdleElement, idValue: string) {
   const assigned = element.$model.ids.assigned(idValue);
   const idAlreadyExists = assigned && assigned !== element;
-
   if (!idValue) {
     return 'ID 不能为空.';
   }
-
   if (idAlreadyExists) {
     return 'ID 必须唯一';
   }
-
   return validateId(idValue);
 }
 
@@ -141,12 +133,10 @@ export function validateId(idValue: string) {
   if (containsSpace(idValue)) {
     return 'ID 不能包含空格';
   }
-
   if (!ID_REGEX.test(idValue)) {
     if (QNAME_REGEX.test(idValue)) {
       return 'ID 不能包含前缀';
     }
-
     return 'ID 必须符合 BPMN 规范';
   }
 }
@@ -179,6 +169,32 @@ export function getScriptType(script: ModdleElement & BpmnScript) {
 }
 
 /**
+ * 创建元素对象
+ * @param modeller
+ * @param elementType
+ * @param properties 元素的属性值
+ * @param parent 元素的父元素
+ */
+export function createElement(
+  modeller: Modeler,
+  elementType: string,
+  properties: Record<string, any>,
+  parent?: BpmnModdleEl
+): BpmnModdleEl {
+  const factory = getBpmnFactory(modeller);
+  const element = factory.create(elementType, properties);
+  parent && (element.$parent = parent);
+  return element;
+}
+
+export function getBusinessObject(element: BpmnElement): BpmnModdleEl {
+  // 存在泳池时，默认 "Collaboration" 节点替换为 "Process" 节点
+  return is(element, 'bpmn:Collaboration')
+    ? element.children[0].businessObject.processRef
+    : (element && element.businessObject) || element;
+}
+
+/**
  * 获取 Modeling
  * @param modeler
  */
@@ -187,7 +203,7 @@ export function getModeling(modeler: Modeler) {
 }
 
 /**
- * 获取 Modele
+ * 获取 Moddle
  * @param modeler
  */
 export function getModdle(modeler: Modeler) {

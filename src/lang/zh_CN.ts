@@ -4,6 +4,7 @@ import events from './zh_CN/bpmn/elements/events';
 import gateway from './zh_CN/bpmn/elements/gateway';
 import tasks from './zh_CN/bpmn/elements/tasks';
 import contextPad from './zh_CN/bpmn/elements/context';
+import other from './zh_CN/bpmn/elements/other';
 import lint from './zh_CN/bpmn/lint';
 import cron from './zh_CN/cron';
 import dept from './zh_CN/selector/dept';
@@ -71,6 +72,7 @@ export default {
     ...tasks,
     ...lint,
     ...contextPad,
+    ...other,
   },
   cron: cron,
   selector: {

@@ -1,13 +1,13 @@
-import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
+import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { isEventSubProcess, isExpanded, isInterrupting } from 'bpmn-js/lib/util/DiUtil';
 import { isPlane } from 'bpmn-js/lib/util/DrilldownUtil';
-import { Base } from 'diagram-js/lib/model';
+import { getBusinessObject } from '@/components/Designer/src/utils/tools';
 
 /**
  * 获取元素的icon key(bpmnIcons: Record<string, string>)
  * @param element
  */
-export default function bpmnIconKey(element: Base): string {
+export default function bpmnIconKey(element: BpmnElement): string {
   let elementType: string;
   if (element.type === 'label') {
     const businessObject = getBusinessObject(element);
@@ -67,18 +67,18 @@ function getRawType(type: string) {
  * 获取bpmn元素的事件定义信息
  * @param element
  */
-function getEventDefinition(element: Base) {
+function getEventDefinition(element: BpmnElement) {
   const businessObject = getBusinessObject(element),
     eventDefinitions = businessObject.eventDefinitions;
   return eventDefinitions && eventDefinitions[0];
 }
 
-function getEventDefinitionPrefix(eventDefinition: Base) {
+function getEventDefinitionPrefix(eventDefinition: BpmnElement) {
   const rawType = getRawType(eventDefinition.$type);
   return rawType.replace('EventDefinition', '');
 }
 
-function isCancelActivity(element: Base) {
+function isCancelActivity(element: BpmnElement) {
   const businessObject = getBusinessObject(element);
   return businessObject && businessObject.cancelActivity !== false;
 }
@@ -87,7 +87,7 @@ function isCancelActivity(element: Base) {
  * 判断是否是默认流转类型
  * @param element bpmn元素
  */
-function isDefaultFlow(element: Base) {
+function isDefaultFlow(element: BpmnElement) {
   const businessObject = getBusinessObject(element);
   const sourceBusinessObject = getBusinessObject(element.source);
 
@@ -105,7 +105,7 @@ function isDefaultFlow(element: Base) {
  * 判断是否是条件流转类型
  * @param element bpmn元素
  */
-function isConditionalFlow(element: Base) {
+function isConditionalFlow(element: BpmnElement) {
   const businessObject = getBusinessObject(element);
   const sourceBusinessObject = getBusinessObject(element.source);
   if (!is(element, 'bpmn:SequenceFlow') || !sourceBusinessObject) {
