@@ -1,23 +1,8 @@
 import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
-import Canvas, { CanvasViewbox } from 'diagram-js/lib/core/Canvas';
+import Canvas from 'diagram-js/lib/core/Canvas';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { isAppendAction } from '@/components/Designer/src/utils/tools';
-import { Element, Shape } from 'diagram-js/lib/model/Types';
 import { Point } from 'diagram-js/lib/util/Types';
-
-interface InternalEvent {
-  type: string; // 发生的事件名称，但是很快会被置为undefined
-  element: Element;
-  elements: Element[];
-  shape: Shape;
-  originalEvent: MouseEvent;
-  context: object; // 有点复杂，有兴趣的朋友可以研究
-  gfx?: SVGElement;
-  svg?: SVGElement;
-  viewport?: SVGElement;
-  viewbox?: CanvasViewbox;
-  pad?: object; // 见 Element.pad
-}
 
 export default function enhancementContextmenu(modeler: Modeler) {
   const config: any = {
@@ -50,7 +35,7 @@ export default function enhancementContextmenu(modeler: Modeler) {
   });
 }
 
-const openPopupMenu = (modeler: Modeler, element: Element, event: MouseEvent, type: string) => {
+const openPopupMenu = (modeler: Modeler, element: BpmnElement, event: MouseEvent, type: string) => {
   const popupMenu: PopupMenu = modeler.get<PopupMenu>('popupMenu');
   const canvas: Canvas = modeler.get('canvas');
   if (type === 'replace') {
@@ -72,7 +57,7 @@ const openPopupMenu = (modeler: Modeler, element: Element, event: MouseEvent, ty
   } else {
     const rootElement = canvas.getRootElement();
     const position: Point = getContextMenuPosition(event);
-    popupMenu.open(rootElement as Element, 'bpmn-create', position, {
+    popupMenu.open(rootElement as BpmnElement, 'bpmn-create', position, {
       title: '创建元素',
       width: 300,
       search: true,

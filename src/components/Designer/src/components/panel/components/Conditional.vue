@@ -25,14 +25,13 @@
   } from '@/components/Designer/src/utils/condition';
   import { ConditionalForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { scriptTypeOptions } from '@/components/Designer/src/config/selectOptions';
-  import { Connection } from 'diagram-js/lib/model/Types';
 
   defineOptions({ name: 'Conditional' });
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Connection>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   // 变量配置部分
   const varVisible = ref(false);
@@ -45,7 +44,7 @@
   /**
    * 获取元素变量
    */
-  function getElementVariables(element: Connection) {
+  function getElementVariables(element: BpmnElement) {
     varVisible.value = isConditionEventDefinition(element);
     variableName.value = getVariableNameValue(element);
     if (varVisible.value) {
@@ -57,7 +56,7 @@
   /**
    * 获取元素条件类型
    */
-  function getElementConditionType(element: Connection) {
+  function getElementConditionType(element: BpmnElement) {
     conditionData.value.conditionType = getConditionTypeValue(element);
     conditionData.value.conditionType === 'expression' && getConditionExpression(element);
     conditionData.value.conditionType === 'script' && getConditionScript(element);
@@ -66,7 +65,7 @@
   /**
    * 获取元素条件脚本
    */
-  function getConditionScript(element: Connection) {
+  function getConditionScript(element: BpmnElement) {
     conditionData.value.language = getConditionScriptLanguageValue(element);
     conditionData.value.scriptType = getConditionScriptTypeValue(modelerRef!.value, element);
     conditionData.value.body = getConditionScriptBodyValue(element);
@@ -76,7 +75,7 @@
   /**
    * 获取元素条件表达式
    */
-  function getConditionExpression(element: Connection) {
+  function getConditionExpression(element: BpmnElement) {
     conditionData.value.expression = getConditionExpressionValue(element);
   }
 

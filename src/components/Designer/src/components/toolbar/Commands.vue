@@ -10,7 +10,8 @@
     () => modelerRef?.value && modelerRef.value.get<CommandStack>(MODELER_COMMAND)
   );
 
-  const { canRedo, canUndo } = {} as any;
+  const canRedo = ref(false);
+  const canUndo = ref(false);
 
   function undo() {
     command.value && command.value.canUndo() && command.value.undo();

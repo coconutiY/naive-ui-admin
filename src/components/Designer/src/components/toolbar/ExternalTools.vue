@@ -17,7 +17,6 @@
   });
 
   let minimap: any | null = null;
-  // const minimapStatus = computed(() => useEditorStore().getEditorConfig.miniMap);
   const minimapStatus = ref(true);
   const minimapToggle = () => {
     !minimap && (minimap = modelerRef!.value.get('minimap'));
@@ -29,7 +28,6 @@
   };
 
   let lintModule: any | null = null;
-  // const lintEnable = computed(() => useEditorStore().getEditorConfig.useLint);
   const lintEnable = ref(true);
   const lintToggle = () => {
     !lintModule && (lintModule = modelerRef!.value.get('linting'));
@@ -40,9 +38,7 @@
     shortcutKeysModel.value.visible = true;
   };
 
-  // const shortcutKeysEnable = computed(() => useEditorStore().getEditorConfig.otherModule);
   const shortcutKeysEnable = ref(true);
-  // const templateExternal = computed(() => useEditorStore().getEditorConfig.templateChooser);
   const templateExternal = ref(true);
 
   const listeners = ref<string[]>([]);

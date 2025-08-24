@@ -4,7 +4,7 @@
   import Modeler from 'bpmn-js/lib/Modeler';
   import {
     ACTIVE_ELEMENT,
-    MODELER,
+    MODELER, MODELER_COMMAND,
     MODELER_REGISTRY,
   } from '@/components/Designer/src/config/bpmnEnums';
   import { debounce } from 'min-dash';
@@ -13,6 +13,7 @@
   import EmptyXml from '@/components/Designer/src/utils/emptyXml';
   import type { BaseViewerOptions } from 'bpmn-js/lib/BaseViewer';
   import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
+  import CommandStack from 'diagram-js/lib/command/CommandStack';
 
   const emit = defineEmits(['update:xml']);
   const modelerRef = ref<Modeler>();
@@ -97,7 +98,10 @@
     modeler.on('commandStack.changed', async () => {
       try {
         const { xml } = await modeler.saveXML({ format: true });
+        const canRedo = modeler.get<CommandStack>(MODELER_COMMAND).canRedo();
+        const canUndo = modeler.get<CommandStack>(MODELER_COMMAND).canUndo();
         emit('update:xml', xml);
+        console.log('commandStack.changed', canUndo, canRedo);
       } catch (error) {
         throw error;
       }
