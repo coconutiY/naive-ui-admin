@@ -4,7 +4,9 @@
   import Modeler from 'bpmn-js/lib/Modeler';
   import {
     ACTIVE_ELEMENT,
-    MODELER, MODELER_COMMAND,
+    COMMAND_DO,
+    MODELER,
+    MODELER_COMMAND,
     MODELER_REGISTRY,
   } from '@/components/Designer/src/config/bpmnEnums';
   import { debounce } from 'min-dash';
@@ -23,6 +25,12 @@
     return activeElement.value?.id;
   });
   provide(ACTIVE_ELEMENT, activeElement);
+
+  const commandDo = ref({
+    canRedo: false,
+    canUndo: false,
+  });
+  provide(COMMAND_DO, commandDo);
 
   const bpmnCanvas = ref<HTMLElement>();
 
@@ -98,10 +106,10 @@
     modeler.on('commandStack.changed', async () => {
       try {
         const { xml } = await modeler.saveXML({ format: true });
-        const canRedo = modeler.get<CommandStack>(MODELER_COMMAND).canRedo();
-        const canUndo = modeler.get<CommandStack>(MODELER_COMMAND).canUndo();
+        commandDo.value.canRedo = modeler.get<CommandStack>(MODELER_COMMAND).canRedo();
+        commandDo.value.canUndo = modeler.get<CommandStack>(MODELER_COMMAND).canUndo();
         emit('update:xml', xml);
-        console.log('commandStack.changed', canUndo, canRedo);
+        console.log('commandStack.changed', commandDo.value);
       } catch (error) {
         throw error;
       }

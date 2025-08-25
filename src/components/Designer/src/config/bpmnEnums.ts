@@ -32,6 +32,7 @@ export enum MULTIPLE_CONST {
 // provide/inject 数据
 export const MODELER = Symbol('modeler');
 export const ACTIVE_ELEMENT = Symbol('active_element');
+export const COMMAND_DO = Symbol('command_do');
 // bpmn Modeler插件
 export const MODELER_MODDLE = 'moddle';
 export const MODELER_MODELING = 'modeling';

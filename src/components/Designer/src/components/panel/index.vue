@@ -30,7 +30,7 @@
   );
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   const drawerVisible = ref(true);
   const drawerIcon = computed(() =>
@@ -39,8 +39,6 @@
   const iconName = ref('Process');
   const activeType = ref('');
   const title = ref('');
-  // const elementName = ref<string>('Process');
-  // const collapseKey = ref<any[]>([])
   const renderComponents = shallowRef<Component[]>([
     BaseInfo,
     Conditional,
@@ -67,7 +65,6 @@
       const iconKey = bpmnIconKey(active!.value);
       title.value = translate(iconKey);
       iconName.value = bpmnIcons[iconKey];
-      console.log(iconKey, '元素实际名称');
     }
   }
 
