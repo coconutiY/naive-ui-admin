@@ -5,7 +5,6 @@ import i18n from '@/lang';
 
 const { t } = i18n.global;
 
-
 export const defaultConditionTypeOptions: Record<string, string>[] = [
   { label: '无条件( None )', value: 'none' },
   { label: '默认路径( Default )', value: 'default' },
@@ -93,4 +92,11 @@ export const listenerTypeOptions = ref<Record<string, string>[]>([
 export const fieldTypeOptions = ref<Record<string, string>[]>([
   { label: t('bpmn.panel.string'), value: 'string' },
   { label: t('bpmn.panel.expression'), value: 'expression' },
+]);
+
+// 定时器选项
+export const timerOptions = ref<Record<string, string>[]>([
+  { label: t('bpmn.panel.timeDate'), value: 'timeDate' },
+  { label: t('bpmn.panel.timeDuration'), value: 'timeDuration' },
+  { label: t('bpmn.panel.timeCycle'), value: 'timeCycle' },
 ]);

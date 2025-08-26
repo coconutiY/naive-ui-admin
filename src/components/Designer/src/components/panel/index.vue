@@ -28,6 +28,9 @@
   const ExtensionProperties = defineAsyncComponent(
     () => import('./components/ExtensionProperties.vue')
   );
+  const Timer = defineAsyncComponent(
+    () => import('./components/Timer.vue')
+  );
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
@@ -46,6 +49,7 @@
     TaskListeners,
     ExecutionListeners,
     JobExecution,
+    Timer,
     ExtensionProperties,
     AsyncContinuations,
     Documentations,
