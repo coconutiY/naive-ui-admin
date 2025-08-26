@@ -14,7 +14,6 @@
   import { ElementChangeParams, SelectionChangeParams } from '/#/bpmn/designer/settings';
   import EmptyXml from '@/components/Designer/src/utils/emptyXml';
   import type { BaseViewerOptions } from 'bpmn-js/lib/BaseViewer';
-  import enhancementContextmenu from '@/components/Designer/src/modules/ContextMenu/EnhancementContextmenu';
   import CommandStack from 'diagram-js/lib/command/CommandStack';
 
   const emit = defineEmits(['update:xml']);
@@ -47,7 +46,11 @@
         ...modelerModules[2],
       };
       const modeler: Modeler = new Modeler(options);
-      enhancementContextmenu(modeler);
+      //阻止右键默认事件
+      // document.body.addEventListener('contextmenu', (ev: MouseEvent) => {
+      //   ev.preventDefault();
+      // });
+      // enhancementContextmenu(modeler);
       modelerRef.value = markRaw(modeler);
       initListening(modeler);
       await createNewDiagram(modeler);
@@ -175,10 +178,6 @@
   }, 100);
 
   onMounted(async () => {
-    //阻止右键默认事件
-    document.body.addEventListener('contextmenu', (ev: MouseEvent) => {
-      ev.preventDefault();
-    });
     await init();
   });
 </script>

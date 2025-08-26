@@ -9,8 +9,6 @@
   import xml from 'highlight.js/lib/languages/xml';
   import json from 'highlight.js/lib/languages/json';
   import vkbeautify from 'vkbeautify';
-  import { DEFAULT_LABEL_SIZE } from 'bpmn-js/lib/util/LabelUtil';
-  import height = DEFAULT_LABEL_SIZE.height;
 
   type PreviewModel = {
     title: string | undefined;
@@ -87,9 +85,9 @@
   <n-modal v-model:show="previewModel.visible">
     <n-card :title="previewModel.title" :style="{ width: '64vw', 'max-height': '80vh' }">
       <n-scrollbar :size="1">
-      <div class="preview-model">
-        <pre><code :class="previewModel.language" v-html="previewModel.content"></code></pre>
-      </div>
+        <div class="preview-model">
+          <pre><code :class="previewModel.language" v-html="previewModel.content"></code></pre>
+        </div>
       </n-scrollbar>
     </n-card>
   </n-modal>

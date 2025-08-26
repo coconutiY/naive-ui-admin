@@ -3,6 +3,7 @@ import { append as svgAppend, attr as svgAttr, create as svgCreate } from 'tiny-
 import EventBus from 'diagram-js/lib/core/EventBus';
 import Modeling from 'bpmn-js/lib/features/modeling/Modeling.js';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
+import { Shape } from 'bpmn-js/lib/model/Types';
 
 const pathMap = {
   userTask:
@@ -12,6 +13,7 @@ const pathMap = {
 const HIGH_PRIORITY = 1500;
 
 class CustomRenderer extends BaseRenderer {
+  static $inject: string[];
   bpmnRenderer: BaseRenderer;
   modeling: Modeling;
 
@@ -31,7 +33,7 @@ class CustomRenderer extends BaseRenderer {
    * @param {*} element
    * @returns
    */
-  drawShape(parentNode: SVGElement, element: any): SVGRectElement {
+  drawShape(parentNode: SVGElement, element: Shape): SVGRectElement {
     // 处理自定义元素
     if (is(element, 'bpmn:UserTask')) {
       const path = svgCreate('path');
@@ -43,7 +45,7 @@ class CustomRenderer extends BaseRenderer {
       // 需要 return 该 svg 元素
       return <SVGRectElement>path;
     }
-    return this.bpmnRenderer.drawShape(parentNode, element);
+    return <SVGRectElement>this.bpmnRenderer.drawShape(parentNode, element);
   }
 
   getShapePath(shape: any) {

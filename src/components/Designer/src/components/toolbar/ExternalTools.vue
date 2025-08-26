@@ -1,58 +1,79 @@
 <script setup lang="ts">
   import ToggleMode from 'bpmn-js-token-simulation/lib/features/toggle-mode/modeler/ToggleMode';
   import Modeler from 'bpmn-js/lib/Modeler';
-  import { MODELER } from '@/components/Designer/src/config/bpmnEnums';
+  import {
+    MODELER,
+    MODELER_EVENTBUS,
+    MODELER_LINTING,
+    MODELER_MINIMAP,
+    MODELER_TOGGLEMODE,
+  } from '@/components/Designer/src/config/bpmnEnums';
+  import EventBus from 'diagram-js/lib/core/EventBus';
 
   const { t } = useI18n();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
 
-  const eventsModel = ref({
-    title: t('bpmn.toolbar.bpmnShortcutKeys'),
-    visible: false,
-  });
-
-  const shortcutKeysModel = ref({
-    title: t('bpmn.toolbar.bpmnShortcutKeys'),
+  const modal = ref({
+    title: t('bpmn.toolbar.bpmnEvents'),
+    event: true,
     visible: false,
   });
 
   let minimap: any | null = null;
   const minimapStatus = ref(true);
-  const minimapToggle = () => {
-    !minimap && (minimap = modelerRef!.value.get('minimap'));
-    minimap && minimap.toggle();
-  };
 
-  const mockSimulation = () => {
-    modelerRef!.value.get<ToggleMode>('toggleMode').toggleMode();
-  };
+  function minimapToggle() {
+    !minimap && (minimap = modelerRef!.value.get(MODELER_MINIMAP));
+    minimap && minimap.toggle();
+  }
+
+  function mockSimulation() {
+    modelerRef!.value.get<ToggleMode>(MODELER_TOGGLEMODE).toggleMode();
+  }
 
   let lintModule: any | null = null;
   const lintEnable = ref(true);
-  const lintToggle = () => {
-    !lintModule && (lintModule = modelerRef!.value.get('linting'));
+
+  function lintToggle() {
+    !lintModule && (lintModule = modelerRef!.value.get(MODELER_LINTING));
     lintModule && lintModule.toggle();
-  };
+  }
 
-  const openShortcutKeysModel = () => {
-    shortcutKeysModel.value.visible = true;
-  };
+  function openShortcutKeysModel() {
+    modal.value.title = t('bpmn.toolbar.bpmnShortcutKeys');
+    modal.value.event = false;
+    modal.value.visible = true;
+  }
 
-  const shortcutKeysEnable = ref(true);
-  const templateExternal = ref(true);
+  // const shortcutKeysEnable = ref(true);
+  // const templateExternal = ref(true);
 
   const listeners = ref<string[]>([]);
-  const listenerFilter = ref<string>('');
-  const visibleListeners = computed(() =>
-    listeners.value.filter((i) => i.includes(listenerFilter.value))
-  );
+  const listenerFilter = ref();
 
-  const openEventsModel = () => {
-    const eventBus = modelerRef!.value.get<any>('eventBus');
+  function openEventsModel() {
+    const eventBus = modelerRef!.value.get<EventBus>(MODELER_EVENTBUS);
     listenerFilter.value = '';
-    listeners.value = Object.keys(eventBus._listeners).sort();
-    eventsModel.value.visible = true;
-  };
+    listeners.value = Object.keys(eventBus['_listeners']).sort();
+    modal.value.title = t('bpmn.toolbar.bpmnEvents');
+    modal.value.event = true;
+    modal.value.visible = true;
+  }
+
+  function closeEventsModel() {
+    listenerFilter.value = '';
+    listeners.value = [];
+    modal.value.visible = false;
+  }
+
+  function filterListener() {
+    if (!listenerFilter.value) {
+      const eventBus = modelerRef!.value.get<EventBus>(MODELER_EVENTBUS);
+      listeners.value = Object.keys(eventBus['_listeners']).sort();
+    } else {
+      listeners.value = listeners.value.filter((i) => i.includes(listenerFilter.value));
+    }
+  }
 </script>
 
 <template>
@@ -67,7 +88,7 @@
           </template>
         </n-button>
       </template>
-      {{ $t('bpmn.toolbar.toggleProcessMock') }}
+      {{ t('bpmn.toolbar.toggleProcessMock') }}
     </n-tooltip>
     <n-tooltip>
       <template #trigger>
@@ -79,7 +100,7 @@
           </template>
         </n-button>
       </template>
-      {{ $t('bpmn.toolbar.bpmnEvents') }}
+      {{ t('bpmn.toolbar.bpmnEvents') }}
     </n-tooltip>
     <n-tooltip v-if="minimapStatus">
       <template #trigger>
@@ -91,7 +112,7 @@
           </template>
         </n-button>
       </template>
-      {{ $t('bpmn.toolbar.toggleMinimap') }}
+      {{ t('bpmn.toolbar.toggleMinimap') }}
     </n-tooltip>
     <n-tooltip v-if="lintEnable">
       <template #trigger>
@@ -103,9 +124,9 @@
           </template>
         </n-button>
       </template>
-      {{ $t('bpmn.toolbar.toggleProcessLint') }}
+      {{ t('bpmn.toolbar.toggleProcessLint') }}
     </n-tooltip>
-    <n-tooltip v-if="shortcutKeysEnable">
+    <n-tooltip>
       <template #trigger>
         <n-button @click="openShortcutKeysModel">
           <template #icon>
@@ -115,53 +136,58 @@
           </template>
         </n-button>
       </template>
-      {{ $t('bpmn.toolbar.bpmnShortcutKeys') }}
+      {{ t('bpmn.toolbar.bpmnShortcutKeys') }}
     </n-tooltip>
   </n-button-group>
-  <n-modal :title="eventsModel.title" v-model:show="eventsModel.visible" width="500px">
-    <div class="event-listeners-box">
-      <div class="listener-search">
-        <n-input v-model="listenerFilter" :clearable="true" />
-      </div>
-      <div class="event-listeners-box" v-if="visibleListeners">
-        <p class="listener-item" v-for="(name, key) in visibleListeners" :key="key"
-          >{{ key + 1 }}：{{ name }}</p
-        >
-      </div>
-    </div>
-  </n-modal>
 
-  <n-modal :title="shortcutKeysModel.title" v-model:show="shortcutKeysModel.visible" width="500px">
-    <div class="shortcut-keys-model">
-      <p>{{ $t('bpmn.toolbar.undo') }}</p>
-      <p>Ctrl + Z</p>
-      <p>{{ $t('bpmn.toolbar.redo') }}</p>
-      <p>Ctrl + Shift + Z / ctrl + Y</p>
-      <p>{{ $t('bpmn.toolbar.selectAll') }}</p>
-      <p>Ctrl + A</p>
-      <p>{{ $t('bpmn.toolbar.zoom') }}</p>
-      <p>Ctrl + {{ $t('bpmn.toolbar.mouseWheel') }}</p>
-      <p>{{ $t('bpmn.toolbar.scrollingVertical') }}</p>
-      <p>{{ $t('bpmn.toolbar.mouseWheel') }}</p>
-      <p>{{ $t('bpmn.toolbar.scrollingHorizontal') }}</p>
-      <p>Shift + {{ $t('bpmn.toolbar.mouseWheel') }}</p>
-      <p>{{ $t('bpmn.toolbar.directEditing') }}</p>
-      <p>E</p>
-      <p>{{ $t('bpmn.toolbar.handTool') }}</p>
-      <p>H</p>
-      <p>{{ $t('bpmn.toolbar.lassoTool') }}</p>
-      <p>L</p>
-      <p>{{ $t('bpmn.toolbar.spaceTool') }}</p>
-      <p>S</p>
-    </div>
-    <div v-if="templateExternal" class="shortcut-keys-model">
-      <p>{{ $t('bpmn.toolbar.replaceTool') }}</p>
-      <p>R</p>
-      <p>{{ $t('bpmn.toolbar.appendAnything') }}</p>
-      <p>A</p>
-      <p>{{ $t('bpmn.toolbar.createAnything') }}</p>
-      <p>N</p>
-    </div>
+  <n-modal v-model:show="modal.visible" @close="closeEventsModel">
+    <n-card :title="modal.title" :style="{ width: '500px', height: '60vh' }">
+      <template v-if="modal.event" #header-extra>
+        <n-input
+          v-model:value="listenerFilter"
+          @update:value="filterListener"
+          :clearable="true"
+          class="listener-search"
+        />
+      </template>
+      <template #default>
+        <n-scrollbar v-if="modal.event" :size="1">
+          <div class="listener-list" :style="{ 'max-height': '50vh' }">
+            <p class="listener-item" v-for="(name, index) in listeners" :key="name">{{
+              `${index + 1}：${name}`
+            }}</p>
+          </div>
+        </n-scrollbar>
+        <n-scrollbar v-else :size="1">
+          <div class="shortcut-keys-model">
+            <p>{{ `${t('bpmn.toolbar.undo')} : Ctrl + Z` }}</p>
+            <p>{{ `${t('bpmn.toolbar.redo')} : Ctrl + Shift + Z / ctrl + Y ` }}</p>
+            <p>{{ `${t('bpmn.toolbar.selectAll')} : Ctrl + A ` }} </p>
+            <p>{{ `${t('bpmn.toolbar.zoom')} : Ctrl + ${t('bpmn.toolbar.mouseWheel')}` }}</p>
+            <p>{{ `${t('bpmn.toolbar.scrollingVertical')} : ${t('bpmn.toolbar.mouseWheel')}` }}</p>
+            <p>{{
+              `${t('bpmn.toolbar.scrollingHorizontal')}: Shift + ${t('bpmn.toolbar.mouseWheel')}`
+            }}</p>
+            <!--            <p>{{t('bpmn.toolbar.directEditing') }}</p>-->
+            <!--          <p>E</p>-->
+            <!--          <p>{{t('bpmn.toolbar.handTool') }}</p>-->
+            <!--          <p>H</p>-->
+            <!--          <p>{{t('bpmn.toolbar.lassoTool') }}</p>-->
+            <!--          <p>L</p>-->
+            <!--          <p>{{t('bpmn.toolbar.spaceTool') }}</p>-->
+            <!--          <p>S</p>-->
+          </div>
+          <!--        <div v-if="templateExternal" class="shortcut-keys-model">-->
+          <!--          <p>{{t('bpmn.toolbar.replaceTool') }}</p>-->
+          <!--          <p>R</p>-->
+          <!--          <p>{{t('bpmn.toolbar.appendAnything') }}</p>-->
+          <!--          <p>A</p>-->
+          <!--          <p>{{t('bpmn.toolbar.createAnything') }}</p>-->
+          <!--          <p>N</p>-->
+          <!--        </div>-->
+        </n-scrollbar>
+      </template>
+    </n-card>
   </n-modal>
 </template>
 

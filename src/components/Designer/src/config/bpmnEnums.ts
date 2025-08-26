@@ -50,6 +50,10 @@ export const MODELER_CONN = 'globalConnect';
 export const MODELER_SELECTION = 'selection';
 export const MODELER_ALIGN = 'alignElements';
 export const MODELER_COMMAND = 'commandStack';
+export const MODELER_TOGGLEMODE = 'toggleMode';
+export const MODELER_MINIMAP = 'minimap';
+export const MODELER_LINTING = 'linting';
+export const MODELER_EVENTBUS = 'eventBus';
 
 // bpmn元素的icon名称
 export const bpmnIcons: Record<string, string> = {
