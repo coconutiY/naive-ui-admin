@@ -2,17 +2,15 @@
   import { propTypes } from '@/utils/propTypes';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { Base } from 'diagram-js/lib/model';
-  import { getDefaultEvent } from '@/components/Designer/src/utils/listeners';
-  import { ExecutionListenerForm, TaskListenerForm } from "/#/bpmn/bpmn-moddle/bpmn-form";
+  import { TaskListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import {
     fieldTypeOptions,
     listenerTypeOptions,
     taskListenerEventTypes,
   } from '@/components/Designer/src/config/selectOptions';
-  import { ModdleElement } from "bpmn-js/lib/model/Types";
-  import { DataTableColumns, FormInst, FormRules, NButton } from "naive-ui";
-  import { BpmnField } from "/#/bpmn/bpmn-moddle/bpmn-instance";
+  import { ModdleElement } from 'bpmn-js/lib/model/Types';
+  import { DataTableColumns, FormInst, FormRules, NButton } from 'naive-ui';
+  import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 
   defineOptions({ name: 'TaskListeners' });
   defineProps({
@@ -23,7 +21,7 @@
   const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   // 模态框
   const modelTitle = ref(t('bpmn.panel.addTaskListener'));

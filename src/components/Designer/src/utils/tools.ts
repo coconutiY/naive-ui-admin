@@ -217,3 +217,36 @@ export function getModdle(modeler: Modeler) {
 export function getBpmnFactory(modeler: Modeler) {
   return modeler.get<BpmnFactory>(MODELER_BPMN_FACTORY);
 }
+
+/**
+ * 获取指定日期的开始时间、截止时间
+ * @param beginDate 开始日期
+ * @param endDate 截止日期
+ */
+
+import dayjs from 'dayjs';
+import duration, { DurationUnitsObjectType } from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
+
+export function getDateRange(
+  beginDate: dayjs.ConfigType,
+  endDate: dayjs.ConfigType
+): [string, string] {
+  return [
+    dayjs(beginDate).startOf('d').format('YYYY-MM-DD HH:mm:ss'),
+    dayjs(endDate).endOf('d').format('YYYY-MM-DD HH:mm:ss'),
+  ];
+}
+
+export function getDateDurationByDate(date: Date) {
+  return dayjs.duration(date.getTime()).toISOString();
+}
+
+export function getDateDuration(date: DurationUnitsObjectType) {
+  return dayjs.duration(date).toISOString();
+}
+
+export function getDateDurationByString(date: string) {
+  return dayjs.duration(date);
+}

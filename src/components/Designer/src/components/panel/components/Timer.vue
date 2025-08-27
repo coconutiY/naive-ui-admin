@@ -1,13 +1,19 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
   import { timerOptions } from '@/components/Designer/src/config/selectOptions';
+  import Modeler from 'bpmn-js/lib/Modeler';
+  import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
+  import { useMessage } from 'naive-ui';
 
   defineOptions({ name: 'Timer' });
   defineProps({
     labelWidth: propTypes.number.def(80),
   });
-
-  const { proxy } = getCurrentInstance() as ComponentInternalInstance;
+  const message = useMessage();
+  const { t } = useI18n();
+  // 依赖注入
+  const modelerRef = inject<Ref<Modeler>>(MODELER);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   const timerForm = ref({
     type: '',
@@ -29,14 +35,8 @@
     years: 0,
   });
   const modelVisible = ref(false);
-  const modelTitle = ref(proxy?.$t('bpmn.panel.configTime'));
-  const cycleType = ref<string>('cron');
-  const modelerStore = useModelerStore();
-  const timerOptions = ref<OptionType[]>([
-    { value: 'timeDate', label: proxy?.$t('bpmn.panel.timeDate') as string },
-    { value: 'timeDuration', label: proxy?.$t('bpmn.panel.timeDuration') as string },
-    { value: 'timeCycle', label: proxy?.$t('bpmn.panel.timeCycle') as string },
-  ]);
+  const modelTitle = ref(t('bpmn.panel.configTime'));
+  const cycleType = ref('cron');
 
   const cycleFormValue = computed(() => {
     let dateDuration = getDateDuration(durationForm.value);
@@ -45,32 +45,32 @@
     }`;
   });
 
-  const timerTypeChange = (value: string) => {
+  function timerTypeChange(value: string) {
     setTimerType(modelerStore.getActive!, value);
-  };
+  }
 
-  const timerValueChange = () => {
+  function timerValueChange() {
     if (timerForm.value.type && timerForm.value.type === 'timeDuration') {
       let regExp = new RegExp(
         '^P(?=\\d|T$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+(\\.\\d{1,})?S)?)?$'
       );
       if (!regExp.exec(timerForm.value.val)) {
-        return proxy?.$modal.msgError(proxy?.$t('bpmn.panel.typeError'));
+        return message.error(t('bpmn.panel.typeError'));
       }
     }
     timerForm.value.type &&
       setTimerValue(modelerStore.getActive!, timerForm.value.type, timerForm.value.val);
-  };
+  }
 
-  const saveTimerValue = () => {
+  function saveTimerValue() {
     if (timerForm.value.type === 'timeCycle' && cycleType.value === 'duration') {
       timerForm.value.val = cycleFormValue.value;
     }
     setTimerValue(modelerStore.getActive!, timerForm.value.type, timerForm.value.val);
     modelVisible.value = false;
-  };
+  }
 
-  const openDrawer = () => {
+  function openDrawer() {
     let duration = getDateDurationByString(timerForm.value.val);
     if (duration) {
       durationForm.value = {
@@ -85,9 +85,9 @@
     }
     timerForm.value.oldVal = timerForm.value.val;
     modelVisible.value = true;
-  };
+  }
 
-  const closeDrawer = () => {
+  function closeDrawer() {
     timerForm.value.val = timerForm.value.oldVal;
     cycleForm.value = {
       cyclesNum: 1,
@@ -95,22 +95,22 @@
       cyclePeriod: '',
     };
     modelVisible.value = false;
-  };
+  }
 
-  const setFormValue = () => {
+  function setFormValue() {
     timerForm.value.val = getDateDuration(durationForm.value);
-  };
+  }
 
-  const reloadData = () => {
+  function reloadData() {
     timerForm.value.type = getTimerType(modelerStore.getActive!) as string;
     timerForm.value.val = getTimerValue(modelerStore.getActive!, timerForm.value.type);
-  };
+  }
 
-  const eventEmitterListener = () => {
+  function eventEmitterListener() {
     if (isTimerSupported(modelerStore.getActive!)) {
       reloadData();
     }
-  };
+  }
 
   onMounted(() => {
     reloadData();
@@ -127,7 +127,7 @@
     </template>
     <template #default>
       <n-form :labn-width="labelWidth" :model="timerForm">
-        <n-form-item :label="$t('bpmn.panel.timerType')" path="type">
+        <n-form-item :label="t('bpmn.panel.timerType')" path="type">
           <n-select
             v-model="timerForm.type"
             clearable
@@ -135,13 +135,13 @@
             :options="timerOptions"
           />
         </n-form-item>
-        <n-form-item v-if="timerForm.type" :label="$t('bpmn.panel.timerValue')" path="val">
+        <n-form-item v-if="timerForm.type" :label="t('bpmn.panel.timerValue')" path="val">
           <n-date-picker
             v-if="timerForm.type === 'timeDate'"
             v-model="timerForm.val"
             @change="timerValueChange"
             type="datetime"
-            :placeholder="$t('bpmn.panel.selectTime')"
+            :placeholder="t('bpmn.panel.selectTime')"
             format="YYYY-MM-DDThh:mm:ss"
             value-format="YYYY-MM-DDThh:mm:ss"
           />
@@ -163,24 +163,24 @@
   <n-drawer v-model:show="modelVisible" :title="modelTitle" destroy-on-close>
     <n-form v-model="durationForm" :labn-width="labelWidth">
       <template v-if="timerForm.type === 'timeDuration'">
-        <n-form-item :label="$t('bpmn.panel.nowConfig')" path="val">
+        <n-form-item :label="t('bpmn.panel.nowConfig')" path="val">
           <n-input v-model:value="timerForm.val" clearable disabled />
         </n-form-item>
       </template>
       <template v-if="timerForm.type === 'timeCycle'">
-        <n-form-item :label="$t('bpmn.panel.cycleType')" labn-width="40" path="cycleType">
+        <n-form-item :label="t('bpmn.panel.cycleType')" labn-width="40" path="cycleType">
           <n-radio-group v-model:value="cycleType" size="medium">
             <n-radio-button label="cron" value="cron" />
-            <n-radio-button :label="$t('bpmn.panel.standardFormat')" value="duration" />
+            <n-radio-button :label="t('bpmn.panel.standardFormat')" value="duration" />
           </n-radio-group>
         </n-form-item>
         <cron-gen v-if="cycleType === 'cron'" v-model="timerForm.val" />
         <template v-if="cycleType === 'duration'">
-          <n-form-item :label="$t('bpmn.panel.timerValue')" labn-width="40" path="cycleFormValue">
+          <n-form-item :label="t('bpmn.panel.timerValue')" labn-width="40" path="cycleFormValue">
             <n-input v-model:value="cycleFormValue" disabled />
           </n-form-item>
           <n-divider />
-          <n-form-item :label="$t('bpmn.panel.cyclesNum')" path="cyclesNum">
+          <n-form-item :label="t('bpmn.panel.cyclesNum')" path="cyclesNum">
             <n-space>
               <n-input-number
                 v-model="cycleForm.cyclesNum"
@@ -201,11 +201,11 @@
               </n-input-number>
             </n-space>
           </n-form-item>
-          <n-form-item :label="$t('bpmn.panel.startTime')" path="startTime">
+          <n-form-item :label="t('bpmn.panel.startTime')" path="startTime">
             <n-date-picker
               v-model="cycleForm.startTime"
               type="datetime"
-              :placeholder="$t('bpmn.panel.selectTime')"
+              :placeholder="t('bpmn.panel.selectTime')"
               format="YYYY-MM-DD hh:mm:ss"
               value-format="YYYY-MM-DDThh:mm:ss"
             />
@@ -218,7 +218,7 @@
           (timerForm.type === 'timeCycle' && cycleType === 'duration')
         "
       >
-        <n-form-item :label="$t('bpmn.panel.seconds')" path="seconds">
+        <n-form-item :label="t('bpmn.panel.seconds')" path="seconds">
           <n-space>
             <n-input-number
               v-model="durationForm.seconds"
@@ -239,7 +239,7 @@
             </n-input-number>
           </n-space>
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.minutes')" path="minutes">
+        <n-form-item :label="t('bpmn.panel.minutes')" path="minutes">
           <n-space>
             <n-input-number
               v-model="durationForm.minutes"
@@ -260,7 +260,7 @@
             </n-input-number>
           </n-space>
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.hours')" path="hours">
+        <n-form-item :label="t('bpmn.panel.hours')" path="hours">
           <n-space>
             <n-input-number
               v-model="durationForm.hours"
@@ -281,7 +281,7 @@
             </n-input-number>
           </n-space>
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.days')" path="days">
+        <n-form-item :label="t('bpmn.panel.days')" path="days">
           <n-space>
             <n-input-number
               v-model="durationForm.days"
@@ -302,7 +302,7 @@
             </n-input-number>
           </n-space>
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.months')" path="months">
+        <n-form-item :label="t('bpmn.panel.months')" path="months">
           <n-space>
             <n-input-number
               v-model="durationForm.months"
@@ -323,7 +323,7 @@
             </n-input-number>
           </n-space>
         </n-form-item>
-        <n-form-item :label="$t('bpmn.panel.years')" path="years">
+        <n-form-item :label="t('bpmn.panel.years')" path="years">
           <n-space>
             <n-input-number
               v-model="durationForm.years"
@@ -349,8 +349,8 @@
 
     <template #footer>
       <div class="drawer-footer">
-        <n-button @click="closeDrawer">{{ $t('global.cancel') }}</n-button>
-        <n-button type="primary" @click="saveTimerValue">{{ $t('bpmn.panel.confirm') }}</n-button>
+        <n-button @click="closeDrawer">{{ t('global.cancel') }}</n-button>
+        <n-button type="primary" @click="saveTimerValue">{{ t('bpmn.panel.confirm') }}</n-button>
       </div>
     </template>
   </n-drawer>
