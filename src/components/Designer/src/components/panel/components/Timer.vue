@@ -4,6 +4,13 @@
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import { useMessage } from 'naive-ui';
+  import { getDateDuration, getDateDurationByString } from '@/components/Designer/src/utils/tools';
+  import {
+    getTimerType,
+    getTimerValue,
+    setTimerType,
+    setTimerValue,
+  } from '@/components/Designer/src/utils/timer';
 
   defineOptions({ name: 'Timer' });
   defineProps({
@@ -46,7 +53,7 @@
   });
 
   function timerTypeChange(value: string) {
-    setTimerType(modelerStore.getActive!, value);
+    setTimerType(modelerRef!.value, active!.value, value);
   }
 
   function timerValueChange() {
@@ -59,14 +66,14 @@
       }
     }
     timerForm.value.type &&
-      setTimerValue(modelerStore.getActive!, timerForm.value.type, timerForm.value.val);
+      setTimerValue(modelerRef!.value, active!.value, timerForm.value.type, timerForm.value.val);
   }
 
   function saveTimerValue() {
     if (timerForm.value.type === 'timeCycle' && cycleType.value === 'duration') {
       timerForm.value.val = cycleFormValue.value;
     }
-    setTimerValue(modelerStore.getActive!, timerForm.value.type, timerForm.value.val);
+    setTimerValue(modelerRef!.value, active!.value, timerForm.value.type, timerForm.value.val);
     modelVisible.value = false;
   }
 
@@ -102,14 +109,8 @@
   }
 
   function reloadData() {
-    timerForm.value.type = getTimerType(modelerStore.getActive!) as string;
-    timerForm.value.val = getTimerValue(modelerStore.getActive!, timerForm.value.type);
-  }
-
-  function eventEmitterListener() {
-    if (isTimerSupported(modelerStore.getActive!)) {
-      reloadData();
-    }
+    timerForm.value.type = getTimerType(active!.value) as string;
+    timerForm.value.val = getTimerValue(active!.value, timerForm.value.type);
   }
 
   onMounted(() => {
@@ -120,10 +121,7 @@
 <template>
   <n-collapse-item name="Timer">
     <template #header>
-      <div class="collapse-title">
-        <icon-lucide-timer />
-        {{ t('bpmn.panel.timerEvent') }}
-      </div>
+      <div class="collapse-title"> <icon-lucide-timer />{{ t('bpmn.panel.timerEvent') }} </div>
     </template>
     <template #default>
       <n-form :labn-width="labelWidth" :model="timerForm">
@@ -160,7 +158,7 @@
       </n-form>
     </template>
   </n-collapse-item>
-  <n-drawer v-model:show="modelVisible" :title="modelTitle" destroy-on-close>
+  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="600">
     <n-form v-model="durationForm" :labn-width="labelWidth">
       <template v-if="timerForm.type === 'timeDuration'">
         <n-form-item :label="t('bpmn.panel.nowConfig')" path="val">
@@ -174,7 +172,7 @@
             <n-radio-button :label="t('bpmn.panel.standardFormat')" value="duration" />
           </n-radio-group>
         </n-form-item>
-        <cron-gen v-if="cycleType === 'cron'" v-model="timerForm.val" />
+        <CronGen v-if="cycleType === 'cron'" v-model="timerForm.val" />
         <template v-if="cycleType === 'duration'">
           <n-form-item :label="t('bpmn.panel.timerValue')" labn-width="40" path="cycleFormValue">
             <n-input v-model:value="cycleFormValue" disabled />
@@ -190,12 +188,12 @@
               >
                 <template #decrease-icon>
                   <n-icon>
-                    <Minus />
+                    <icon-lucide-minus />
                   </n-icon>
                 </template>
                 <template #increase-icon>
                   <n-icon>
-                    <Plus />
+                    <icon-lucide-plus />
                   </n-icon>
                 </template>
               </n-input-number>
@@ -356,4 +354,6 @@
   </n-drawer>
 </template>
 
-<style scoped lang="less"></style>
+<style scoped lang="scss">
+  @use '/src/components/Designer/src/styles/panel.scss';
+</style>

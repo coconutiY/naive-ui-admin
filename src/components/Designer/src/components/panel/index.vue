@@ -28,9 +28,20 @@
   const ExtensionProperties = defineAsyncComponent(
     () => import('./components/ExtensionProperties.vue')
   );
-  const Timer = defineAsyncComponent(
-    () => import('./components/Timer.vue')
-  );
+  const Timer = defineAsyncComponent(() => import('./components/Timer.vue'));
+  const asyncComponents = shallowRef<Record<string, Component>>({});
+  onMounted(async () => {
+    const modules = import.meta.glob('./components/*.vue');
+    Object.entries(modules).forEach(([filePath]) => {
+      const name = filePath
+        .split('/')
+        .pop()!
+        .replace(/\.\w+$/, '');
+      asyncComponents.value[`${name}`] = defineAsyncComponent(() => import(filePath));
+    });
+    console.log(asyncComponents, 'asyncComponents');
+    console.log(renderComponents, 'renderComponents');
+  });
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
@@ -54,6 +65,25 @@
     AsyncContinuations,
     Documentations,
   ]);
+
+  function getcollapseItem(element: BpmnElement) {
+    const keys = ['BaseInfo'];
+
+
+  }
+  // renderComponents.value.push(BaseInfo);
+  // isCanbeConditional(active?.value) && renderComponents.value.push(Conditional)
+  // isTimerSupported(active?.value) && renderComponents.value.push(Timer)
+  // isUserAssignmentSupported(active?.value) && renderComponents.value.push(UserAssignment)
+  // isMultiInstanceSupported(active?.value) && renderComponents.value.push(MultiInstance)
+  // isTaskListener(active?.value) && renderComponents.value.push(TaskListeners)
+  // is(active?.value, 'bpmn:Process') && renderComponents.value.push(GlobalEvent);
+  // isExecutable(active?.value)&&renderComponents.value.push(ExecutionListeners)
+  // is(element, 'bpmn:Process')&& renderComponents.value.push({ name: 'element-event-listeners', component: ElementEventListeners })
+  // renderComponents.value.push(ExtensionProperties)
+  // isAsynchronous(element)&&renderComponents.value.push({ name: 'element-async-continuations', component: ElementAsyncContinuations })
+  // isStartInitializable(element) && renderComponents.value.push({ name: 'element-start-initiator', component: ElementStartInitiator })
+  // renderComponents.value.push(Documentation)
 
   /**
    * 设置panel的展示和隐藏并且更新对应的Icon

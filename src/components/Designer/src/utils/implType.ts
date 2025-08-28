@@ -2,8 +2,9 @@ import Modeler from 'bpmn-js/lib/Modeler';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { find } from 'min-dash';
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { getBusinessObject } from '@/components/Designer/src/utils/tools';
+import { getBusinessObject, notEmpty } from '@/components/Designer/src/utils/tools';
 import { getExtensionElements } from '@/components/Designer/src/utils/extensionProperties';
+
 type ImplementationType =
   | 'dmn'
   | 'connector'
@@ -76,6 +77,17 @@ export function isDmnCapable(modeler: Modeler, element: BpmnElement): boolean {
  */
 export function isExternalCapable(modeler: Modeler, element: BpmnElement): boolean {
   return is(element, `${getProcessPrefix(modeler)}:ExternalCapable`);
+}
+
+export function isTimerSupported(element: BpmnElement) {
+  return (
+    isAny(element, ['bpmn:StartEvent', 'bpmn:IntermediateCatchEvent', 'bpmn:BoundaryEvent']) &&
+    notEmpty(getTimerEventDefinition(element))
+  );
+}
+
+export function getTimerEventDefinition(element: BpmnElement): ModdleElement {
+  return getEventDefinition(element, 'bpmn:TimerEventDefinition');
 }
 
 /**
