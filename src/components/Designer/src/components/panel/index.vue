@@ -68,13 +68,11 @@
 
   function getcollapseItem(element: BpmnElement) {
     const keys = ['BaseInfo'];
-
-
+    // isConditional(active?.value) && keys.push('Conditional');
+    // isTimerSupported(active?.value) && keys.push('Timer');
+    // isUserAssignmentSupported(modelerRef!.value,active?.value) && keys.push('Timer');
   }
-  // renderComponents.value.push(BaseInfo);
-  // isCanbeConditional(active?.value) && renderComponents.value.push(Conditional)
-  // isTimerSupported(active?.value) && renderComponents.value.push(Timer)
-  // isUserAssignmentSupported(active?.value) && renderComponents.value.push(UserAssignment)
+
   // isMultiInstanceSupported(active?.value) && renderComponents.value.push(MultiInstance)
   // isTaskListener(active?.value) && renderComponents.value.push(TaskListeners)
   // is(active?.value, 'bpmn:Process') && renderComponents.value.push(GlobalEvent);

@@ -2,8 +2,12 @@ import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
 import { ListenersForm, ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
 import Modeler from 'bpmn-js/lib/Modeler';
-import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
-import { createElement, getModdle, getModeling } from '@/components/Designer/src/utils/tools';
+import {
+  createElement,
+  getModdle,
+  getModeling,
+  getProcessPrefix,
+} from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
 import { LISTENER_ALLOWED_TYPES } from '@/components/Designer/src/config/bpmnEnums';
 import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';

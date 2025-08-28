@@ -7,7 +7,7 @@ import {
   getBpmnFactory,
   getBusinessObject,
   getModeling,
-  isIdValid,
+  isIdValid, notNull,
 } from '@/components/Designer/src/utils/tools';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { without } from 'min-dash';
@@ -101,7 +101,7 @@ export function setName(
  * @param element
  */
 export function getProcessExecutable(element: BpmnElement) {
-  return !!element.businessObject.isExecutable;
+  return notNull(element.businessObject.isExecutable);
 }
 
 /**

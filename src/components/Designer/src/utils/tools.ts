@@ -8,9 +8,10 @@ import {
 } from '@/components/Designer/src/config/bpmnEnums';
 import Modeler from 'bpmn-js/lib/Modeler';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
-import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
 import { ScriptForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
 import { BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import dayjs from 'dayjs';
+import duration, { DurationUnitsObjectType } from 'dayjs/plugin/duration';
 
 /**
  * 空格正则表达式
@@ -70,9 +71,9 @@ export function isNull<T>(val: T | null | undefined) {
  * @param value
  * @return { 'string' | 'array' | 'boolean' | 'number' | 'object' | 'function' } type
  */
-export const getRawType = (value: any): string => {
+export function getRawType(value: any): string{
   return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
-};
+}
 
 /**
  * 随机生成一个指定长度的 id， 默认长度为 8
@@ -140,6 +141,8 @@ export function validateId(idValue: string) {
     return 'ID 必须符合 BPMN 规范';
   }
 }
+
+
 
 /**
  * 创建脚本
@@ -219,13 +222,18 @@ export function getBpmnFactory(modeler: Modeler) {
 }
 
 /**
+ * 获取流程内属性活标签前缀（根据流程引擎决定）
+ * @param modeler 模型（导入xml后才能有值，否则为undefined）
+ */
+export function getProcessPrefix(modeler: Modeler): string {
+  return modeler.getDefinitions().targetNamespace;
+}
+
+/**
  * 获取指定日期的开始时间、截止时间
  * @param beginDate 开始日期
  * @param endDate 截止日期
  */
-
-import dayjs from 'dayjs';
-import duration, { DurationUnitsObjectType } from 'dayjs/plugin/duration';
 
 dayjs.extend(duration);
 

@@ -1,8 +1,6 @@
 import Modeler from 'bpmn-js/lib/Modeler';
-import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
-import { getModeling } from '@/components/Designer/src/utils/tools';
-import { is } from 'bpmn-js/lib/util/ModelUtil';
-import { ModdleElement } from 'bpmn-js/lib/model/Types';
+import { getModeling, getProcessPrefix } from '@/components/Designer/src/utils/tools';
+import { isAsyncAfter, isAsyncBefore, isExclusive } from '@/components/Designer/src/utils/implType';
 
 // 只有在bpmn:Task中的扩展属性
 /**
@@ -77,54 +75,4 @@ export function setExclusive(modeler: Modeler, element: BpmnElement, value: bool
   modeling.updateModdleProperties(element, element.businessObject, {
     [`${prefix}:exclusive`]: value,
   });
-}
-
-// 是否支持异步属性
-/**
- * 获取是否为异步延续
- * @param modeler
- * @param element
- */
-export function isAsynchronous(modeler: Modeler, element: BpmnElement): boolean {
-  const prefix = getProcessPrefix(modeler);
-  return is(element, `${prefix}:AsyncCapable`);
-}
-
-/**
- * 检查是否为异步前 <BR/>
- * Returns true if the attribute 'asyncBefore' is set to true.
- * @param bo
- * @param prefix
- */
-function isAsyncBefore(bo: ModdleElement, prefix: string): boolean {
-  return !!(bo.get(`${prefix}:asyncBefore`) || bo.get(`${prefix}:async`));
-}
-
-/**
- * 检查是否为异步后 <BR/>
- * Returns true if the attribute 'asyncAfter' is set to true.
- * @param bo
- * @param prefix
- */
-function isAsyncAfter(bo: ModdleElement, prefix: string): boolean {
-  return !!bo.get(`${prefix}:asyncAfter`);
-}
-
-/**
- * 检查是否排他（单独执行）<BR/>
- * Returns true if the attribute 'exclusive' is set to true.
- * @param bo
- * @param prefix
- */
-function isExclusive(bo: ModdleElement, prefix: string): boolean {
-  return !!bo.get(`${prefix}:exclusive`);
-}
-
-/**
- * 是否异步
- * @param bo
- * @param prefix
- */
-export function isAsync(bo: ModdleElement, prefix: string): boolean {
-  return isAsyncAfter(bo, prefix) || isAsyncBefore(bo, prefix);
 }

@@ -1,12 +1,10 @@
 import Modeler from 'bpmn-js/lib/Modeler';
 import {
-  getProcessPrefix,
-  getServiceTaskLikeBusinessObject,
+  getServiceTaskLikeBusinessObject, isAsync,
 } from '@/components/Designer/src/utils/implType';
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
-import { createElement, getModeling } from '@/components/Designer/src/utils/tools';
+import {createElement, getModeling, getProcessPrefix} from '@/components/Designer/src/utils/tools';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
-import { isAsync } from '@/components/Designer/src/utils/asyncContinuations';
 import { getExtensionElements } from '@/components/Designer/src/utils/extensionProperties';
 
 /**

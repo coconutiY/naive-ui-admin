@@ -2,6 +2,11 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import { isEventSubProcess, isExpanded, isInterrupting } from 'bpmn-js/lib/util/DiUtil';
 import { isPlane } from 'bpmn-js/lib/util/DrilldownUtil';
 import { getBusinessObject } from '@/components/Designer/src/utils/tools';
+import {
+  isCancelActivity,
+  isConditionalFlow,
+  isDefaultFlow,
+} from '@/components/Designer/src/utils/implType';
 
 /**
  * 获取元素的icon key(bpmnIcons: Record<string, string>)
@@ -78,38 +83,3 @@ function getEventDefinitionPrefix(eventDefinition: BpmnElement) {
   return rawType.replace('EventDefinition', '');
 }
 
-function isCancelActivity(element: BpmnElement) {
-  const businessObject = getBusinessObject(element);
-  return businessObject && businessObject.cancelActivity !== false;
-}
-
-/**
- * 判断是否是默认流转类型
- * @param element bpmn元素
- */
-function isDefaultFlow(element: BpmnElement) {
-  const businessObject = getBusinessObject(element);
-  const sourceBusinessObject = getBusinessObject(element.source);
-
-  if (!is(element, 'bpmn:SequenceFlow') || !sourceBusinessObject) {
-    return false;
-  }
-  return (
-    sourceBusinessObject.default &&
-    sourceBusinessObject.default === businessObject &&
-    (is(sourceBusinessObject, 'bpmn:Gateway') || is(sourceBusinessObject, 'bpmn:Activity'))
-  );
-}
-
-/**
- * 判断是否是条件流转类型
- * @param element bpmn元素
- */
-function isConditionalFlow(element: BpmnElement) {
-  const businessObject = getBusinessObject(element);
-  const sourceBusinessObject = getBusinessObject(element.source);
-  if (!is(element, 'bpmn:SequenceFlow') || !sourceBusinessObject) {
-    return false;
-  }
-  return businessObject.conditionExpression && is(sourceBusinessObject, 'bpmn:Activity');
-}

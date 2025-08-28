@@ -1,59 +1,13 @@
-import { isAny, is, getBusinessObject } from 'bpmn-js/lib/util/ModelUtil';
-import { createElement, getModeling } from '@/components/Designer/src/utils/tools';
-import { getEventDefinition, getProcessPrefix } from '@/components/Designer/src/utils/implType';
+import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
+import {
+  createElement,
+  getModeling,
+  getProcessPrefix,
+} from '@/components/Designer/src/utils/tools';
+import { getEventDefinition } from '@/components/Designer/src/utils/implType';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { defaultConditionTypeOptions } from '@/components/Designer/src/config/selectOptions';
-
-/**
- * 配置项可见性 <BR/>
- * 在下列元素中可见
- */
-const CONDITIONAL_SOURCES = [
-  'bpmn:Activity',
-  'bpmn:ExclusiveGateway',
-  'bpmn:InclusiveGateway',
-  'bpmn:ComplexGateway',
-];
-
-/**
- * 父节点符合条件的连线 <BR/>
- * 检查条件父节点是否符合条件
- * @param element
- */
-export function isConditionalSource(element: BpmnElement) {
-  return isAny(element, CONDITIONAL_SOURCES);
-}
-
-/**
- * 是否是 定义条件的事件 （ 控制变量 Variables 配置 ）  <BR/>
- * 检查元素是否为条件定义相关
- * @param element
- */
-export function isConditionEventDefinition(element: BpmnElement): boolean {
-  return (
-    is(element, 'bpmn:Event') && !!getEventDefinition(element, 'bpmn:ConditionalEventDefinition')
-  );
-}
-
-/**
- * 是否启动事件
- * @param element
- */
-export function isExtendStartEvent(element: BpmnElement): boolean {
-  return is(element, 'bpmn:StartEvent');
-}
-
-/**
- * 是否连接线
- * @param element
- */
-export function isCanbeConditional(element: BpmnElement): boolean {
-  return (
-    (is(element, 'bpmn:SequenceFlow') && isConditionalSource(element.source)) ||
-    isConditionEventDefinition(element)
-  );
-}
 
 // 1. 条件变量部分
 /**

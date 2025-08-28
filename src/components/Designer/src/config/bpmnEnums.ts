@@ -11,6 +11,17 @@ export const LISTENER_ALLOWED_TYPES = [
 ];
 
 /**
+ * 配置项可见性 <BR/>
+ * 在下列元素中可见
+ */
+export const CONDITIONAL_SOURCES = [
+  'bpmn:Activity',
+  'bpmn:ExclusiveGateway',
+  'bpmn:InclusiveGateway',
+  'bpmn:ComplexGateway',
+];
+
+/**
  * 多实例常量
  * @type enum
  */

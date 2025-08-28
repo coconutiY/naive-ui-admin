@@ -12,8 +12,6 @@
     getConditionTypeValue,
     getVariableEventsValue,
     getVariableNameValue,
-    isConditionEventDefinition,
-    isExtendStartEvent,
     setConditionExpressionValue,
     setConditionScriptBodyValue,
     setConditionScriptLanguageValue,
@@ -25,6 +23,7 @@
   } from '@/components/Designer/src/utils/condition';
   import { ConditionalForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { scriptTypeOptions } from '@/components/Designer/src/config/selectOptions';
+  import {isConditionEventDefinition, isExtendStartEvent} from "@/components/Designer/src/utils/implType";
 
   defineOptions({ name: 'Conditional' });
   defineProps({

@@ -1,11 +1,11 @@
 import { ModdleElement } from 'moddle';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import Modeler from 'bpmn-js/lib/Modeler';
-import { getProcessPrefix } from '@/components/Designer/src/utils/implType';
 import {
   createElement,
   getBusinessObject,
   getModeling,
+  getProcessPrefix,
 } from '@/components/Designer/src/utils/tools';
 import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 import { isArray, without } from 'min-dash';
