@@ -5,7 +5,7 @@ export default {
   nodeName: '节点名称',
   version: '流程版本',
   executable: '可执行',
-
+  value: '值',
   documentationSettings: '文档',
   documentationBody: '文档内容',
 

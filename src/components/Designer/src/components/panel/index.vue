@@ -10,6 +10,7 @@
   import { inject } from 'vue-demi';
   import bpmnIconKey from '@/components/Designer/src/utils/icon';
   import { Translate } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
+  import { isConditional, isTimer } from '@/components/Designer/src/utils/implType';
 
   const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
   const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
@@ -68,9 +69,9 @@
 
   function getcollapseItem(element: BpmnElement) {
     const keys = ['BaseInfo'];
-    // isConditional(active?.value) && keys.push('Conditional');
-    // isTimerSupported(active?.value) && keys.push('Timer');
-    // isUserAssignmentSupported(modelerRef!.value,active?.value) && keys.push('Timer');
+    isConditional(element) && keys.push('Conditional');
+    isTimer(element) && keys.push('Timer');
+    // isUserAssignment(modelerRef!.value, element) && keys.push('Timer');
   }
 
   // isMultiInstanceSupported(active?.value) && renderComponents.value.push(MultiInstance)

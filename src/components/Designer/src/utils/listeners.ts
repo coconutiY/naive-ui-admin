@@ -9,7 +9,6 @@ import {
   getProcessPrefix,
 } from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
-import { LISTENER_ALLOWED_TYPES } from '@/components/Designer/src/config/bpmnEnums';
 import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 import {
   addExtensionElements,
@@ -236,20 +235,6 @@ export function removeExecutionListener(
 }
 
 /**
- * 是否可执行
- * @param element
- */
-export function isExecutable(element: BpmnElement) {
-  if (isAny(element, LISTENER_ALLOWED_TYPES)) {
-    return true;
-  }
-  if (is(element, 'bpmn:Participant')) {
-    return !!element.businessObject.processRef;
-  }
-  return false;
-}
-
-/**
  * 获取监听器类型
  * @param modeler
  * @param listener
@@ -259,11 +244,58 @@ export function getExecutionListenerType(modeler: Modeler, listener: ModdleEleme
 }
 
 /**
- * 获取默认事件
+ * 获取默认事件类型
  * @param element
  */
 export function getDefaultEvent(element: BpmnElement) {
   return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
+}
+
+//--- 执行监听器 TaskListeners -----//
+
+const TASK_SUFFIX = 'TaskListener';
+
+/**
+ * 获取任务监听器列表 task listener list
+ * @param modeler
+ * @param element
+ */
+export function getTaskListeners(modeler: Modeler, element: BpmnElement): ModdleElement[] {
+  const prefix = getProcessPrefix(modeler);
+  const businessObject = getListenersContainer(element);
+  return getExtensionElements(businessObject, `${prefix}:${TASK_SUFFIX}`);
+}
+
+/**
+ * 根据props创建一个任务监听器
+ * @param modeler
+ * @param element
+ * @param props
+ */
+export function addTaskListener(modeler: Modeler, element: BpmnElement, props: ListenersForm) {
+  const prefix = getProcessPrefix(modeler);
+  const moddle = getModdle(modeler);
+  const businessObject = getListenersContainer(element);
+  const listener = moddle.create(`${prefix}:${TASK_SUFFIX}`, {});
+  updateListenerProperty(modeler, element, listener, props);
+  addExtensionElements(modeler, element, businessObject, listener);
+}
+
+/**
+ * 修改任务监听器的属性
+ * @param modeler
+ * @param element
+ * @param props
+ * @param listener
+ */
+export function updateTaskListener(
+  modeler: Modeler,
+  element: BpmnElement,
+  props: ListenersForm,
+  listener: ModdleElement
+) {
+  removeExtensionElements(modeler, element, getListenersContainer(element), listener);
+  addTaskListener(modeler, element, props);
 }
 
 //--- 通用 Common -----//
@@ -293,7 +325,7 @@ export function updateListenerProperty(
   }
   if (fields) {
     properties[`fields`] = fields.map((field: BpmnField) => {
-      return createFieldObject(modeler, field);
+      return createField(modeler, field);
     });
   }
   modeling.updateModdleProperties(element, listener, properties);
@@ -304,7 +336,7 @@ export function updateListenerProperty(
  * @param modeler
  * @param field
  */
-export function createFieldObject(modeler: Modeler, field: BpmnField) {
+export function createField(modeler: Modeler, field: BpmnField) {
   const moddle = getModdle(modeler);
   const prefix = getProcessPrefix(modeler);
   const { name, fieldType, string, expression } = field;
@@ -331,4 +363,14 @@ export function getListenerType(
     if (listener.get('script')) return 'script';
   }
   return '';
+}
+
+/**
+ * 单个移除(执行/任务)监听器
+ * @param modeler
+ * @param element
+ * @param listener
+ */
+export function removeListener(modeler: Modeler, element: BpmnElement, listener: ModdleElement) {
+  removeExtensionElements(modeler, element, getListenersContainer(element), listener);
 }

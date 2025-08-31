@@ -2,7 +2,6 @@
   import { propTypes } from '@/utils/propTypes';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { Base } from 'diagram-js/lib/model';
   import { type DataTableColumns, FormInst, FormRules, NButton } from 'naive-ui';
   import {
     addExecutionListener,
@@ -13,9 +12,8 @@
     updateExecutionListener,
   } from '@/components/Designer/src/utils/listeners';
   import { ModdleElement } from 'bpmn-js/lib/model/Types';
-  import { BpmnExecutionListener, BpmnField, BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
-  import { ExecutionListenerForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
-  import { getScriptType } from '@/components/Designer/src/utils/tools';
+  import { BpmnExecutionListener, BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+  import { ExecutionListenerForm, ListenersForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import {
     fieldTypeOptions,
     listenerEventTypeOptions,
@@ -31,7 +29,7 @@
   const lucideMinus = defineAsyncComponent(() => import('~icons/lucide/minus'));
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   // 模态框
   const modelTitle = ref(t('bpmn.panel.addExecutionListener'));
@@ -45,14 +43,14 @@
 
   let listenersRaw = markRaw<ModdleElement[]>([]);
 
-  const listeners = ref<ExecutionListenerForm[]>([]);
+  const listeners = ref<ListenersForm[]>([]);
   //监听器列表配置
-  const listenerColumns: DataTableColumns<ExecutionListenerForm> = [
+  const listenerColumns: DataTableColumns<ListenersForm> = [
     {
       title: t('bpmn.panel.executionListenerEventType'),
       key: 'event',
       align: 'center',
-      render(rowData: ExecutionListenerForm) {
+      render(rowData: ListenersForm) {
         return t(`bpmn.panel.${rowData.event}`);
       },
     },
@@ -60,7 +58,7 @@
       title: t('bpmn.panel.executionListenerType'),
       key: 'type',
       align: 'center',
-      render(rowData: ExecutionListenerForm) {
+      render(rowData: ListenersForm) {
         return t(`bpmn.panel.${rowData.type}`);
       },
     },
@@ -68,7 +66,7 @@
       title: t('bpmn.panel.operations'),
       key: 'actions',
       align: 'center',
-      render(rowData: ExecutionListenerForm, rowIndex: number) {
+      render(rowData: ListenersForm, rowIndex: number) {
         return [
           h(
             NButton,
@@ -156,9 +154,10 @@
     },
   ];
   //监听器表单
-  const newListener = ref<ExecutionListenerForm>({
+  const newListener = ref<ListenersForm>({
     event: getDefaultEvent(active!.value),
     type: 'class',
+    value: '',
     fields: [],
   });
   //字段注入表单
@@ -173,11 +172,6 @@
   const formRef = ref<FormInst>();
   //注入表单实例
   const fieldFormRef = ref<FormInst>();
-  //控制注入字段表单
-  const formItemVisible = ref({
-    listenerType: 'class',
-    scriptType: 'none',
-  });
   //监听器表单规则
   const listenerRules: FormRules = {
     event: { required: true, trigger: ['blur', 'change'], message: t('bpmn.panel.rules.elEvent') },
@@ -204,37 +198,13 @@
   });
 
   /**
-   * 修改监听器类型
-   * @param value
-   */
-  function updateListenerType(value: string) {
-    formItemVisible.value.listenerType = value;
-  }
-
-  /**
-   * 修改脚本类型
-   * @param value
-   */
-  function updateScriptType(value: string) {
-    formItemVisible.value.scriptType = value;
-    newListener.value.script = {
-      scriptFormat: newListener.value.script?.scriptFormat,
-      scriptType: value,
-    };
-  }
-
-  /**
    * 获取注入字段的类型
    */
-  function getBpmnFields(fields: BpmnField[] | undefined) {
-    return fields
-      ? fields.map(
-          (field: BpmnField): BpmnField => ({
-            ...field,
-            fieldType: field.string ? 'string' : 'expression',
-          })
-        )
-      : [];
+  function getBpmnFields(fields: BpmnField[]) {
+    return fields.map((field: BpmnField) => ({
+      ...field,
+      fieldType: field.string ? 'string' : 'expression',
+    }));
   }
 
   /**
@@ -244,17 +214,9 @@
     modelVisible.value = false;
     listenersRaw = markRaw(getExecutionListeners(modelerRef!.value, active!.value));
     const list = listenersRaw.map(
-      (item: ModdleElement & BpmnExecutionListener): ExecutionListenerForm => ({
+      (item: ModdleElement & BpmnExecutionListener): ListenersForm => ({
         ...item,
         fields: getBpmnFields(item.fields),
-        ...(item.script
-          ? {
-              script: {
-                ...item.script,
-                scriptType: getScriptType(item.script as ModdleElement & BpmnScript),
-              },
-            }
-          : {}),
         type: getExecutionListenerType(modelerRef!.value, item),
       })
     );
@@ -275,16 +237,19 @@
    * 保存执行监听器并重载数据
    */
   async function saveExecutionListener() {
-    await formRef.value?.validate();
-    activeIndex.value === -1
-      ? addExecutionListener(modelerRef!.value, active!.value, newListener.value)
-      : updateExecutionListener(
-          modelerRef!.value,
-          active!.value,
-          newListener.value,
-          listenersRaw[activeIndex.value]
-        );
-    reloadExtensionListeners();
+    await formRef.value?.validate((errors) => {
+      if (!errors) {
+        activeIndex.value === -1
+          ? addExecutionListener(modelerRef!.value, active!.value, newListener.value)
+          : updateExecutionListener(
+              modelerRef!.value,
+              active!.value,
+              newListener.value,
+              listenersRaw[activeIndex.value]
+            );
+        reloadExtensionListeners();
+      }
+    });
   }
 
   /**
@@ -393,9 +358,10 @@
 <template>
   <n-collapse-item name="ExecutionListeners">
     <template #header>
-      <div class="collapse-title"
-        ><icon-lucide-bell-ring /> {{ t('bpmn.panel.executionListeners') }}</div
-      >
+      <div class="collapse-title">
+        <icon-lucide-bell-ring />
+        {{ t('bpmn.panel.executionListeners') }}
+      </div>
     </template>
     <template #default>
       <n-data-table
@@ -422,73 +388,11 @@
           <n-select v-model:value="newListener.event" :options="listenerEventTypeOptions" />
         </n-form-item>
         <n-form-item path="type" :label="t('bpmn.panel.executionListenerType')">
-          <n-select
-            v-model:value="newListener.type"
-            :on-update:value="updateListenerType"
-            :options="listenerTypeOptions"
-          />
+          <n-select v-model:value="newListener.type" :options="listenerTypeOptions" />
         </n-form-item>
-        <n-form-item
-          v-if="formItemVisible.listenerType === 'class'"
-          path="class"
-          :label="t('bpmn.panel.javaClass')"
-        >
-          <n-input v-model:value="newListener.class" @keydown.enter.prevent />
+        <n-form-item path="value" :label="t('bpmn.panel.javaClass')">
+          <n-input v-model:value="newListener.value" @keydown.enter.prevent />
         </n-form-item>
-        <n-form-item
-          v-if="formItemVisible.listenerType === 'expression'"
-          path="expression"
-          :label="t('bpmn.panel.expression')"
-        >
-          <n-input v-model:value="newListener.expression" @keydown.enter.prevent />
-        </n-form-item>
-        <n-form-item
-          v-if="formItemVisible.listenerType === 'delegateExpression'"
-          path="delegateExpression"
-          :label="t('bpmn.panel.delegateExpression')"
-        >
-          <n-input v-model:value="newListener.delegateExpression" @keydown.enter.prevent />
-        </n-form-item>
-        <template v-if="formItemVisible.listenerType === 'script' && newListener.script">
-          <n-form-item
-            key="scriptFormat"
-            path="script.scriptFormat"
-            :label="t('bpmn.panel.scriptFormat')"
-          >
-            <n-input v-model:value="newListener.script.scriptFormat" @keydown.enter.prevent />
-          </n-form-item>
-          <n-form-item
-            key="scriptType"
-            path="script.scriptType"
-            :label="t('bpmn.panel.scriptType')"
-          >
-            <n-select
-              v-model:value="newListener.script.scriptType"
-              :on-update:value="updateScriptType"
-              :options="scriptTypeOptions"
-            />
-          </n-form-item>
-          <n-form-item
-            v-if="formItemVisible.scriptType === 'inline'"
-            key="scriptContent"
-            path="script.value"
-            :label="t('bpmn.panel.scriptBody')"
-          >
-            <n-input
-              v-model:value="newListener.script.value"
-              type="textarea"
-              @keydown.enter.prevent
-            />
-          </n-form-item>
-          <n-form-item
-            v-if="formItemVisible.scriptType === 'external'"
-            key="scriptResource"
-            path="script.resource"
-            :label="t('bpmn.panel.scriptResource')"
-          >
-            <n-input v-model:value="newListener.script.resource" @keydown.enter.prevent />
-          </n-form-item>
-        </template>
       </n-form>
       <div class="field-content">
         <n-divider>
@@ -510,9 +414,9 @@
       <template #footer>
         <div class="drawer-footer">
           <n-button @click="modelVisible = false">{{ t('global.cancel') }}</n-button>
-          <n-button type="primary" @click="saveExecutionListener">{{
-            t('bpmn.panel.confirm')
-          }}</n-button>
+          <n-button type="primary" @click="saveExecutionListener"
+            >{{ t('bpmn.panel.confirm') }}
+          </n-button>
         </div>
       </template>
     </n-drawer-content>
