@@ -12,6 +12,15 @@ declare interface BpmnField {
   fieldType?: 'string' | 'expression';
 }
 
+export declare interface BpmnListener {
+  event: string;
+  expression?: string;
+  class?: string;
+  delegateExpression?: string;
+  script?: BpmnScript;
+  fields: BpmnField[];
+}
+
 export declare interface BpmnExecutionListener {
   event: string;
   expression?: string;

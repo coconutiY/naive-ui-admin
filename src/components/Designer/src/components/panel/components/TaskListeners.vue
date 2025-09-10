@@ -10,10 +10,10 @@
   } from '@/components/Designer/src/config/selectOptions';
   import { ModdleElement } from 'bpmn-js/lib/model/Types';
   import { DataTableColumns, FormInst, FormRules, NButton } from 'naive-ui';
-  import { BpmnExecutionListener, BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+  import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
   import {
     addTaskListener,
-    getExecutionListenerType,
+    getTaskListenerForms,
     getTaskListeners,
     removeListener,
     updateTaskListener,
@@ -59,6 +59,14 @@
       align: 'center',
       render(rowData: ListenersForm) {
         return t(`bpmn.panel.${rowData.type}`);
+      },
+    },
+    {
+      title: t('bpmn.panel.value'),
+      key: 'value',
+      align: 'center',
+      render(rowData: ListenersForm) {
+        return rowData.value;
       },
     },
     {
@@ -309,28 +317,19 @@
    */
   function reloadTaskListeners() {
     modelVisible.value = false;
-    listenersRaw = markRaw(getTaskListeners(modelerRef!.value, active!.value));
-    const list = listenersRaw.map(
-      (item: ModdleElement & BpmnExecutionListener): ListenersForm => ({
-        ...item,
-        fields: getBpmnFields(item.fields),
-        type: getExecutionListenerType(modelerRef!.value, item),
-      })
-    );
-    listeners.value = JSON.parse(JSON.stringify(list));
+    const taskListeners = getTaskListeners(modelerRef!.value, active!.value);
+    listenersRaw = markRaw(taskListeners);
+    listeners.value = getTaskListenerForms(modelerRef!.value, taskListeners);
   }
 
-  /**
-   * 获取注入字段的类型
-   */
-  function getBpmnFields(fields: BpmnField[]) {
-    return fields.map(
-      (field: BpmnField): BpmnField => ({
-        ...field,
-        fieldType: field.string ? 'string' : 'expression',
-      })
-    );
-  }
+  watch(
+    () => active?.value,
+    (value) => {
+      if (value) {
+        reloadTaskListeners();
+      }
+    }
+  );
 </script>
 
 <template>

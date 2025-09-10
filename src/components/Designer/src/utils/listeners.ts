@@ -9,7 +9,7 @@ import {
   getProcessPrefix,
 } from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
-import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import { BpmnField, BpmnListener } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 import {
   addExtensionElements,
   getExtensionElements,
@@ -171,6 +171,23 @@ export function getExecutionListeners(modeler: Modeler, element: BpmnElement): M
   return getExtensionElements(businessObject, `${prefix}:${EXECUTIONAL_SUFFIX}`);
 }
 
+export function getExecutionListenerForms(
+  modeler: Modeler,
+  listeners: ModdleElement[]
+): ListenersForm[] {
+  return listeners.map((item: ModdleElement & BpmnListener): ListenersForm => {
+    const fields = getBpmnFields(item.fields);
+    const type = getExecutionListenerType(modeler, item);
+    return {
+      ...item,
+      event: item.event,
+      type: type,
+      value: item[`${type}`],
+      fields: fields,
+    };
+  });
+}
+
 /**
  * 创建一个新的执行监听器并且修改元素的业务对象 《BR/>
  * create an empty execution listener and update element's businessObject
@@ -251,7 +268,7 @@ export function getDefaultEvent(element: BpmnElement) {
   return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
 }
 
-//--- 执行监听器 TaskListeners -----//
+//--- 任务监听器 TaskListeners -----//
 
 const TASK_SUFFIX = 'TaskListener';
 
@@ -298,6 +315,31 @@ export function updateTaskListener(
   addTaskListener(modeler, element, props);
 }
 
+export function getTaskListenerForms(
+  modeler: Modeler,
+  listeners: ModdleElement[]
+): ListenersForm[] {
+  return listeners.map((item: ModdleElement & BpmnListener): ListenersForm => {
+    const fields = getBpmnFields(item.fields);
+    const type = getTaskListenerType(modeler, item);
+    return {
+      ...item,
+      event: item.event,
+      type: type,
+      value: item[`${type}`],
+      fields: fields,
+    };
+  });
+}
+/**
+ * 获取监听器类型
+ * @param modeler
+ * @param listener
+ */
+export function getTaskListenerType(modeler: Modeler, listener: ModdleElement) {
+  return getListenerType(modeler, listener, TASK_SUFFIX);
+}
+
 //--- 通用 Common -----//
 /**
  * 更新执行/任务监听器属性
@@ -342,6 +384,16 @@ export function createField(modeler: Modeler, field: BpmnField) {
   const { name, fieldType, string, expression } = field;
   const fieldConfig = fieldType === 'string' ? { name, string } : { name, expression };
   return moddle!.create(`${prefix}:Field`, fieldConfig);
+}
+
+/**
+ * 获取bpmn字段的表单
+ */
+export function getBpmnFields(fields: BpmnField[]) {
+  return fields.map((field: BpmnField) => ({
+    ...field,
+    fieldType: field.string ? 'string' : 'expression',
+  }));
 }
 
 /**

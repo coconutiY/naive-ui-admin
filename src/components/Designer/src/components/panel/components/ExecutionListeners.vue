@@ -6,6 +6,7 @@
   import {
     addExecutionListener,
     getDefaultEvent,
+    getExecutionListenerForms,
     getExecutionListeners,
     getExecutionListenerType,
     removeExecutionListener,
@@ -60,6 +61,14 @@
       align: 'center',
       render(rowData: ListenersForm) {
         return t(`bpmn.panel.${rowData.type}`);
+      },
+    },
+    {
+      title: t('bpmn.panel.value'),
+      key: 'value',
+      align: 'center',
+      render(rowData: ListenersForm) {
+        return rowData.value;
       },
     },
     {
@@ -198,29 +207,13 @@
   });
 
   /**
-   * 获取注入字段的类型
-   */
-  function getBpmnFields(fields: BpmnField[]) {
-    return fields.map((field: BpmnField) => ({
-      ...field,
-      fieldType: field.string ? 'string' : 'expression',
-    }));
-  }
-
-  /**
    * 重载执行监听器数据
    */
   function reloadExtensionListeners() {
     modelVisible.value = false;
-    listenersRaw = markRaw(getExecutionListeners(modelerRef!.value, active!.value));
-    const list = listenersRaw.map(
-      (item: ModdleElement & BpmnExecutionListener): ListenersForm => ({
-        ...item,
-        fields: getBpmnFields(item.fields),
-        type: getExecutionListenerType(modelerRef!.value, item),
-      })
-    );
-    listeners.value = JSON.parse(JSON.stringify(list));
+    const executionListeners = getExecutionListeners(modelerRef!.value, active!.value);
+    listenersRaw = markRaw(executionListeners);
+    listeners.value = getExecutionListenerForms(modelerRef!.value, executionListeners);
   }
 
   /**
@@ -390,7 +383,7 @@
         <n-form-item path="type" :label="t('bpmn.panel.executionListenerType')">
           <n-select v-model:value="newListener.type" :options="listenerTypeOptions" />
         </n-form-item>
-        <n-form-item path="value" :label="t('bpmn.panel.javaClass')">
+        <n-form-item path="value" :label="t('bpmn.panel.value')">
           <n-input v-model:value="newListener.value" @keydown.enter.prevent />
         </n-form-item>
       </n-form>
