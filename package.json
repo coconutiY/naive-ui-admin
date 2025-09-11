@@ -29,6 +29,7 @@
     "@alova/mock": "^2.0.6",
     "@highlightjs/vue-plugin": "2.1.0",
     "@iconify/json": "^2.2.362",
+    "@types/bpmn-moddle": "^9.0.0",
     "@vicons/antd": "^0.12.0",
     "@vicons/ionicons5": "^0.12.0",
     "@vueup/vue-quill": "^1.2.0",

@@ -1,15 +1,14 @@
 import ElementFactory from 'bpmn-js/lib/features/modeling/ElementFactory';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
-import BpmnModdle from 'bpmn-moddle';
 import { Dimensions } from 'diagram-js/lib/util/Types';
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
-import type { Element, ModdleElement } from 'bpmn-js/lib/model/Types';
+import type { Element, Moddle, ModdleElement } from 'bpmn-js/lib/model/Types';
 
 type ElementConfig = Record<string, Dimensions>;
 
 class CustomElementFactory extends ElementFactory {
   _config: ElementConfig | undefined;
-  constructor(config: Record<string, Dimensions>, bpmnFactory: BpmnFactory, moddle: BpmnModdle) {
+  constructor(config: Record<string, Dimensions>, bpmnFactory: BpmnFactory, moddle: Moddle) {
     super(bpmnFactory, moddle);
     this._config = config;
   }

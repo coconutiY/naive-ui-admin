@@ -1,10 +1,14 @@
 import { every, some, isObject } from 'min-dash';
 import { append as svgAppend, attr as svgAttr, create as svgCreate } from 'tiny-svg';
 import { Element } from 'diagram-js/lib/model/Types';
-import { ModdleElement } from 'bpmn-moddle';
+import { ModdleElement } from 'bpmn-js/lib/model/Types';
 
 //////////////////// 校验部分
-export function isTypedEvent(event: ModdleElement, eventDefinitionType: string, filter?: any): boolean {
+export function isTypedEvent(
+  event: ModdleElement,
+  eventDefinitionType: string,
+  filter?: any
+): boolean {
   function matches(definition: any, filter: any) {
     return every(filter, function (val: any, key: string) {
       return definition[key] == val;
@@ -25,7 +29,14 @@ export function isThrowEvent(event: ModdleElement): boolean {
 
 //////////////////// svg 图形绘制部分
 // 绘制圆形
-export function drawCircle(renderer: any, parentGfx: any, width: number, height: number, offset: number, attrs?: any): SVGElement {
+export function drawCircle(
+  renderer: any,
+  parentGfx: any,
+  width: number,
+  height: number,
+  offset: number,
+  attrs?: any
+): SVGElement {
   if (isObject(offset)) {
     attrs = offset;
     offset = 0;
@@ -41,7 +52,7 @@ export function drawCircle(renderer: any, parentGfx: any, width: number, height:
   svgAttr(circle, {
     cx: cx,
     cy: cy,
-    r: Math.round((width + height) / 4 - offset)
+    r: Math.round((width + height) / 4 - offset),
   });
   svgAttr(circle, attrs);
   svgAppend(parentGfx, circle);
@@ -51,7 +62,7 @@ export function drawCircle(renderer: any, parentGfx: any, width: number, height:
 export function drawPath(renderer: any, parentGfx: any, d: any, attrs?: any): SVGElement {
   attrs = renderer._styles.computeStyle(attrs, ['no-fill'], {
     strokeWidth: 2,
-    stroke: 'black'
+    stroke: 'black',
   });
   const path = svgCreate('path');
   svgAttr(path, { d: d });

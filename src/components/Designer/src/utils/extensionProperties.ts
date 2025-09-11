@@ -1,4 +1,3 @@
-import { ModdleElement } from 'moddle';
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 import Modeler from 'bpmn-js/lib/Modeler';
 import {
@@ -9,6 +8,7 @@ import {
 } from '@/components/Designer/src/utils/tools';
 import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
 import { isArray, without } from 'min-dash';
+import { ModdleElement } from 'bpmn-js/lib/model/Types';
 
 /**
  * 获取扩展属性

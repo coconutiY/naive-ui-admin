@@ -100,7 +100,7 @@ class RewritePaletteProvider extends PaletteProvider {
         className: 'bpmn-icon-lasso-tool',
         title: '套索工具',
         action: {
-          click: function (event: Event) {
+          click: function (event: MouseEvent) {
             lassoTool.activateSelection(event);
           },
         },

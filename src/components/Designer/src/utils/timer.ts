@@ -1,8 +1,7 @@
 import { getBusinessObject, getModdle, getModeling } from '@/components/Designer/src/utils/tools';
-import { ModdleElement } from 'moddle';
 import { getTimerEventDefinition } from '@/components/Designer/src/utils/implType';
 import Modeler from 'bpmn-js/lib/Modeler';
-import { Moddle } from 'bpmn-js/lib/model/Types';
+import { Moddle, ModdleElement } from 'bpmn-js/lib/model/Types';
 
 export function getTimerType(element: BpmnElement) {
   const businessObject = getBusinessObject(element);

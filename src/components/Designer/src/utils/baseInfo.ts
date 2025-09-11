@@ -1,5 +1,4 @@
 import { is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { ModdleElement } from 'moddle';
 import { add as collectionAdd } from 'diagram-js/lib/util/Collections';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
 import { Canvas } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
@@ -7,10 +6,12 @@ import {
   getBpmnFactory,
   getBusinessObject,
   getModeling,
-  isIdValid, notNull,
+  isIdValid,
+  notNull,
 } from '@/components/Designer/src/utils/tools';
 import Modeler from 'bpmn-js/lib/Modeler';
 import { without } from 'min-dash';
+import { ModdleElement } from 'bpmn-js/lib/model/Types';
 
 // 文档格式
 const DOCUMENTATION_TEXT_FORMAT = 'text/plain';

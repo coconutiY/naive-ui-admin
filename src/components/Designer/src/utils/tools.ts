@@ -71,7 +71,7 @@ export function isNull<T>(val: T | null | undefined) {
  * @param value
  * @return { 'string' | 'array' | 'boolean' | 'number' | 'object' | 'function' } type
  */
-export function getRawType(value: any): string{
+export function getRawType(value: any): string {
   return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
 }
 
@@ -141,8 +141,6 @@ export function validateId(idValue: string) {
     return 'ID 必须符合 BPMN 规范';
   }
 }
-
-
 
 /**
  * 创建脚本

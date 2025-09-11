@@ -1,9 +1,14 @@
 import Modeler from 'bpmn-js/lib/Modeler';
 import {
-  getServiceTaskLikeBusinessObject, isAsync,
+  getServiceTaskLikeBusinessObject,
+  isAsync,
 } from '@/components/Designer/src/utils/implType';
 import { getBusinessObject, is } from 'bpmn-js/lib/util/ModelUtil';
-import {createElement, getModeling, getProcessPrefix} from '@/components/Designer/src/utils/tools';
+import {
+  createElement,
+  getModeling,
+  getProcessPrefix,
+} from '@/components/Designer/src/utils/tools';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { getExtensionElements } from '@/components/Designer/src/utils/extensionProperties';
 
@@ -142,7 +147,7 @@ export function setRetryTimeCycleValue(
  */
 function isExternalTaskLike(modeler: Modeler, element: BpmnElement): boolean {
   const prefix = getProcessPrefix(modeler);
-  const bo = getServiceTaskLikeBusinessObject(element),
+  const bo = getServiceTaskLikeBusinessObject(modeler, element),
     type = bo && bo.get(`${prefix}:type`);
   return bo && is(bo, `${prefix}:ServiceTaskLike`) && type && type === 'external';
 }
@@ -157,7 +162,7 @@ function getRelativeBusinessObject(modeler: Modeler, element: BpmnElement): Modd
   if (is(element, 'bpmn:Participant')) {
     businessObject = getBusinessObject(element).get('processRef');
   } else if (isExternalTaskLike(modeler, element)) {
-    businessObject = getServiceTaskLikeBusinessObject(element);
+    businessObject = getServiceTaskLikeBusinessObject(modeler, element);
   } else {
     businessObject = getBusinessObject(element);
   }

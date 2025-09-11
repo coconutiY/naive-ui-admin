@@ -1,5 +1,4 @@
-import { Connection, Root, Shape, Label, Parent } from 'bpmn-js/lib/model/Types';
-import { ModdleElement } from 'bpmn-moddle';
+import { Connection, Root, Shape, Label, Parent, ModdleElement } from 'bpmn-js/lib/model/Types';
 import { CanvasViewbox } from 'diagram-js/lib/core/Canvas';
 
 declare global {
@@ -37,7 +36,6 @@ declare global {
     viewbox?: CanvasViewbox;
     pad?: object; // 见 Element.pad
   }
-
 }
 declare module 'bpmn-js-properties-panel';
 

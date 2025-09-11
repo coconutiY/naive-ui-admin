@@ -12,7 +12,7 @@ import {
  * 获取元素的icon key(bpmnIcons: Record<string, string>)
  * @param element
  */
-export default function bpmnIconKey(element: BpmnElement): string {
+export default function bpmnIconKey(element: BpmnElement) {
   let elementType: string;
   if (element.type === 'label') {
     const businessObject = getBusinessObject(element);
