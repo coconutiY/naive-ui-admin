@@ -23,11 +23,16 @@
   } from '@/components/Designer/src/utils/condition';
   import { ConditionalForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { scriptTypeOptions } from '@/components/Designer/src/config/selectOptions';
-  import {isConditionEventDefinition, isExtendStartEvent} from "@/components/Designer/src/utils/implType";
+  import {
+    isConditionEventDefinition,
+    isExtendStartEvent,
+  } from '@/components/Designer/src/utils/implType';
 
   defineOptions({ name: 'Conditional' });
   defineProps({
     labelWidth: propTypes.number.def(80),
+    labelPlace: propTypes.string.def('left'),
+    formSize: propTypes.string.def('small'),
   });
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
@@ -153,82 +158,94 @@
     </template>
     <template #default>
       <div class="element-conditional">
-        <template v-if="varVisible">
+        <n-form :size="formSize" :label-placement="labelPlace" :label-width="labelWidth">
+          <template v-if="varVisible">
+            <n-form-item
+              key="variableName"
+              :label="$t('bpmn.panel.variableName')"
+              :label-width="labelWidth"
+            >
+              <n-input
+                v-model:value="variableName"
+                maxlength="32"
+                @change="setElementVariableName"
+              />
+            </n-form-item>
+            <n-form-item
+              v-if="varEventVisible"
+              key="variableEvent"
+              :label="$t('bpmn.panel.variableEvents')"
+              :label-width="labelWidth"
+            >
+              <n-input v-model:value="variableEvents" @change="setElementVariableEvents" />
+            </n-form-item>
+          </template>
           <n-form-item
-            key="variableName"
-            :label="$t('bpmn.panel.variableName')"
-            :label-width="labelWidth"
-          >
-            <n-input v-model:value="variableName" maxlength="32" @change="setElementVariableName" />
-          </n-form-item>
-          <n-form-item
-            v-if="varEventVisible"
-            key="variableEvent"
-            :label="$t('bpmn.panel.variableEvents')"
-            :label-width="labelWidth"
-          >
-            <n-input v-model:value="variableEvents" @change="setElementVariableEvents" />
-          </n-form-item>
-        </template>
-        <n-form-item
-          key="condition"
-          :label="$t('bpmn.panel.conditionType')"
-          :label-width="labelWidth"
-        >
-          <n-select
-            v-model:value="conditionData.conditionType"
-            :on-update:value="setConditionType"
-            :options="conditionTypeOptions"
-          />
-        </n-form-item>
-        <n-form-item
-          v-if="conditionData.conditionType && conditionData.conditionType === 'expression'"
-          key="expression"
-          :label="$t('bpmn.panel.conditionExpression')"
-          :label-width="labelWidth"
-        >
-          <n-input v-model:value="conditionData.expression" @change="setConditionExpression" />
-        </n-form-item>
-        <template v-if="conditionData.conditionType === 'script'">
-          <n-form-item
-            key="scriptType"
-            :label="$t('bpmn.panel.scriptType')"
+            key="condition"
+            :label="$t('bpmn.panel.conditionType')"
             :label-width="labelWidth"
           >
             <n-select
-              v-model:value="conditionData.scriptType"
-              :options="scriptTypeOptions"
-              @change="setElementConditionScriptType"
+              v-model:value="conditionData.conditionType"
+              :on-update:value="setConditionType"
+              :options="conditionTypeOptions"
             />
           </n-form-item>
           <n-form-item
-            key="scriptLanguage"
-            :label="$t('bpmn.panel.scriptLanguage')"
+            v-if="conditionData.conditionType && conditionData.conditionType === 'expression'"
+            key="expression"
+            :label="$t('bpmn.panel.conditionExpression')"
             :label-width="labelWidth"
           >
-            <n-input v-model:value="conditionData.language" @change="setConditionScriptLanguage" />
+            <n-input v-model:value="conditionData.expression" @change="setConditionExpression" />
           </n-form-item>
-          <n-form-item
-            v-show="conditionData.scriptType === 'inline'"
-            key="scriptBody"
-            :label="$t('bpmn.panel.scriptBody')"
-            :label-width="labelWidth"
-          >
-            <n-input
-              v-model:value="conditionData.body"
-              type="textarea"
-              @change="setConditionScriptBody"
-            />
-          </n-form-item>
-          <n-form-item
-            v-show="conditionData.scriptType === 'external'"
-            key="scriptResource"
-            :label="$t('bpmn.panel.scriptResource')"
-            :label-width="labelWidth"
-          >
-            <n-input v-model:value="conditionData.resource" @change="setConditionScriptResource" />
-          </n-form-item>
-        </template>
+          <template v-if="conditionData.conditionType === 'script'">
+            <n-form-item
+              key="scriptType"
+              :label="$t('bpmn.panel.scriptType')"
+              :label-width="labelWidth"
+            >
+              <n-select
+                v-model:value="conditionData.scriptType"
+                :options="scriptTypeOptions"
+                @change="setElementConditionScriptType"
+              />
+            </n-form-item>
+            <n-form-item
+              key="scriptLanguage"
+              :label="$t('bpmn.panel.scriptLanguage')"
+              :label-width="labelWidth"
+            >
+              <n-input
+                v-model:value="conditionData.language"
+                @change="setConditionScriptLanguage"
+              />
+            </n-form-item>
+            <n-form-item
+              v-show="conditionData.scriptType === 'inline'"
+              key="scriptBody"
+              :label="$t('bpmn.panel.scriptBody')"
+              :label-width="labelWidth"
+            >
+              <n-input
+                v-model:value="conditionData.body"
+                type="textarea"
+                @change="setConditionScriptBody"
+              />
+            </n-form-item>
+            <n-form-item
+              v-show="conditionData.scriptType === 'external'"
+              key="scriptResource"
+              :label="$t('bpmn.panel.scriptResource')"
+              :label-width="labelWidth"
+            >
+              <n-input
+                v-model:value="conditionData.resource"
+                @change="setConditionScriptResource"
+              />
+            </n-form-item>
+          </template>
+        </n-form>
       </div>
     </template>
   </n-collapse-item>

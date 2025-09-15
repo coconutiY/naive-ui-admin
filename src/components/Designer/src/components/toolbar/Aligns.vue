@@ -68,7 +68,7 @@
   );
   const align = computed(() => modeler?.value && modeler.value.get<AlignElements>(MODELER_ALIGN));
 
-  function alignElements(tag: string) {
+  function alignElements(tag: 'top' | 'right' | 'bottom' | 'left' | 'center' | 'middle') {
     if (modeling.value && selection.value && align.value) {
       const SelectedElements = selection.value.get();
       if (!SelectedElements || SelectedElements.length <= 1) {

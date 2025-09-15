@@ -2,12 +2,8 @@
   import { propTypes } from '@/utils/propTypes';
   import { ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
   import { scopeOptions } from '@/components/Designer/src/config/selectOptions';
-  import { inject } from 'vue-demi';
-  import { Ref } from 'vue';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { Base } from 'diagram-js/lib/model';
-  import { ModdleElement } from 'moddle';
   import { type DataTableColumns, FormInst, NButton } from 'naive-ui';
   import { uuid } from '@/components/Designer/src/utils/tools';
   import {
@@ -16,6 +12,7 @@
     getGlobalEvents,
     removeGlobalEvent,
   } from '@/components/Designer/src/utils/listeners';
+  import { ModdleElement } from 'bpmn-js/lib/model/Types';
 
   defineOptions({ name: 'GlobalEvents' });
   defineProps({
@@ -24,7 +21,7 @@
   const { t } = useI18n();
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
   const modelVisible = ref(false);
   const isUpdate = ref(false);
   const modelTitle = ref('');
@@ -173,7 +170,7 @@
       </n-tag>
     </template>
     <template #default>
-      <n-collapse arrow-placement="right">
+      <n-collapse arrow-placement="right" class="global-collapse">
         <n-collapse-item name="message">
           <template #header>
             <div class="collapse-title">
@@ -304,4 +301,7 @@
 
 <style scoped lang="scss">
   @use '/src/components/Designer/src/styles/panel.scss';
+  .global-collapse :deep(.n-collapse-item) {
+    margin-left: 6px;
+  }
 </style>

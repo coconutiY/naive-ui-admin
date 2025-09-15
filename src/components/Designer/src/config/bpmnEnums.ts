@@ -1,3 +1,5 @@
+export const ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
 /**
  * 允许添加监听器的元素
  */

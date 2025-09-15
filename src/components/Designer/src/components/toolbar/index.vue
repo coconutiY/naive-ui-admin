@@ -14,13 +14,13 @@
 </template>
 
 <script setup name="ToolBar" lang="ts">
-  import Previews from './Previews.vue';
-  import Imports from './Imports.vue';
-  import Exports from './Exports.vue';
-  import Aligns from './Aligns.vue';
-  import Scales from './Scales.vue';
-  import Commands from './Commands.vue';
-  import ExternalTools from './ExternalTools.vue';
+  const Previews = defineAsyncComponent(async () => await import('./Previews.vue'));
+  const Imports = defineAsyncComponent(async () => await import('./Imports.vue'));
+  const Exports = defineAsyncComponent(async () => await import('./Exports.vue'));
+  const Aligns = defineAsyncComponent(async () => await import('./Aligns.vue'));
+  const Scales = defineAsyncComponent(async () => await import('./Scales.vue'));
+  const Commands = defineAsyncComponent(async () => await import('./Commands.vue'));
+  const ExternalTools = defineAsyncComponent(async () => await import('./ExternalTools.vue'));
 </script>
 <style scoped lang="scss">
   @use 'src/components/Designer/src/styles/toolbar.scss';

@@ -8,6 +8,8 @@
   defineOptions({ name: 'Documentations' });
   defineProps({
     labelWidth: propTypes.number.def(80),
+    labelPlace: propTypes.string.def('left'),
+    formSize: propTypes.string.def('small'),
   });
   const docValue = ref('');
   const modeler = inject<Ref<Modeler>>(MODELER);
@@ -35,9 +37,11 @@
       >
     </template>
     <template #default>
-      <n-form-item :label="$t('bpmn.panel.documentationBody')" :label-width="labelWidth">
-        <n-input v-model:value="docValue" type="textarea" @change="updateElementDoc" />
-      </n-form-item>
+      <n-form :label-width="labelWidth" :label-placement="labelPlace" :size="formSize">
+        <n-form-item :label="$t('bpmn.panel.documentationBody')" :label-width="labelWidth">
+          <n-input v-model:value="docValue" type="textarea" @update-value="updateElementDoc" />
+        </n-form-item>
+      </n-form>
     </template>
   </n-collapse-item>
 </template>

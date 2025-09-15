@@ -358,8 +358,8 @@
     </template>
   </n-collapse-item>
   <!-- 监听器抽屉 -->
-  <n-drawer v-model:show="modelVisible" :title="modelTitle" :width="600">
-    <n-drawer-content>
+  <n-drawer v-model:show="modelVisible" :width="600">
+    <n-drawer-content :title="modelTitle">
       <n-form ref="formRef" :model="newListener" :rules="listenerRules" :label-width="labelWidth">
         <n-form-item path="event" :label="t('bpmn.panel.executionListenerEventType')">
           <n-select v-model:value="newListener.event" :options="taskListenerEventTypes" />

@@ -1,15 +1,147 @@
-<template>
-  <el-form :size="size">
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="1"> {{$t('cron.everyMonth')}}，{{$t('cron.allowedWildcards')}} [, - * /] </el-radio>
-    </el-form-item>
+<script setup lang="ts">
+  import { checkNumber, zeroFill } from '@/components/CronGen/cronUtil';
 
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="2">
-        {{ $t('cron.cycleFrom') }}
-        <el-input-number v-model="cycle01" :min="1" :max="11" class="mx-1em my-0" controls-position="right" @focus="radioChange(2)" />
-        {{ $t('cron.to') }}
-        <el-input-number
+  defineOptions({ name: 'CronMonth' });
+  const props = defineProps({
+    modelValue: {
+      required: true,
+      type: String,
+    },
+    size: {
+      type: String,
+      default: '',
+    },
+  });
+  const { t } = useI18n();
+  const emit = defineEmits<{
+    (e: 'update:modelValue', v: string): void;
+  }>();
+
+  const radioValue = ref<number>(1);
+  const cycle01 = ref<number>(1);
+  const cycle02 = ref<number>(2);
+  const average01 = ref<number>(1);
+  const average02 = ref<number>(1);
+  const checkboxList = ref<number[]>([]);
+
+  const value = computed({
+    get: () => props.modelValue as string,
+    set: (v) => emit('update:modelValue', v),
+  });
+
+  /**
+   * 赋值
+   */
+  function assign() {
+    if (value.value === '*') {
+      radioValue.value = 1;
+    } else if (value.value.indexOf('-') > -1) {
+      const indexArr = value.value.split('-');
+      cycle01.value = isNaN(+indexArr[0]) ? 0 : +indexArr[0];
+      cycle02.value = +indexArr[1];
+      radioValue.value = 2;
+    } else if (value.value.indexOf('/') > -1) {
+      const indexArr = value.value.split('/');
+      average01.value = isNaN(+indexArr[0]) ? 0 : +indexArr[0];
+      average02.value = +indexArr[1];
+      radioValue.value = 3;
+    } else {
+      radioValue.value = 4;
+      checkboxList.value = value.value.split(',').map((i) => +i);
+    }
+  }
+
+  /**
+   * 单选按钮值变化时
+   * @param v
+   */
+  const radioChange = (v: number) => {
+    if (radioValue.value !== v) {
+      radioValue.value = v;
+    }
+  };
+
+  /**
+   * 计算两个周期值
+   */
+  const cycleTotal = computed(() => {
+    const cycle1 = checkNumber(cycle01.value, 0, 58);
+    const cycle2 = checkNumber(cycle02.value, cycle1 ? cycle1 + 1 : 1, 59);
+    return cycle1 + '-' + cycle2;
+  });
+
+  /**
+   * 计算平均用到的值
+   */
+  const averageTotal = computed(() => {
+    const average1 = checkNumber(average01.value, 0, 58);
+    const average2 = checkNumber(average02.value, 1, 59 - average1 || 0);
+    return average1 + '/' + average2;
+  });
+
+  /**
+   * 计算勾选的checkbox值
+   */
+  const checkboxString = computed(() => {
+    const str = checkboxList.value.join();
+    return str == '' ? '*' : str;
+  });
+  onMounted(() => assign());
+  watch(
+    () => value.value,
+    () => assign()
+  );
+  watch(
+    () => radioValue.value,
+    (v) => {
+      if (v === 1) {
+        value.value = '*';
+      } else if (v === 2) {
+        value.value = cycleTotal.value;
+      } else if (v === 3) {
+        value.value = averageTotal.value;
+      } else if (v === 4) {
+        value.value = checkboxString.value;
+      } else {
+        value.value = '*';
+      }
+    }
+  );
+  watch(
+    () => cycleTotal.value,
+    (v) => (value.value = v)
+  );
+  watch(
+    () => averageTotal.value,
+    (v) => (value.value = v)
+  );
+  watch(
+    () => checkboxString.value,
+    (v) => (value.value = v)
+  );
+</script>
+
+<template>
+  <n-form :size="size">
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="1">
+        {{ t('cron.everyMonth') }}，{{ t('cron.allowedWildcards') }} [, - * /]
+      </n-radio>
+    </n-form-item>
+
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="2">
+        {{ t('cron.cycleFrom') }}
+        <n-input-number
+          v-model="cycle01"
+          :min="1"
+          :max="11"
+          class="mx-1em my-0"
+          controls-position="right"
+          @focus="radioChange(2)"
+        />
+        {{ t('cron.to') }}
+        <n-input-number
           v-model="cycle02"
           :min="cycle01 ? cycle01 + 1 : 2"
           :max="12"
@@ -17,16 +149,23 @@
           controls-position="right"
           @focus="radioChange(2)"
         />
-        {{ $t('cron.months') }}
-      </el-radio>
-    </el-form-item>
+        {{ t('cron.months') }}
+      </n-radio>
+    </n-form-item>
 
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="3">
-        {{ $t('cron.cycleFrom') }}
-        <el-input-number v-model="average01" :min="1" :max="11" class="mx-1em my-0" controls-position="right" @focus="radioChange(3)" />
-        {{ $t('cron.months') }}{{ $t('cron.start') }}，{{ $t('cron.every') }}
-        <el-input-number
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="3">
+        {{ t('cron.cycleFrom') }}
+        <n-input-number
+          v-model="average01"
+          :min="1"
+          :max="11"
+          class="mx-1em my-0"
+          controls-position="right"
+          @focus="radioChange(3)"
+        />
+        {{ t('cron.months') }}{{ t('cron.start') }}，{{ t('cron.every') }}
+        <n-input-number
           v-model="average02"
           :min="1"
           :max="12 - average01 || 0"
@@ -34,146 +173,28 @@
           controls-position="right"
           @focus="radioChange(3)"
         />
-        {{ $t('cron.months') }}{{ $t('cron.executeOnce') }}
-      </el-radio>
-    </el-form-item>
-    <el-form-item class="start">
-      <el-radio v-model="radioValue" :label="4" style="margin-right: 20px"> {{ $t('cron.designate') }}{{ $t('cron.months') }} </el-radio>
+        {{ t('cron.months') }}{{ t('cron.executeOnce') }}
+      </n-radio>
+    </n-form-item>
+    <n-form-item class="start">
+      <n-radio v-model="radioValue" :label="4" style="margin-right: 20px">
+        {{ t('cron.designate') }}{{ t('cron.months') }}
+      </n-radio>
       <div class="flex">
-        <el-checkbox-group v-model="checkboxList" class="grid grid-cols-12 justify-items-stretch">
-          <el-checkbox v-for="item in 12" :key="item" :value="item" :label="zeroFill(item)" />
-        </el-checkbox-group>
+        <n-checkbox-group v-model="checkboxList" class="grid grid-cols-12 justify-items-stretch">
+          <n-checkbox v-for="item in 12" :key="item" :value="item" :label="zeroFill(item)" />
+        </n-checkbox-group>
       </div>
-    </el-form-item>
-  </el-form>
+    </n-form-item>
+  </n-form>
 </template>
-<script setup name="CronMonth" lang="ts">
 
-import {checkNumber, zeroFill} from "@/components/CronGen/cronUtil";
+<style lang="scss" scoped>
+  ::v-deep(.start) {
+    margin-bottom: 0;
 
-const props = defineProps({
-  modelValue: {
-    required: true,
-    type: String,
-  },
-  size:{
-    type: String,
-    default: ''
-  }
-});
-
-const emit = defineEmits<{
-  (e: "update:modelValue", v: string): void;
-}>();
-
-const radioValue = ref<number>(1);
-const cycle01 = ref<number>(1);
-const cycle02 = ref<number>(2);
-const average01 = ref<number>(1);
-const average02 = ref<number>(1);
-const checkboxList = ref<number[]>([]);
-
-const value = computed({
-  get: () => props.modelValue,
-  set: (v) => emit("update:modelValue", v),
-});
-
-/**
- * 赋值
- */
-const assign = () => {
-  if (value.value === "*") {
-    radioValue.value = 1;
-  } else if (value.value.indexOf("-") > -1) {
-    const indexArr = value.value.split("-");
-    cycle01.value = isNaN(+indexArr[0]) ? 0 : +indexArr[0];
-    cycle02.value = +indexArr[1];
-    radioValue.value = 2;
-  } else if (value.value.indexOf("/") > -1) {
-    const indexArr = value.value.split("/");
-    average01.value = isNaN(+indexArr[0]) ? 0 : +indexArr[0];
-    average02.value = +indexArr[1];
-    radioValue.value = 3;
-  } else {
-    radioValue.value = 4;
-    checkboxList.value = value.value.split(",").map((i) => +i);
-  }
-};
-
-/**
- * 单选按钮值变化时
- * @param v
- */
-const radioChange = (v: number) => {
-  if (radioValue.value !== v) {
-    radioValue.value = v;
-  }
-};
-
-/**
- * 计算两个周期值
- */
-const cycleTotal = computed(() => {
-  const cycle1 = checkNumber(cycle01.value, 0, 58);
-  const cycle2 = checkNumber(cycle02.value, cycle1 ? cycle1 + 1 : 1, 59);
-  return cycle1 + "-" + cycle2;
-});
-
-/**
- * 计算平均用到的值
- */
-const averageTotal = computed(() => {
-  const average1 = checkNumber(average01.value, 0, 58);
-  const average2 = checkNumber(average02.value, 1, 59 - average1 || 0);
-  return average1 + "/" + average2;
-});
-
-/**
- * 计算勾选的checkbox值
- */
-const checkboxString = computed(() => {
-  const str = checkboxList.value.join();
-  return str == "" ? "*" : str;
-});
-onMounted(() => assign());
-watch(
-  () => value.value,
-  () => assign()
-);
-watch(
-  () => radioValue.value,
-  (v) => {
-    if (v === 1) {
-      value.value = "*";
-    } else if (v === 2) {
-      value.value = cycleTotal.value;
-    } else if (v === 3) {
-      value.value = averageTotal.value;
-    } else if (v === 4) {
-      value.value = checkboxString.value;
-    } else {
-      value.value = "*";
+    .n-form-item__content {
+      align-items: flex-start;
     }
   }
-);
-watch(
-  () => cycleTotal.value,
-  (v) => (value.value = v)
-);
-watch(
-  () => averageTotal.value,
-  (v) => (value.value = v)
-);
-watch(
-  () => checkboxString.value,
-  (v) => (value.value = v)
-);
-</script>
-<style lang="scss" scoped>
-::v-deep(.start) {
-  margin-bottom: 0;
-  .el-form-item__content {
-    align-items: flex-start;
-  }
-}
 </style>

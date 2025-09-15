@@ -108,7 +108,11 @@
         :model="baseInfo"
       >
         <n-form-item :label="t('bpmn.panel.id')" path="elementId" required>
-          <n-input v-model:value="baseInfo.elementId" maxlength="32" @change="updateElementId" />
+          <n-input
+            v-model:value="baseInfo.elementId"
+            maxlength="32"
+            @update-value="updateElementId"
+          />
         </n-form-item>
         <n-form-item
           :label="baseInfo.isProcess ? t('bpmn.panel.processName') : t('bpmn.panel.nodeName')"
@@ -118,7 +122,7 @@
           <n-input
             v-model:value="baseInfo.elementName"
             maxlength="20"
-            @change="updateElementName"
+            @update-value="updateElementName"
           />
         </n-form-item>
         <template v-if="baseInfo.isProcess">
@@ -126,7 +130,7 @@
             <n-input
               v-model:value="baseInfo.elementVersion"
               maxlength="20"
-              @change="updateElementVersion"
+              @update-value="updateElementVersion"
             />
           </n-form-item>
           <n-form-item
@@ -136,7 +140,7 @@
           >
             <n-switch
               v-model:value="baseInfo.elementExecutable"
-              @update:value="updateElementExecutable"
+              @update-value="updateElementExecutable"
             />
           </n-form-item>
         </template>

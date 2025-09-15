@@ -5,7 +5,7 @@
   padding: 1px 1px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
 
   > div[class^='n-button'] + div[class^='n-button'] {
     margin-left: 16px;

@@ -1,95 +1,7 @@
-<template>
-  <n-form :size="size">
-    <n-form-item>
-      <n-radio v-model="radioValue" :label="1">
-        {{ $t('cron.everyDay') }}，{{ $t('cron.allowedWildcards') }} [, - * ? / L W]
-      </n-radio>
-    </n-form-item>
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="2"> {{ $t('cron.notSpecified') }} </el-radio>
-    </el-form-item>
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="3">
-        {{ $t('cron.cycleFrom') }}
-        <el-input-number
-          class="mx-1em my-0"
-          controls-position="right"
-          v-model="cycle01"
-          :min="1"
-          :max="30"
-          @focus="radioChange(3)"
-        />
-        {{ $t('cron.to') }}
-        <el-input-number
-          class="mx-1em my-0"
-          controls-position="right"
-          v-model="cycle02"
-          :min="cycle01 ? cycle01 + 1 : 2"
-          :max="31"
-          @focus="radioChange(3)"
-        />
-        {{ $t('cron.days') }}
-      </el-radio>
-    </el-form-item>
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="4">
-        {{ $t('cron.cycleFrom') }}
-        <el-input-number
-          class="mx-1em my-0"
-          controls-position="right"
-          v-model="average01"
-          :min="1"
-          :max="30"
-          @focus="radioChange(4)"
-        />
-        {{ $t('cron.days') }}{{ $t('cron.start') }}，{{ $t('cron.every') }}
-        <el-input-number
-          class="mx-1em my-0"
-          controls-position="right"
-          v-model="average02"
-          :min="1"
-          :max="31 - average01 || 1"
-          @focus="radioChange(4)"
-        />
-        {{ $t('cron.days') }}{{ $t('cron.executeOnce') }}
-      </el-radio>
-    </el-form-item>
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="5">
-        {{ $t('cron.everyMonth') }}
-        <el-input-number
-          class="mx-1em my-0"
-          controls-position="right"
-          v-model="workday"
-          :min="1"
-          :max="31"
-          @focus="radioChange(5)"
-        />
-        {{ $t('cron.days') }}{{ $t('cron.workingDay') }}
-      </el-radio>
-    </el-form-item>
-
-    <el-form-item>
-      <el-radio v-model="radioValue" :label="6">
-        {{ $t('cron.thisMonth') }}{{ $t('cron.lastDay') }}
-      </el-radio>
-    </el-form-item>
-
-    <el-form-item class="start">
-      <el-radio v-model="radioValue" :label="7" style="margin-right: 20px">
-        {{ $t('cron.designate') }} {{ $t('cron.days') }}
-      </el-radio>
-      <div class="flex">
-        <el-checkbox-group v-model="checkboxList" class="grid grid-cols-12 justify-items-stretch">
-          <el-checkbox v-for="item in 31" :key="item" :value="item" :label="zeroFill(item)" />
-        </el-checkbox-group>
-      </div>
-    </el-form-item>
-  </n-form>
-</template>
-<script setup name="CronDay" lang="ts">
+<script setup lang="ts">
   import { checkNumber, zeroFill } from '@/components/CronGen/cronUtil';
 
+  defineOptions({ name: 'CronDay' });
   const props = defineProps({
     modelValue: {
       required: true,
@@ -100,7 +12,7 @@
       default: '',
     },
   });
-
+  const { t } = useI18n();
   const emit = defineEmits<{
     (e: 'update:modelValue', v: string): void;
   }>();
@@ -114,14 +26,14 @@
   const checkboxList = ref<number[]>([]);
 
   const value = computed({
-    get: () => props.modelValue,
-    set: (v) => emit('update:modelValue', v),
+    get: () => props.modelValue as string,
+    set: (v: string) => emit('update:modelValue', v),
   });
 
   /**
    * 赋值
    */
-  const assign = () => {
+  function assign() {
     if (value.value === '*') {
       radioValue.value = 1;
     } else if (value.value == '?') {
@@ -146,7 +58,7 @@
       checkboxList.value = value.value.split(',').map((i) => +i);
       radioValue.value = 7;
     }
-  };
+  }
 
   /**
    * 单选按钮值变化时
@@ -196,6 +108,7 @@
     () => value.value,
     () => assign()
   );
+
   watch(
     () => radioValue.value,
     (v) => {
@@ -218,28 +131,121 @@
       }
     }
   );
+
   watch(
     () => cycleTotal.value,
     (v) => (value.value = v)
   );
+
   watch(
     () => workdayCheck.value,
     (v) => (value.value = v)
   );
+
   watch(
     () => averageTotal.value,
     (v) => (value.value = v)
   );
+
   watch(
     () => checkboxString.value,
     (v) => (value.value = v)
   );
 </script>
+<template>
+  <n-form :size="size">
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="1">
+        {{ t('cron.everyDay') }}，{{ t('cron.allowedWildcards') }} [, - * ? / L W]
+      </n-radio>
+    </n-form-item>
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="2"> {{ t('cron.notSpecified') }}</n-radio>
+    </n-form-item>
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="3">
+        {{ t('cron.cycleFrom') }}
+        <n-input-number
+          class="mx-1em my-0"
+          controls-position="right"
+          v-model="cycle01"
+          :min="1"
+          :max="30"
+          @focus="radioChange(3)"
+        />
+        {{ t('cron.to') }}
+        <n-input-number
+          class="mx-1em my-0"
+          controls-position="right"
+          v-model="cycle02"
+          :min="cycle01 ? cycle01 + 1 : 2"
+          :max="31"
+          @focus="radioChange(3)"
+        />
+        {{ t('cron.days') }}
+      </n-radio>
+    </n-form-item>
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="4">
+        {{ t('cron.cycleFrom') }}
+        <n-input-number
+          class="mx-1em my-0"
+          controls-position="right"
+          v-model="average01"
+          :min="1"
+          :max="30"
+          @focus="radioChange(4)"
+        />
+        {{ t('cron.days') }}{{ t('cron.start') }}，{{ t('cron.every') }}
+        <n-input-number
+          class="mx-1em my-0"
+          controls-position="right"
+          v-model="average02"
+          :min="1"
+          :max="31 - average01 || 1"
+          @focus="radioChange(4)"
+        />
+        {{ t('cron.days') }}{{ t('cron.executeOnce') }}
+      </n-radio>
+    </n-form-item>
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="5">
+        {{ t('cron.everyMonth') }}
+        <n-input-number
+          class="mx-1em my-0"
+          controls-position="right"
+          v-model="workday"
+          :min="1"
+          :max="31"
+          @focus="radioChange(5)"
+        />
+        {{ t('cron.days') }}{{ t('cron.workingDay') }}
+      </n-radio>
+    </n-form-item>
 
+    <n-form-item>
+      <n-radio v-model="radioValue" :label="6">
+        {{ t('cron.thisMonth') }}{{ t('cron.lastDay') }}
+      </n-radio>
+    </n-form-item>
+
+    <n-form-item class="start">
+      <n-radio v-model="radioValue" :label="7" style="margin-right: 20px">
+        {{ t('cron.designate') }} {{ t('cron.days') }}
+      </n-radio>
+      <div class="flex">
+        <n-checkbox-group v-model="checkboxList" class="grid grid-cols-12 justify-items-stretch">
+          <n-checkbox v-for="item in 31" :key="item" :value="item" :label="zeroFill(item)" />
+        </n-checkbox-group>
+      </div>
+    </n-form-item>
+  </n-form>
+</template>
 <style lang="scss" scoped>
   ::v-deep(.start) {
     margin-bottom: 0;
-    .el-form-item__content {
+
+    .n-form-item__content {
       align-items: flex-start;
     }
   }
