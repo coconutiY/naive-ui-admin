@@ -146,7 +146,7 @@
         :label-placement="labelPlace"
         :model="timerForm"
       >
-        <n-form-item :label="t('bpmn.panel.timerType')" path="type" >
+        <n-form-item :label="t('bpmn.panel.timerType')" path="type">
           <n-select
             v-model="timerForm.type"
             @update-value="timerTypeChange"
@@ -163,7 +163,7 @@
             :value-format="ISO_DATE_FORMAT"
             :placeholder="t('bpmn.panel.selectTime')"
           />
-          <n-input v-else v-model="timerForm.val" @change="timerValueChange">
+          <n-input v-else v-model="timerForm.val" @update-value="timerValueChange">
             <template #suffix>
               <n-icon @click="openDrawer">
                 <icon-lucide-search />

@@ -38,7 +38,7 @@ export function setVariableNameValue(
   }
 }
 
-// 2. 条件事件部分
+//  条件事件部分
 /**
  * 获取条件事件的值
  * @param element
@@ -67,7 +67,7 @@ export function setVariableEventsValue(
   }
 }
 
-// 3. 元素条件类型
+//  元素条件类型
 /**
  * 获取元素条件的值
  * @param element
@@ -100,7 +100,7 @@ export function setConditionTypeValue(modeler: Modeler, element: BpmnElement, va
   };
   const parent = is(element, 'bpmn:SequenceFlow')
     ? getBusinessObject(element)
-    : (getConditionalEventDefinition(element) as ModdleElement);
+    : getConditionalEventDefinition(element);
   const formalExpressionElement = createElement(
     modeler,
     'bpmn:FormalExpression',
@@ -135,11 +135,11 @@ export function setConditionExpressionValue(
 ) {
   const parent = is(element, 'bpmn:SequenceFlow')
     ? getBusinessObject(element)
-    : (getConditionalEventDefinition(element) as ModdleElement);
+    : getConditionalEventDefinition(element);
   const formalExpressionElement = createElement(
     modeler,
     'bpmn:FormalExpression',
-    { body },
+    { body: `\$\{${body}\}` },
     parent
   );
   updateCondition(modeler, element, formalExpressionElement);
@@ -189,7 +189,7 @@ export function setConditionScriptTypeValue(
   modeling.updateModdleProperties(element, getConditionExpression(element)!, props);
 }
 
-// 6. 元素脚本 语言类型
+// 元素脚本 语言类型
 /**
  * 获取脚本语言类型的值
  * @param element
@@ -213,7 +213,7 @@ export function setConditionScriptLanguageValue(
   modeling.updateModdleProperties(element, getConditionExpression(element)!, { language: value });
 }
 
-// 7. 元素脚本 body
+//  元素脚本 body
 /**
  * 获取元素脚本的值
  * @param element
@@ -237,7 +237,7 @@ export function setConditionScriptBodyValue(
   modeling.updateModdleProperties(element, getConditionExpression(element)!, { body: value });
 }
 
-// 8. 元素脚本 source
+// 元素脚本 source
 /**
  * 获取元素脚本来源的值
  * @param modeler

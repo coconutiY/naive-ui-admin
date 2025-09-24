@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
-  import { ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+  import { ThrowEventForm } from '/#/bpmn/declares/bpmn-form';
   import { scopeOptions } from '@/components/Designer/src/config/selectOptions';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';

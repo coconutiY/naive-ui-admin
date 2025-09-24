@@ -4,25 +4,16 @@
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
   import {
     getConditionExpressionValue,
-    getConditionScriptBodyValue,
-    getConditionScriptLanguageValue,
-    getConditionScriptResourceValue,
-    getConditionScriptTypeValue,
     getConditionTypeOptions,
     getConditionTypeValue,
     getVariableEventsValue,
     getVariableNameValue,
     setConditionExpressionValue,
-    setConditionScriptBodyValue,
-    setConditionScriptLanguageValue,
-    setConditionScriptResourceValue,
-    setConditionScriptTypeValue,
     setConditionTypeValue,
     setVariableEventsValue,
     setVariableNameValue,
   } from '@/components/Designer/src/utils/condition';
-  import { ConditionalForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
-  import { scriptTypeOptions } from '@/components/Designer/src/config/selectOptions';
+  import { ConditionalForm } from '/#/bpmn/declares/bpmn-form';
   import {
     isConditionEventDefinition,
     isExtendStartEvent,
@@ -34,6 +25,7 @@
     labelPlace: propTypes.string.def('left'),
     formSize: propTypes.string.def('small'),
   });
+  const { t } = useI18n();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
@@ -42,9 +34,11 @@
   const variableName = ref('');
   const varEventVisible = ref(false);
   const variableEvents = ref('');
+
   // 条件类型配置部分
   const conditionTypeOptions = ref<Record<string, string>[]>([]);
   const conditionData = ref<ConditionalForm>({});
+
   /**
    * 获取元素变量
    */
@@ -63,17 +57,6 @@
   function getElementConditionType(element: BpmnElement) {
     conditionData.value.conditionType = getConditionTypeValue(element);
     conditionData.value.conditionType === 'expression' && getConditionExpression(element);
-    conditionData.value.conditionType === 'script' && getConditionScript(element);
-  }
-
-  /**
-   * 获取元素条件脚本
-   */
-  function getConditionScript(element: BpmnElement) {
-    conditionData.value.language = getConditionScriptLanguageValue(element);
-    conditionData.value.scriptType = getConditionScriptTypeValue(modelerRef!.value, element);
-    conditionData.value.body = getConditionScriptBodyValue(element);
-    conditionData.value.resource = getConditionScriptResourceValue(modelerRef!.value, element);
   }
 
   /**
@@ -97,13 +80,6 @@
   }
 
   /**
-   * 获取元素条件脚本类型
-   */
-  function setElementConditionScriptType(value: string | undefined) {
-    setConditionScriptTypeValue(modelerRef!.value, active!.value, value);
-  }
-
-  /**
    * 设置元素条件类型
    */
   function setConditionType(value: string) {
@@ -117,26 +93,11 @@
     setConditionExpressionValue(modelerRef!.value, active!.value, value);
   }
 
-  /**
-   * 设置元素条件脚本语言
-   */
-  function setConditionScriptLanguage(value: string | undefined) {
-    setConditionScriptLanguageValue(modelerRef!.value, active!.value, value);
-  }
-
-  /**
-   * 设置元素条件脚本内容
-   */
-  function setConditionScriptBody(value: string | undefined) {
-    setConditionScriptBodyValue(modelerRef!.value, active!.value, value);
-  }
-  /**
-   * 设置元素条件脚本资源
-   */
-  function setConditionScriptResource(value: string | undefined) {
-    setConditionScriptResourceValue(modelerRef!.value, active!.value, value);
-  }
-
+  onMounted(() => {
+    getElementVariables(active!.value);
+    getElementConditionType(active!.value);
+    conditionTypeOptions.value = getConditionTypeOptions(active!.value);
+  });
   watch(
     () => active?.value,
     (value) => {
@@ -153,7 +114,7 @@
   <n-collapse-item name="Conditional">
     <template #header>
       <div class="collapse-title"
-        ><icon-lucide-arrow-right-left /> {{ $t('bpmn.panel.conditionalSettings') }}</div
+        ><icon-lucide-arrow-right-left /> {{ t('bpmn.panel.conditionalSettings') }}</div
       >
     </template>
     <template #default>
@@ -162,89 +123,41 @@
           <template v-if="varVisible">
             <n-form-item
               key="variableName"
-              :label="$t('bpmn.panel.variableName')"
+              :label="t('bpmn.panel.variableName')"
               :label-width="labelWidth"
             >
               <n-input
                 v-model:value="variableName"
                 maxlength="32"
-                @change="setElementVariableName"
+                @update-value="setElementVariableName"
               />
             </n-form-item>
             <n-form-item
               v-if="varEventVisible"
               key="variableEvent"
-              :label="$t('bpmn.panel.variableEvents')"
+              :label="t('bpmn.panel.variableEvents')"
               :label-width="labelWidth"
             >
-              <n-input v-model:value="variableEvents" @change="setElementVariableEvents" />
+              <n-input v-model:value="variableEvents" @update-value="setElementVariableEvents" />
             </n-form-item>
           </template>
-          <n-form-item
-            key="condition"
-            :label="$t('bpmn.panel.conditionType')"
-            :label-width="labelWidth"
-          >
+          <n-form-item key="conditionData" :label="t('bpmn.panel.conditionType')">
             <n-select
               v-model:value="conditionData.conditionType"
-              :on-update:value="setConditionType"
+              @update:value="setConditionType"
               :options="conditionTypeOptions"
             />
           </n-form-item>
           <n-form-item
-            v-if="conditionData.conditionType && conditionData.conditionType === 'expression'"
-            key="expression"
-            :label="$t('bpmn.panel.conditionExpression')"
-            :label-width="labelWidth"
+            v-if="conditionData.conditionType === 'expression'"
+            path="expression"
+            :label="t('bpmn.panel.conditionExpression')"
           >
-            <n-input v-model:value="conditionData.expression" @change="setConditionExpression" />
+            <n-input
+              v-model:value="conditionData.expression"
+              @update:value="setConditionExpression"
+            />
           </n-form-item>
-          <template v-if="conditionData.conditionType === 'script'">
-            <n-form-item
-              key="scriptType"
-              :label="$t('bpmn.panel.scriptType')"
-              :label-width="labelWidth"
-            >
-              <n-select
-                v-model:value="conditionData.scriptType"
-                :options="scriptTypeOptions"
-                @change="setElementConditionScriptType"
-              />
-            </n-form-item>
-            <n-form-item
-              key="scriptLanguage"
-              :label="$t('bpmn.panel.scriptLanguage')"
-              :label-width="labelWidth"
-            >
-              <n-input
-                v-model:value="conditionData.language"
-                @change="setConditionScriptLanguage"
-              />
-            </n-form-item>
-            <n-form-item
-              v-show="conditionData.scriptType === 'inline'"
-              key="scriptBody"
-              :label="$t('bpmn.panel.scriptBody')"
-              :label-width="labelWidth"
-            >
-              <n-input
-                v-model:value="conditionData.body"
-                type="textarea"
-                @change="setConditionScriptBody"
-              />
-            </n-form-item>
-            <n-form-item
-              v-show="conditionData.scriptType === 'external'"
-              key="scriptResource"
-              :label="$t('bpmn.panel.scriptResource')"
-              :label-width="labelWidth"
-            >
-              <n-input
-                v-model:value="conditionData.resource"
-                @change="setConditionScriptResource"
-              />
-            </n-form-item>
-          </template>
         </n-form>
       </div>
     </template>

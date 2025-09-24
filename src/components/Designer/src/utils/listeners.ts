@@ -1,6 +1,6 @@
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 import { getBusinessObject, is, isAny } from 'bpmn-js/lib/util/ModelUtil';
-import { ListenersForm, ThrowEventForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+import { ListenersForm, ThrowEventForm } from '/#/bpmn/declares/bpmn-form';
 import Modeler from 'bpmn-js/lib/Modeler';
 import {
   createElement,
@@ -9,7 +9,7 @@ import {
   getProcessPrefix,
 } from '@/components/Designer/src/utils/tools';
 import { without } from 'min-dash';
-import { BpmnField, BpmnListener } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import { BpmnField, BpmnListener } from '/#/bpmn/declares/bpmn-instance';
 import {
   addExtensionElements,
   getExtensionElements,

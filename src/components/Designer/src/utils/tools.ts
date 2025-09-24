@@ -8,8 +8,8 @@ import {
 } from '@/components/Designer/src/config/bpmnEnums';
 import Modeler from 'bpmn-js/lib/Modeler';
 import BpmnFactory from 'bpmn-js/lib/features/modeling/BpmnFactory';
-import { ScriptForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
-import { BpmnScript } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import { ScriptForm } from '/#/bpmn/declares/bpmn-form';
+import { BpmnScript } from '/#/bpmn/declares/bpmn-instance';
 import dayjs from 'dayjs';
 import duration, { DurationUnitsObjectType } from 'dayjs/plugin/duration';
 

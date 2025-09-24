@@ -2,7 +2,7 @@
   import { propTypes } from '@/utils/propTypes';
   import Modeler from 'bpmn-js/lib/Modeler';
   import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
-  import { ListenersForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+  import { ListenersForm } from '/#/bpmn/declares/bpmn-form';
   import {
     fieldTypeOptions,
     listenerTypeOptions,
@@ -10,7 +10,7 @@
   } from '@/components/Designer/src/config/selectOptions';
   import { ModdleElement } from 'bpmn-js/lib/model/Types';
   import { DataTableColumns, FormInst, FormRules, NButton } from 'naive-ui';
-  import { BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+  import { BpmnField } from '/#/bpmn/declares/bpmn-instance';
   import {
     addTaskListener,
     getTaskListenerForms,

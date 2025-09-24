@@ -8,13 +8,12 @@
     getDefaultEvent,
     getExecutionListenerForms,
     getExecutionListeners,
-    getExecutionListenerType,
     removeExecutionListener,
     updateExecutionListener,
   } from '@/components/Designer/src/utils/listeners';
   import { ModdleElement } from 'bpmn-js/lib/model/Types';
-  import { BpmnExecutionListener, BpmnField } from '/#/bpmn/bpmn-moddle/bpmn-instance';
-  import { ExecutionListenerForm, ListenersForm } from '/#/bpmn/bpmn-moddle/bpmn-form';
+  import { BpmnField } from '/#/bpmn/declares/bpmn-instance';
+  import { ExecutionListenerForm, ListenersForm } from '/#/bpmn/declares/bpmn-form';
   import {
     fieldTypeOptions,
     listenerEventTypeOptions,

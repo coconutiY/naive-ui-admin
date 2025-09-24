@@ -8,7 +8,6 @@
   import GlobalConnect from 'diagram-js/lib/features/global-connect/GlobalConnect';
   import Modeler from 'bpmn-js/lib/Modeler';
   import PopupMenu from 'diagram-js/lib/features/popup-menu/PopupMenu';
-  import { PaletteElement } from '/#/bpmn/designer/settings';
   import {
     MODELER,
     MODELER_CANVAS,

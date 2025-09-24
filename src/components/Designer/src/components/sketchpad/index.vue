@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, markRaw, onMounted, provide, Ref, ref } from 'vue';
+  import { computed, defineAsyncComponent, markRaw, onMounted, provide, Ref, ref } from 'vue';
   import initModules from '@/components/Designer/src/components/sketchpad/modulesAndModdle';
   import Modeler from 'bpmn-js/lib/Modeler';
   import {
@@ -11,10 +11,13 @@
   } from '@/components/Designer/src/config/bpmnEnums';
   import { debounce } from 'min-dash';
   import ElementRegistry from 'diagram-js/lib/core/ElementRegistry';
-  import { ElementChangeParams, SelectionChangeParams } from '/#/bpmn/designer/settings';
   import EmptyXml from '@/components/Designer/src/utils/emptyXml';
   import type { BaseViewerOptions } from 'bpmn-js/lib/BaseViewer';
   import CommandStack from 'diagram-js/lib/command/CommandStack';
+  import { Issue } from 'bpmn-js-bpmnlint';
+
+  const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
+  const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
 
   const emit = defineEmits(['update:xml']);
   const modelerRef = ref<Modeler>();
@@ -33,6 +36,17 @@
 
   const bpmnCanvas = ref<HTMLElement>();
 
+  const drawerVisible = ref(true);
+  const drawerIcon = computed(() =>
+    drawerVisible.value ? lucideChevronsRight : lucideChevronsLeft
+  );
+  /**
+   * 设置panel的展示和隐藏并且更新对应的Icon
+   */
+  function changeVisible() {
+    drawerVisible.value = !drawerVisible.value;
+  }
+
   /**
    * 初始化流程图
    */
@@ -45,8 +59,8 @@
         moddleExtensions: modelerModules[1] || {},
         ...modelerModules[2],
       };
-      const modeler: Modeler = new Modeler(options);
-      //阻止右键默认事件
+      const modeler = new Modeler(options);
+      //阻止右键默认事件（右键快速创建元素）
       // document.body.addEventListener('contextmenu', (ev: MouseEvent) => {
       //   ev.preventDefault();
       // });
@@ -102,7 +116,6 @@
      * 导入完成后默认选中 process 节点，并设置panel内部表单
      */
     modeler.on('import.done', () => {
-      console.log('import.done');
       setCurrentElement(undefined);
     });
 
@@ -112,16 +125,16 @@
         commandDo.value.canRedo = modeler.get<CommandStack>(MODELER_COMMAND).canRedo();
         commandDo.value.canUndo = modeler.get<CommandStack>(MODELER_COMMAND).canUndo();
         emit('update:xml', xml);
-        console.log('commandStack.changed', commandDo.value);
       } catch (error) {
         throw error;
       }
     });
 
     /**
-     * 监听选择事件，修改当前激活的元素以及表单
+     * 监听选择事件，修改当前激活的元素以及表单 <BR />
+     * 鼠标左键长按拖动后会触发，松开后也会触发
      */
-    modeler.on('selection.changed', ({ newSelection }: SelectionChangeParams) => {
+    modeler.on('selection.changed', ({ newSelection }: SelectionChanged) => {
       setCurrentElement(newSelection[0] || null);
     });
 
@@ -129,8 +142,7 @@
      * 监听元素发生改变事件，更新panel
      * 保证 修改 "默认流转路径" 等类似需要修改多个元素的事件发生的时候，更新表单的元素与原选中元素不一致。
      */
-    modeler.on('element.changed', ({ element }: ElementChangeParams) => {
-      console.log(element, 'element.changed');
+    modeler.on('element.changed', ({ element }: ElementChanged) => {
       if (element && element.id === activeId.value) {
         setCurrentElement(element);
       }
@@ -147,9 +159,10 @@
      * 流程校验结果
      * TODO 该监听拆分给lint模块
      */
-    // modeler.on('linting.completed', ({ issues }: { issues: Issue }) => {
-    // lintIssue.value = issues;
-    // });
+    modeler.on('linting.completed', ({ issues }: { issues: Issue }) => {
+      console.log('issues', issues);
+      // lintIssue.value = issues;
+    });
   }
 
   /**
@@ -160,12 +173,10 @@
     // 如果不传入参数则显示流程配置,否则显示当前节点
     if (!elementRef) {
       const registry = modelerRef.value!.get<ElementRegistry>(MODELER_REGISTRY);
-      console.log(registry);
       // const definitionsElement = modelerRef.value!.getDefinitions();
       elementRef =
         registry.find((el: BpmnElement) => el.type === 'bpmn:Process') ||
         registry.find((el: BpmnElement) => el.type === 'bpmn:Collaboration');
-      console.log('elementRef', registry);
       if (!elementRef) {
         throw new Error('未找到流程标签信息！');
       }
@@ -192,8 +203,13 @@
         </template>
       </Toolbar>
       <div ref="bpmnCanvas" class="designer_canvas"></div>
+      <div class="panel_control" @click="changeVisible">
+        <component :is="drawerIcon" />
+      </div>
     </div>
-    <Panel />
+    <transition name="slide-right">
+      <Panel :drawer-visible="drawerVisible" />
+    </transition>
   </div>
 </template>
 

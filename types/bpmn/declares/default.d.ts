@@ -21,6 +21,7 @@ declare global {
     name: string;
     value: string;
   };
+
   type PropertyOptions = OptionItem[];
 
   interface InternalEvent {
@@ -36,7 +37,46 @@ declare global {
     viewbox?: CanvasViewbox;
     pad?: object; // 见 Element.pad
   }
+
+  /**
+   * 元素改变（内部属性更新等）事件（modbus回调）
+   */
+  type ElementChanged = {
+    element: BpmnElement;
+    gfx: HTMLElement | object;
+    type: string | undefined;
+  };
+
+  /**
+   * 选中元素改变事件（modbus回调）
+   */
+  type SelectionChanged = {
+    /**
+     * 新选中的所有元素
+     */
+    newSelection: BpmnElement[];
+    /**
+     * 之前选中的所有元素
+     */
+    oldSelection: BpmnElement[];
+    /**
+     * 事件类型
+     */
+    type: string;
+  };
+
+  /**
+   * palette元素类型
+   */
+  type PaletteElement = {
+    group: string;
+    type: string;
+    className: string;
+    title: string | undefined;
+    visible: boolean;
+  };
 }
+
 declare module 'bpmn-js-properties-panel';
 
 declare module 'diagram-js-minimap';

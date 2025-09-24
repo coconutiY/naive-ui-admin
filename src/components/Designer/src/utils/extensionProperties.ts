@@ -6,7 +6,7 @@ import {
   getModeling,
   getProcessPrefix,
 } from '@/components/Designer/src/utils/tools';
-import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import { BpmnExtensionProperty } from '/#/bpmn/declares/bpmn-instance';
 import { isArray, without } from 'min-dash';
 import { ModdleElement } from 'bpmn-js/lib/model/Types';
 

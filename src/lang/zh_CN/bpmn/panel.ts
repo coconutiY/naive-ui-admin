@@ -87,6 +87,7 @@ export default {
   script: '脚本',
   externalResource: '外部资源',
   inlineScript: '内联脚本',
+  default: '默认',
   none: '无',
 
   index: '序号',

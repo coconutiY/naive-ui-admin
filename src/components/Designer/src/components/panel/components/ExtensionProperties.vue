@@ -11,7 +11,7 @@
     getExtensionProperties,
     removeExtensionProperty,
   } from '@/components/Designer/src/utils/extensionProperties';
-  import { BpmnExtensionProperty } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+  import { BpmnExtensionProperty } from '/#/bpmn/declares/bpmn-instance';
   import type { DataTableColumns, FormInst } from 'naive-ui';
   import { NButton } from 'naive-ui';
   defineOptions({ name: 'ExtensionProperties' });

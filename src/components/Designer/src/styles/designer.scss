@@ -17,6 +17,7 @@
   max-height: calc(100vh - 120px);
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 .designer_palette {
@@ -33,4 +34,32 @@
   flex: 1;
   min-height: calc(100vh - 130px);
   max-height: calc(100vh - 120px);
+}
+
+.panel_control {
+  z-index: 10;
+  width: 18px;
+  height: 64px;
+  top: 50%;
+  right: 0;
+  transform: translate(0, -50%);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 10px 0 0 10px;
+  box-shadow: -2px 0 6px 0 rgba(0, 0, 0, 0.3);
+  background-color: #f3f3f3;
+}
+
+
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.slide-right-enter-from,
+.slide-right-leave-to {
+  transform: translateX(100%);
 }

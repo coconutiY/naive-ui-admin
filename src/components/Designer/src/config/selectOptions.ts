@@ -1,15 +1,14 @@
 import { ref } from 'vue';
 
-import { MultiType } from '/#/bpmn/bpmn-moddle/bpmn-instance';
+import { MultiType } from '/#/bpmn/declares/bpmn-instance';
 import i18n from '@/lang';
 
 const { t } = i18n.global;
 
 export const defaultConditionTypeOptions: Record<string, string>[] = [
-  { label: '无条件( None )', value: 'none' },
-  { label: '默认路径( Default )', value: 'default' },
-  { label: '条件表达式( Expression )', value: 'expression' },
-  // { label: '条件脚本( Script )', value: 'script' },
+  { label: t('bpmn.panel.none'), value: 'none' },
+  { label: t('bpmn.panel.default'), value: 'default' },
+  { label: t('bpmn.panel.expression'), value: 'expression' },
 ];
 
 export const scriptTypeOptions = ref<Record<string, string>[]>([

@@ -7,7 +7,6 @@
     MODELER_BPMN_FACTORY,
     MODELER_CANVAS,
   } from '@/components/Designer/src/config/bpmnEnums';
-  import { Base } from 'diagram-js/lib/model';
   import {
     getName,
     getProcessExecutable,
@@ -30,7 +29,7 @@
   const { t } = useI18n();
   const message = useMessage();
   const modelerRef = inject<Ref<Modeler>>(MODELER);
-  const active = inject<Ref<Base>>(ACTIVE_ELEMENT);
+  const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
   const canvas = computed(() => modelerRef!.value.get<Canvas>(MODELER_CANVAS));
   const bpmnFactory = computed(() => modelerRef!.value.get<BpmnFactory>(MODELER_BPMN_FACTORY));
@@ -56,7 +55,7 @@
     ],
   };
 
-  function reloadGenerationData(active: Base) {
+  function reloadGenerationData(active: BpmnElement) {
     baseInfo.value.elementId = active.id;
     baseInfo.value.elementName = getName(active) || '';
     if (active.type === 'bpmn:Process') {

@@ -4,7 +4,7 @@ import {
   BpmnScript,
   BpmnTaskListener,
   BpmnThrowEvent,
-} from '/#/bpmn/bpmn-moddle/bpmn-instance';
+} from '/#/bpmn/declares/bpmn-instance';
 
 export declare interface ScriptForm extends BpmnScript {
   scriptType?: string;

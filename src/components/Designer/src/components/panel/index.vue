@@ -10,26 +10,25 @@
   import { inject } from 'vue-demi';
   import bpmnIconKey from '@/components/Designer/src/utils/icon';
   import { Translate } from 'bpmn-js/lib/features/context-pad/ContextPadProvider';
-  import { isConditional, isTimer } from '@/components/Designer/src/utils/implType';
+  import {
+    isAssignable,
+    isAsynchronous,
+    isConditional,
+    isExecutable,
+    isProcess,
+    isTaskListener,
+    isTimer,
+  } from '@/components/Designer/src/utils/implType';
+  import { propTypes } from '@/utils/propTypes';
 
-  const lucideChevronsLeft = defineAsyncComponent(() => import('~icons/lucide/chevrons-left'));
-  const lucideChevronsRight = defineAsyncComponent(() => import('~icons/lucide/chevrons-right'));
-  const BaseInfo = defineAsyncComponent(() => import('./components/BaseInfo.vue'));
-  const Documentations = defineAsyncComponent(() => import('./components/Documentations.vue'));
-  const Conditional = defineAsyncComponent(() => import('./components/Conditional.vue'));
-  const GlobalEvents = defineAsyncComponent(() => import('./components/GlobalEvents.vue'));
-  const ExecutionListeners = defineAsyncComponent(
-    () => import('./components/ExecutionListeners.vue')
-  );
-  const TaskListeners = defineAsyncComponent(() => import('./components/TaskListeners.vue'));
-  const JobExecution = defineAsyncComponent(() => import('./components/JobExecution.vue'));
-  const AsyncContinuations = defineAsyncComponent(
-    () => import('./components/AsyncContinuations.vue')
-  );
-  const ExtensionProperties = defineAsyncComponent(
-    () => import('./components/ExtensionProperties.vue')
-  );
-  const Timer = defineAsyncComponent(() => import('./components/Timer.vue'));
+  defineOptions({ name: 'Panel' });
+  defineProps({
+    drawerVisible: {
+      type: Boolean,
+      default: propTypes.bool.def(true),
+    },
+  });
+
   const asyncComponents = shallowRef<Record<string, Component>>({});
   onMounted(async () => {
     const modules = import.meta.glob('./components/*.vue');
@@ -40,55 +39,28 @@
         .replace(/\.\w+$/, '');
       asyncComponents.value[`${name}`] = defineAsyncComponent(() => import(filePath));
     });
-    console.log(asyncComponents, 'asyncComponents');
-    console.log(renderComponents, 'renderComponents');
   });
   // 依赖注入
   const modelerRef = inject<Ref<Modeler>>(MODELER);
   const active = inject<Ref<BpmnElement>>(ACTIVE_ELEMENT);
 
-  const drawerVisible = ref(true);
-  const drawerIcon = computed(() =>
-    drawerVisible.value ? lucideChevronsRight : lucideChevronsLeft
-  );
   const iconName = ref('Process');
   const activeType = ref('');
   const title = ref('');
-  const renderComponents = shallowRef<Component[]>([
-    BaseInfo,
-    Conditional,
-    GlobalEvents,
-    TaskListeners,
-    ExecutionListeners,
-    JobExecution,
-    Timer,
-    ExtensionProperties,
-    AsyncContinuations,
-    Documentations,
-  ]);
+  const renderComponents = shallowRef<Component[]>([]);
 
-  function getcollapseItem(element: BpmnElement) {
+  function getCollapseItem(element: BpmnElement) {
     const keys = ['BaseInfo'];
     isConditional(element) && keys.push('Conditional');
     isTimer(element) && keys.push('Timer');
-    // isUserAssignment(modelerRef!.value, element) && keys.push('Timer');
-  }
-
-  // isMultiInstanceSupported(active?.value) && renderComponents.value.push(MultiInstance)
-  // isTaskListener(active?.value) && renderComponents.value.push(TaskListeners)
-  // is(active?.value, 'bpmn:Process') && renderComponents.value.push(GlobalEvent);
-  // isExecutable(active?.value)&&renderComponents.value.push(ExecutionListeners)
-  // is(element, 'bpmn:Process')&& renderComponents.value.push({ name: 'element-event-listeners', component: ElementEventListeners })
-  // renderComponents.value.push(ExtensionProperties)
-  // isAsynchronous(element)&&renderComponents.value.push({ name: 'element-async-continuations', component: ElementAsyncContinuations })
-  // isStartInitializable(element) && renderComponents.value.push({ name: 'element-start-initiator', component: ElementStartInitiator })
-  // renderComponents.value.push(Documentation)
-
-  /**
-   * 设置panel的展示和隐藏并且更新对应的Icon
-   */
-  function changeVisible() {
-    drawerVisible.value = !drawerVisible.value;
+    // isAssignable(modelerRef!.value, element) && keys.push('Timer');
+    isTaskListener(element) && keys.push('TaskListeners');
+    isExecutable(element) && keys.push('ExecutionListeners');
+    isProcess(element) && keys.push('GlobalEvents');
+    keys.push('ExtensionProperties');
+    isAsynchronous(modelerRef!.value, element) && keys.push('AsyncContinuations');
+    keys.push('Documentations');
+    renderComponents.value = keys.map((key) => asyncComponents.value[key]);
   }
 
   function reloadData() {
@@ -98,6 +70,7 @@
       const iconKey = bpmnIconKey(active!.value);
       title.value = translate(iconKey);
       iconName.value = bpmnIcons[iconKey];
+      getCollapseItem(active!.value);
     }
   }
 
@@ -112,11 +85,8 @@
 </script>
 
 <template>
-  <div class="designer_panel">
-    <div class="drawers_btn" @click="changeVisible">
-      <component :is="drawerIcon" />
-    </div>
-    <n-card class="card" v-show="drawerVisible">
+  <div class="designer_panel" v-show="drawerVisible">
+    <n-card class="card">
       <template #header>
         <div class="panel-header">
           <BpmnIcon :name="iconName" />
