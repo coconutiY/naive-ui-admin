@@ -48,7 +48,7 @@
     ],
     elementName: [
       {
-        required: true,
+        required: false,
         message: t('bpmn.panel.rules.ebiElementNameRule'),
         trigger: 'blur',
       },
@@ -106,7 +106,7 @@
         :rules="rules"
         :model="baseInfo"
       >
-        <n-form-item :label="t('bpmn.panel.id')" path="elementId" required>
+        <n-form-item :label="t('bpmn.panel.id')" path="elementId">
           <n-input
             v-model:value="baseInfo.elementId"
             maxlength="32"
@@ -116,7 +116,6 @@
         <n-form-item
           :label="baseInfo.isProcess ? t('bpmn.panel.processName') : t('bpmn.panel.nodeName')"
           path="elementName"
-          required
         >
           <n-input
             v-model:value="baseInfo.elementName"

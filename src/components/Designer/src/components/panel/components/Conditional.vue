@@ -1,7 +1,11 @@
 <script setup lang="ts">
   import { propTypes } from '@/utils/propTypes';
   import Modeler from 'bpmn-js/lib/Modeler';
-  import { ACTIVE_ELEMENT, MODELER } from '@/components/Designer/src/config/bpmnEnums';
+  import {
+    ACTIVE_ELEMENT,
+    EXPRESSION_REG,
+    MODELER,
+  } from '@/components/Designer/src/config/bpmnEnums';
   import {
     getConditionExpressionValue,
     getConditionTypeOptions,
@@ -10,7 +14,6 @@
     getVariableNameValue,
     setConditionExpressionValue,
     setConditionTypeValue,
-    setVariableEventsValue,
     setVariableNameValue,
   } from '@/components/Designer/src/utils/condition';
   import { ConditionalForm } from '/#/bpmn/declares/bpmn-form';
@@ -37,10 +40,13 @@
 
   // 条件类型配置部分
   const conditionTypeOptions = ref<Record<string, string>[]>([]);
-  const conditionData = ref<ConditionalForm>({});
+  const conditionData = ref<ConditionalForm>({
+    expression: '',
+    conditionType: '',
+  });
 
   /**
-   * 获取元素变量
+   * 获取元素变量（条件开始事件）
    */
   function getElementVariables(element: BpmnElement) {
     varVisible.value = isConditionEventDefinition(element);
@@ -56,13 +62,7 @@
    */
   function getElementConditionType(element: BpmnElement) {
     conditionData.value.conditionType = getConditionTypeValue(element);
-    conditionData.value.conditionType === 'expression' && getConditionExpression(element);
-  }
-
-  /**
-   * 获取元素条件表达式
-   */
-  function getConditionExpression(element: BpmnElement) {
+    console.log(conditionData.value, 'conditionData');
     conditionData.value.expression = getConditionExpressionValue(element);
   }
 
@@ -71,12 +71,6 @@
    */
   function setElementVariableName(value: string | undefined) {
     setVariableNameValue(modelerRef!.value, active!.value, value);
-  }
-  /**
-   * 设置元素变量事件
-   */
-  function setElementVariableEvents(value: string | undefined) {
-    setVariableEventsValue(modelerRef!.value, active!.value, value);
   }
 
   /**
@@ -98,6 +92,7 @@
     getElementConditionType(active!.value);
     conditionTypeOptions.value = getConditionTypeOptions(active!.value);
   });
+
   watch(
     () => active?.value,
     (value) => {
@@ -120,28 +115,19 @@
     <template #default>
       <div class="element-conditional">
         <n-form :size="formSize" :label-placement="labelPlace" :label-width="labelWidth">
-          <template v-if="varVisible">
-            <n-form-item
-              key="variableName"
-              :label="t('bpmn.panel.variableName')"
-              :label-width="labelWidth"
-            >
-              <n-input
-                v-model:value="variableName"
-                maxlength="32"
-                @update-value="setElementVariableName"
-              />
-            </n-form-item>
-            <n-form-item
-              v-if="varEventVisible"
-              key="variableEvent"
-              :label="t('bpmn.panel.variableEvents')"
-              :label-width="labelWidth"
-            >
-              <n-input v-model:value="variableEvents" @update-value="setElementVariableEvents" />
-            </n-form-item>
-          </template>
-          <n-form-item key="conditionData" :label="t('bpmn.panel.conditionType')">
+          <n-form-item
+            v-if="varVisible"
+            path="variableName"
+            :label="t('bpmn.panel.variableName')"
+            :label-width="labelWidth"
+          >
+            <n-input
+              maxlength="32"
+              v-model:value="variableName"
+              @update:value="setElementVariableName"
+            />
+          </n-form-item>
+          <n-form-item path="conditionType" :label="t('bpmn.panel.conditionType')">
             <n-select
               v-model:value="conditionData.conditionType"
               @update:value="setConditionType"
@@ -149,7 +135,7 @@
             />
           </n-form-item>
           <n-form-item
-            v-if="conditionData.conditionType === 'expression'"
+            v-if="conditionData.conditionType"
             path="expression"
             :label="t('bpmn.panel.conditionExpression')"
           >

@@ -215,7 +215,7 @@ export function addExecutionListener(modeler: Modeler, element: BpmnElement, pro
   const prefix = getProcessPrefix(modeler);
   const moddle = getModdle(modeler);
   const businessObject = getListenersContainer(element);
-  const listener = moddle!.create(`${prefix}:${EXECUTIONAL_SUFFIX}`, {});
+  const listener = moddle.create(`${prefix}:${EXECUTIONAL_SUFFIX}`, {});
   updateListenerProperty(modeler, element, listener, props);
   addExtensionElements(modeler, element, businessObject, listener);
 }
@@ -358,12 +358,16 @@ export function updateListenerProperty(
   const prefix = getProcessPrefix(modeler);
   const { event, type, value, fields } = props;
   const properties = { event: event };
-  if (type === 'class') {
-    properties[`${prefix}:class`] = value;
-  } else if (type === 'expression') {
-    properties[`${prefix}:expression`] = value;
-  } else if (type === 'delegateExpression') {
-    properties[`${prefix}:delegateExpression`] = value;
+  switch (type) {
+    case 'class':
+      properties[`${prefix}:class`] = value;
+      break;
+    case 'expression':
+      properties[`${prefix}:expression`] = value;
+      break;
+    case 'delegateExpression':
+      properties[`${prefix}:delegateExpression`] = value;
+      break;
   }
   if (fields) {
     properties[`fields`] = fields.map((field: BpmnField) => {
@@ -383,7 +387,7 @@ export function createField(modeler: Modeler, field: BpmnField) {
   const prefix = getProcessPrefix(modeler);
   const { name, fieldType, string, expression } = field;
   const fieldConfig = fieldType === 'string' ? { name, string } : { name, expression };
-  return moddle!.create(`${prefix}:Field`, fieldConfig);
+  return moddle.create(`${prefix}:Field`, fieldConfig);
 }
 
 /**

@@ -41,8 +41,8 @@ declare interface FormItemVisible {
 }
 
 export declare interface ConditionalForm {
-  conditionType?: string;
-  expression?: string;
+  conditionType: string;
+  expression: string;
   scriptType?: string;
   language?: string;
   body?: string;

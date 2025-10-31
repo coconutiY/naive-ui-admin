@@ -70,6 +70,7 @@ export function setVariableEventsValue(
 //  元素条件类型
 /**
  * 获取元素条件的值
+ * none | default | expression | script(不处理)
  * @param element
  */
 export function getConditionTypeValue(element: BpmnElement): string {
@@ -115,7 +116,7 @@ export function setConditionTypeValue(modeler: Modeler, element: BpmnElement, va
  * 获取条件表达式的值
  * @param element
  */
-export function getConditionExpressionValue(element: BpmnElement): string | undefined {
+export function getConditionExpressionValue(element: BpmnElement) {
   const conditionExpression = getConditionExpression(element);
   if (conditionExpression) {
     return conditionExpression.get('body');
@@ -136,12 +137,7 @@ export function setConditionExpressionValue(
   const parent = is(element, 'bpmn:SequenceFlow')
     ? getBusinessObject(element)
     : getConditionalEventDefinition(element);
-  const formalExpressionElement = createElement(
-    modeler,
-    'bpmn:FormalExpression',
-    { body: `\$\{${body}\}` },
-    parent
-  );
+  const formalExpressionElement = createElement(modeler, 'bpmn:FormalExpression', { body }, parent);
   updateCondition(modeler, element, formalExpressionElement);
 }
 
